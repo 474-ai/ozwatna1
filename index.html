@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحدي السرعة الجماعي</title>
+    <!-- مكتبات فايربيس الصحيحة والكاملة -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
     <style>
@@ -31,7 +32,7 @@
             cursor: pointer; transition: 0.2s; margin-bottom: 10px;
         }
         button:active { transform: scale(0.98); }
-        .option-btn { background: #f1f2f6; color: #333; text-align: right; padding: 15px; font-size: 1rem; }
+        .option-btn { background: #f1f2f6; color: #333; text-align: right; padding: 15px; font-size: 1rem; display: block; width: 100%; border: none; border-radius: 8px; margin-bottom: 8px; cursor: pointer;}
         .option-btn:hover { background: #e4e7eb; }
         .leaderboard { margin-top: 20px; background: #f8f9fa; padding: 10px; border-radius: 10px; text-align: right; }
         .score-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
@@ -56,7 +57,6 @@
         <div id="optionsContainer"></div>
         <div id="feedbackText" style="font-weight:bold; margin: 15px 0;"></div>
         
-        <!-- زر للمتحكم الرئيسي (أنت) لبدء السؤال التالي للجميع في نفس اللحظة -->
         <button id="nextQBtn" style="background:#2c3e50; display:none;" onclick="triggerNextQuestion()">السؤال التالي عند الجميع ➡️</button>
 
         <div class="leaderboard">
@@ -67,19 +67,22 @@
 </div>
 
 <script>
-    // ⚠️ استبدل الرابط أدناه برابط الـ Realtime Database الخاص بك من موقع Firebase
+    // ⚠️ استبدل الرابط أدناه بالرابط الذي نسخته من موقع Firebase من تبويب "بيانات"
     const firebaseConfig = {
-        databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com/"
+        databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com/" 
     };
-    firebase.initializeApp(firebaseConfig);
+    
+    // تفعيل الاتصال بـ Firebase بشكل سليم
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.database();
 
-    // بنك الأسئلة المتزامن
     const quizData = [
         { q: "ما هي السورة التي تعدل ثلث القرآن الكريم؟", os: ["سورة الإخلاص", "سورة الفاتحة", "سورة الكافرون", "سورة الملك"], a: 0 },
         { q: "من هو أول مؤذن في الإسلام؟", os: ["بلال بن رباح", "عمرو بن العاص", "أبو بكر الصديق", "أنس بن مالك"], a: 0 },
         { q: "كم عدد أركان الإسلام؟", os: ["3 أركان", "4 أركان", "5 أركان", "6 أركان"], a: 2 },
-        { q: "ما هي أطول سورة في القرآن الكريم؟", os: ["سورة آل عمران", "سورة البقرة", "سورة النساء", "سورة المائدة"], a: 1 }
+        { q: "ما هي أطول سورة في القرآن الكريم؟", os: ["سورة آل عمران", "سورة البقرة", "سورة النساء", "سورة Mائدة"], a: 1 }
     ];
 
     let myName = "";
@@ -89,23 +92,20 @@
         myName = document.getElementById("pNameInput").value.trim();
         if(myName === "") return alert("اكتب اسمك أولاً!");
 
-        // تسجيل اللاعب في السيرفر المجاني بنقاط 0
         db.ref('players/' + myName).set({ score: 0 });
 
         document.getElementById("loginScreen").classList.remove("active");
         document.getElementById("gameScreen").classList.add("active");
 
-        // إظهار زر التحكم بالسؤال التالي لك فقط (بما أنك منشئ اللعبة) لتقود الجولة بنفسك
-        if(confirm("هل أنت منظم اللعبة الرئيسي؟ (اضغط موافق لإظهار زر التحكم بالأسئلة للجميع)")) {
+        if(confirm("هل أنت منظم اللعبة الرئيسي؟ (اضغط موافق لإعادة تصفير اللعبة والتحكم بالأسئلة)")) {
             document.getElementById("nextQBtn").style.display = "block";
-            db.ref('gameState').set({ currentQ: 0, winnerOfThisRound: "" });
+            db.ref('gameState').set({ currentQ: 0 });
         }
 
         listenToGame();
     }
 
     function listenToGame() {
-        // الاستماع لتغيير الأسئلة عند كل اللاعبين في نفس اللحظة
         db.ref('gameState').on('value', (snapshot) => {
             const state = snapshot.val();
             if(!state) return;
@@ -115,7 +115,7 @@
             
             const qIndex = state.currentQ;
             if(qIndex >= quizData.length) {
-                document.getElementById("questionText").innerText = "🎉 انتهت اللعبة! تفقد لوحة الصدارة لمعرفة الفائز النهائي.";
+                document.getElementById("questionText").innerText = "🎉 انتهت اللعبة! تفقد لوحة الصدارة لمعرفة الفائز.";
                 document.getElementById("optionsContainer").innerHTML = "";
                 return;
             }
@@ -130,7 +130,6 @@
             });
         });
 
-        // تحديث لوحة الصدارة فوراً عند الجميع مجاناً وبسرعة
         db.ref('players').on('value', (snapshot) => {
             const playersData = snapshot.val();
             const leaderboard = document.getElementById("leaderboardContent");
@@ -155,7 +154,6 @@
         for(let b of buttons) b.disabled = true;
 
         if(selectedIdx === correctAnswer) {
-            // إضافة نقاط للاعب في السيرفر وتحديث نقاطه فوراً عند أصحابه الـ 12
             db.ref('players/' + myName + '/score').transaction((currentScore) => {
                 return (currentScore || 0) + 10;
             });
