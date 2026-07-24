@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحدي السرعة الجماعي المصلح</title>
-    <!-- مكتبات فايربيس الرسمية والمستقرة للويب -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body {
@@ -31,6 +28,7 @@
             border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold;
             cursor: pointer; transition: 0.2s; margin-bottom: 10px;
         }
+        button:disabled { background: #95a5a6; cursor: not-allowed; }
         button:active { transform: scale(0.98); }
         .option-btn { background: #f1f2f6; color: #333; text-align: right; padding: 15px; font-size: 1rem; display: block; width: 100%; border: none; border-radius: 8px; margin-bottom: 8px; cursor: pointer;}
         .option-btn:hover { background: #e4e7eb; }
@@ -48,105 +46,125 @@
     <div id="loginScreen" class="screen active">
         <p>أدخل اسمك للانضمام إلى الغرفة المشتركة مع أصحابك:</p>
         <input type="text" id="pNameInput" placeholder="اكتب اسمك الفعلي...">
-        <button onclick="joinRoom()">دخول الغرفة المشتركة 🚀</button>
+        <button id="loginBtn" onclick="joinRoom()">دخول الغرفة المشتركة 🚀</button>
     </div>
 
     <!-- شاشة الانتظار واللعب -->
     <div id="gameScreen" class="screen">
-        <h3 id="questionText">في انتظار بدء السؤال...</h3>
+        <h3 id="questionText">في انتظار بدء السؤال الأول...</h3>
         <div id="optionsContainer"></div>
         <div id="feedbackText" style="font-weight:bold; margin: 15px 0;"></div>
         
         <button id="nextQBtn" style="background:#2c3e50; display:none;" onclick="triggerNextQuestion()">السؤال التالي عند الجميع ➡️</button>
 
         <div class="leaderboard">
-            <strong>📊 الصدارة الحالية (تتحدث فوراً):</strong>
+            <strong>📊 الصدارة الحالية (تتحديث تلقائي):</strong>
             <div id="leaderboardContent"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // تم تصحيح الرابط وإضافة امتداد المنطقة الجغرافية الصحيح لمشروعك التابع لفايربيس
-    const firebaseConfig = {
-        databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com/" 
-    };
-    
-    // ربط وتثبيت الاتصال بالسيرفر
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.database();
+    // الرابط المباشر الصحيح والمدعوم لبيانات مشروعك
+    const dbURL = "https://sdfq-63ee0-default-rtdb.firebaseio.com/";
 
-    // بنك الأسئلة المباشر
     const quizData = [
         { q: "ما هي السورة التي تعدل ثلث القرآن الكريم؟", os: ["سورة الإخلاص", "سورة الفاتحة", "سورة الكافرون", "سورة الملك"], a: 0 },
         { q: "من هو أول مؤذن في الإسلام؟", os: ["بلال بن رباح", "عمرو بن العاص", "أبو بكر الصديق", "أنس بن مالك"], a: 0 },
         { q: "كم عدد أركان الإسلام؟", os: ["3 أركان", "4 أركان", "5 أركان", "6 أركان"], a: 2 },
-        { q: "ما هي أطول سورة في القرآن الكريم؟", os: ["سورة آل عمران", "سورة البقرة", "سورة النساء", "سورة المائدة"], a: 1 }
+        { q: "ما هي أطول سورة في القرآن الكريم？", os: ["سورة آل عمران", "سورة البقرة", "سورة النساء", "سورة المائدة"], a: 1 }
     ];
 
     let myName = "";
     let hasAnswered = false;
+    let isManager = false;
 
-    function joinRoom() {
+    async function joinRoom() {
         myName = document.getElementById("pNameInput").value.trim();
         if(myName === "") return alert("اكتب اسمك أولاً!");
 
-        db.ref('players/' + myName).set({ score: 0 });
+        document.getElementById("loginBtn").disabled = true;
 
-        document.getElementById("loginScreen").classList.remove("active");
-        document.getElementById("gameScreen").classList.add("active");
+        try {
+            // تسجيل اللاعب وحفظه مباشرة في السيرفر
+            await fetch(`${dbURL}players/${myName}.json`, {
+                method: 'PUT',
+                body: JSON.stringify({ score: 0 })
+            });
 
-        if(confirm("هل أنت منظم اللعبة الرئيسي؟ (اضغط موافق لإعادة تصفير اللعبة والتحكم بالأسئلة)")) {
-            document.getElementById("nextQBtn").style.display = "block";
-            db.ref('gameState').set({ currentQ: 0 });
-        }
+            document.getElementById("loginScreen").classList.remove("active");
+            document.getElementById("gameScreen").classList.add("active");
 
-        listenToGame();
-    }
-
-    function listenToGame() {
-        db.ref('gameState').on('value', (snapshot) => {
-            const state = snapshot.val();
-            if(!state) return;
-            
-            hasAnswered = false;
-            document.getElementById("feedbackText").innerText = "";
-            
-            const qIndex = state.currentQ;
-            if(qIndex >= quizData.length) {
-                document.getElementById("questionText").innerText = "🎉 انتهت اللعبة! تفقد لوحة الصدارة لمعرفة الفائز.";
-                document.getElementById("optionsContainer").innerHTML = "";
-                return;
+            if(confirm("هل أنت منظم اللعبة الرئيسي؟ (اضغط موافق لإعادة تصفير اللعبة والتحكم بالأسئلة)")) {
+                isManager = true;
+                document.getElementById("nextQBtn").style.display = "block";
+                await fetch(`${dbURL}gameState.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ currentQ: 0 })
+                });
             }
 
-            const currentData = quizData[qIndex];
-            document.getElementById("questionText").innerText = currentData.q;
-            
-            const container = document.getElementById("optionsContainer");
-            container.innerHTML = "";
-            currentData.os.forEach((opt, idx) => {
-                container.innerHTML += `<button class="option-btn" onclick="submitAnswer(${idx}, ${qIndex})">${opt}</button>`;
-            });
-        });
+            // تشغيل التحديث التلقائي كل ثانية واحدة لمزامنة الأجهزة
+            setInterval(syncGame, 1500);
+            syncGame();
 
-        db.ref('players').on('value', (snapshot) => {
-            const playersData = snapshot.val();
-            const leaderboard = document.getElementById("leaderboardContent");
-            leaderboard.innerHTML = "";
-            
-            let sorted = [];
-            for(let p in playersData) { sorted.push({name: p, score: playersData[p].score}); }
-            sorted.sort((a,b) => b.score - a.score);
-
-            sorted.forEach(p => {
-                leaderboard.innerHTML += `<div class="score-row"><span>👤 ${p.name}</span><span><b>${p.score}</b> نقطة</span></div>`;
-            });
-        });
+        } catch (error) {
+            alert("حدث خطأ في الاتصال بالخادم، تأكد من إعدادات وضع الاختبار في فايربيس.");
+            document.getElementById("loginBtn").disabled = false;
+        }
     }
 
-    function submitAnswer(selectedIdx, qIndex) {
+    async function syncGame() {
+        try {
+            // مزامنة حالة السؤال الحالي لجميع الجوالات
+            const resState = await fetch(`${dbURL}gameState.json`);
+            const state = await resState.json();
+            
+            if(state && state.currentQ !== undefined) {
+                const qIndex = state.currentQ;
+                
+                // إذا تغير السؤال عند الموزع، نقوم بإعادة تفعيل الاختيارات
+                if(document.getElementById("questionText").getAttribute("data-q-idx") != qIndex) {
+                    hasAnswered = false;
+                    document.getElementById("feedbackText").innerText = "";
+                    document.getElementById("questionText").setAttribute("data-q-idx", qIndex);
+                    
+                    if(qIndex >= quizData.length) {
+                        document.getElementById("questionText").innerText = "🎉 انتهت اللعبة! تفقد لوحة الصدارة لمعرفة الفائز.";
+                        document.getElementById("optionsContainer").innerHTML = "";
+                    } else {
+                        const currentData = quizData[qIndex];
+                        document.getElementById("questionText").innerText = currentData.q;
+                        
+                        const container = document.getElementById("optionsContainer");
+                        container.innerHTML = "";
+                        currentData.os.forEach((opt, idx) => {
+                            container.innerHTML += `<button class="option-btn" onclick="submitAnswer(${idx}, ${qIndex})">${opt}</button>`;
+                        });
+                    }
+                }
+            }
+
+            // مزامنة وتحديث لوحة الصدارة فورياً عند اللاعبين الـ 12
+            const resPlayers = await fetch(`${dbURL}players.json`);
+            const playersData = await resPlayers.json();
+            
+            if(playersData) {
+                const leaderboard = document.getElementById("leaderboardContent");
+                leaderboard.innerHTML = "";
+                
+                let sorted = [];
+                for(let p in playersData) { if(playersData[p]) sorted.push({name: p, score: playersData[p].score || 0}); }
+                sorted.sort((a,b) => b.score - a.score);
+
+                sorted.forEach(p => {
+                    leaderboard.innerHTML += `<div class="score-row"><span>👤 ${p.name}</span><span><b>${p.score}</b> نقطة</span></div>`;
+                });
+            }
+        } catch(e) { console.log("خطأ في المزامنة المباشرة"); }
+    }
+
+    async function submitAnswer(selectedIdx, qIndex) {
         if(hasAnswered) return;
         hasAnswered = true;
 
@@ -155,19 +173,34 @@
         for(let b of buttons) b.disabled = true;
 
         if(selectedIdx === correctAnswer) {
-            db.ref('players/' + myName + '/score').transaction((currentScore) => {
-                return (currentScore || 0) + 10;
-            });
-            document.getElementById("feedbackText").innerHTML = "<span style='color:#2ed573'>✅ ممتاز! إجابة صحيحة (+10 نقاط)</span>";
+            document.getElementById("feedbackText").innerHTML = "<span style='color:#2ed573'>✅ ممتاز! إجابة صحيحة جاري إضافة النقاط...</span>";
+            try {
+                // جلب النقاط الحالية وزيادتها بـ 10 نقاط
+                const res = await fetch(`${dbURL}players/${myName}/score.json`);
+                const currentScore = await res.json() || 0;
+                
+                await fetch(`${dbURL}players/${myName}/score.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify(currentScore + 10)
+                });
+                document.getElementById("feedbackText").innerHTML = "<span style='color:#2ed573'>✅ ممتاز! تم احتساب النقاط (+10)</span>";
+            } catch(e) { }
         } else {
             document.getElementById("feedbackText").innerHTML = `<span style='color:#ff4757'>❌ خاطئة! الإجابة الصحيحة هي: ${quizData[qIndex].os[correctAnswer]}</span>`;
         }
     }
 
-    function triggerNextQuestion() {
-        db.ref('gameState/currentQ').transaction((current) => {
-            return (current === null ? 0 : current + 1);
-        });
+    async function triggerNextQuestion() {
+        if(!isManager) return;
+        try {
+            const res = await fetch(`${dbURL}gameState/currentQ.json`);
+            const current = await res.json() || 0;
+            
+            await fetch(`${dbURL}gameState/currentQ.json`, {
+                method: 'PUT',
+                body: JSON.stringify(current + 1)
+            });
+        } catch(e) {}
     }
 </script>
 
