@@ -2,142 +2,278 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الغرف الجماعية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منصة ألعاب الغرف الجماعية</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: #333; margin: 0; padding: 15px;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: #1e293b; color: #f1f5f9; overflow: hidden;
         }
-        .app-card {
-            background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 20px;
-            width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            text-align: center;
+        body { display: flex; justify-content: center; align-items: center; padding: 10px; }
+        
+        .app-container {
+            width: 100%; height: 100%; max-width: 500px; max-height: 800px;
+            background: #334155; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; overflow: hidden; border: 1px solid #475569;
         }
-        h1 { font-size: 1.5rem; color: #2c3e50; margin-top: 0; }
-        .screen { display: none; }
-        .active { display: block; }
+        
+        .screen { display: none; flex: 1; flex-direction: column; padding: 20px; overflow-y: auto; }
+        .screen.active { display: flex; }
+        
+        h1, h2, h3 { text-align: center; color: #38bdf8; margin-top: 0; }
+        p { text-align: center; color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px; }
+        
         input {
-            width: 100%; padding: 12px; border: 2px solid #ddd;
-            border-radius: 10px; margin-bottom: 12px; font-size: 1rem; text-align: center; outline: none;
+            width: 100%; padding: 12px; background: #1e293b; border: 2px solid #475569;
+            border-radius: 8px; margin-bottom: 12px; font-size: 1rem; text-align: center; 
+            color: #fff; outline: none;
         }
-        input:focus { border-color: #3498db; }
+        input:focus { border-color: #38bdf8; }
+        
         button {
-            width: 100%; padding: 12px; background: #3498db; color: white;
-            border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold;
-            cursor: pointer; transition: 0.2s; margin-bottom: 8px;
+            width: 100%; padding: 12px; background: #38bdf8; color: #1e293b;
+            border: none; border-radius: 8px; font-size: 1.05rem; font-weight: bold;
+            cursor: pointer; margin-bottom: 10px;
         }
         button:active { transform: scale(0.98); }
-        .grid-menu { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
-        .game-type-btn { background: #2ecc71; }
-        .join-box { background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-top: 15px; }
-        .player-badge { display: inline-block; background: #34495e; color: white; padding: 5px 10px; margin: 4px; border-radius: 20px; font-size: 0.9rem; }
-        .lobby-info { background: #e8f4fd; padding: 12px; border-radius: 8px; color: #2980b9; font-weight: bold; margin-bottom: 15px; }
-        .invite-box { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; border-radius: 8px; margin-bottom: 15px; color: #856404; font-size: 0.9rem; }
-        .option-btn { background: #f1f2f6; color: #333; text-align: right; padding: 14px; font-size: 1rem; display: block; width: 100%; border: none; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
-        .option-btn:hover { background: #e4e7eb; }
+        button:disabled { background: #64748b; color: #cbd5e1; cursor: not-allowed; transform: none; }
+        
+        /* مكان رفع وعرض الصورة الحقيقية للـ 12 لاعب */
+        .photo-uploader { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .avatar-preview { 
+            width: 80px; height: 80px; border-radius: 50%; border: 3px solid #475569; 
+            object-fit: cover; background: #1e293b; margin-bottom: 10px;
+        }
+        .file-label { background: #475569; color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+        
+        .user-photo-mini { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-left: 8px; border: 2px solid #475569; background: #1e293b; }
+        
+        .grid-menu { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .btn-game-type { background: #10b981; color: #fff; }
+        
+        .join-box { background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #475569; margin-top: 20px; }
+        .lobby-info { background: #1e293b; padding: 12px; border-radius: 10px; color: #38bdf8; font-weight: bold; margin-bottom: 15px; border: 1px solid #475569; text-align: center; }
+        
+        .players-panel { background: #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid #475569; }
+        .players-list-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .player-chip { background: #334155; border: 1px solid #475569; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; }
+        
+        .invite-notification { background: #f59e0b; color: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; text-align: center; }
+        
+        .timer-bar-container { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .timer-bar { width: 100%; height: 100%; background: #ef4444; }
+        
+        .question-box { font-size: 1.25rem; font-weight: bold; line-height: 1.5; margin-bottom: 20px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; background: #1e293b; border-radius: 12px; padding: 12px; border: 1px solid #475569; }
+        
+        .options-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .opt-card { 
+            background: #1e293b; border: 2px solid #475569; border-radius: 12px; padding: 14px; 
+            text-align: right; font-size: 1rem; cursor: pointer; position: relative; color: #fff;
+        }
+        .opt-card.selected { border-color: #38bdf8; background: rgba(56,189,248,0.05); }
+        .opt-card.correct { border-color: #10b981 !important; background: rgba(16,185,129,0.1) !important; color: #10b981; }
+        .opt-card.wrong { border-color: #ef4444 !important; background: rgba(239,68,68,0.1) !important; color: #f87171; }
+        
+        .voters-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #475569; }
+        .voter-mini-chip { font-size: 0.8rem; background: #334155; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; color: #cbd5e1; border: 1px solid #475569; }
+        .voter-mini-chip img { margin-left: 4px; }
+        
+        .status-footer { text-align: center; font-weight: bold; color: #fbbf24; margin: 15px 0; min-height: 20px; font-size: 1rem; }
+        
+        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 30px 0; height: 180px; }
+        .podium-step { background: #1e293b; border: 2px solid #475569; border-top-left-radius: 10px; border-top-right-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 15px; position: relative; }
+        .podium-step.first { height: 100%; width: 100px; border-color: #fbbf24; }
+        .podium-step.second { height: 75%; width: 90px; border-color: #cbd5e1; }
+        .podium-step.third { height: 55%; width: 90px; border-color: #b45309; }
     </style>
 </head>
 <body>
 
-<div class="app-card">
-    <!-- 1. شاشة الدخول وتسجيل الاسم -->
-    <div id="screenLogin" class="screen active">
-        <h1>👋 مرحباً بك في المنصة</h1>
-        <p>أدخل اسمك المميز للبدء:</p>
-        <input type="text" id="inputProfileName" placeholder="اكتب اسمك هنا...">
-        <button onclick="saveProfile()">موافق ودخول 🚀</button>
+<div class="app-container">
+    <!-- 1. شاشة تسجيل الدخول وتعديل الحساب بالصور الحقيقية -->
+    <div id="scrLogin" class="screen active">
+        <h1>🎮 حسابك الجماعي</h1>
+        <p>ارفع صورتك الشخصية واكتب اسمك لتجهيز ملفك والانضمام لأصحابك:</p>
+        
+        <div class="photo-uploader">
+            <!-- الصورة الافتراضية قبل أن يرفع اللاعب صورته -->
+            <img src="data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 24 24' fill='%2364748b'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" class="avatar-preview" id="profilePhotoPreview">
+            <input type="file" id="inpPlayerPhoto" accept="image/*" style="display: none;" onchange="previewAndProcessPhoto(this)">
+            <label for="inpPlayerPhoto" class="file-label">📸 اختر صورة من جهازك</label>
+        </div>
+        
+        <input type="text" id="inpPlayerName" placeholder="اكتب اسمك هنا...">
+        <button onclick="commitProfile()">موافق وحفظ الحساب 🚀</button>
     </div>
 
     <!-- 2. الشاشة الرئيسية واختيار الألعاب والدعوات -->
-    <div id="screenHome" class="screen">
-        <h2 id="welcomeMsg" style="color:#2c3e50; font-size:1.2rem;"></h2>
+    <div id="scrHome" class="screen">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#1e293b; padding:10px 15px; border-radius:12px; border:1px solid #475569;">
+            <div id="homeProfileDisplay" style="font-weight:bold; display:flex; align-items:center;"></div>
+            <button style="width:auto; padding:6px 12px; margin:0; font-size:0.85rem; background:#475569; color:#fff;" onclick="backToProfileUpdate()">⚙️ تعديل</button>
+        </div>
         
-        <div id="boxIncomingInvite" class="invite-box" style="display:none;">
-            <span id="textInviteMsg">وصلتك دعوة الآن!</span>
-            <button style="background:#27ae60; padding:6px; font-size:0.9rem; margin-top:5px;" onclick="acceptDirectInvite()">قبول ودخول 📥</button>
+        <div id="notifInvite" class="invite-notification" style="display:none;">
+            <span id="txtInviteNotify">وصلتك دعوة الآن!</span>
+            <button style="background:#1e293b; color:#fff; padding:6px 12px; font-size:0.9rem; margin-top:8px; width:auto; display:block; margin-inline:auto; border-radius:6px;" onclick="acceptDirectInvite()">دخول الغرفة فوراً 📥</button>
         </div>
 
-        <p style="font-weight:bold; color:#7f8c8d;">اختر نوع اللعبة لتصبح أنت منظم الغرفة:</p>
+        <p style="font-weight:bold; color:#38bdf8; text-align:right; margin-bottom:5px;">أنشئ غرفة جديدة وكن أنت المنظم:</p>
         <div class="grid-menu">
-            <button class="game-type-btn" onclick="createRoom('أسئلة عامة وثقافية')">🧠 غرفة أسئلة عامة</button>
-            <button class="game-type-btn" style="background:#e67e22;" onclick="createRoom('ألغاز وذكاء')">🔍 غرفة ألغاز وذكاء</button>
+            <button class="btn-game-type" onclick="initiateRoom('أسئلة ثقافية وإسلامية')">🧠 غرفة أسئلة إسلامية وثقافية</button>
+            <button class="btn-game-type" style="background:#ea580c;" onclick="initiateRoom('ألغاز ومنافسة ذكاء')">🔍 غرفة ألغاز وعجائب</button>
         </div>
 
         <div class="join-box">
-            <p style="margin-top:0; font-weight:bold;">هل تملك كود غرفة من صديقك؟</p>
-            <input type="text" id="inputRoomCode" placeholder="أدخل كود الغرفة السري...">
-            <button style="background:#9b59b6;" onclick="joinRoomByCode()">دخول الغرفة 🔑</button>
+            <p style="margin-top:0; font-weight:bold; text-align:right; color:#cbd5e1;">دخول غرفة صديق عبر الكود السري:</p>
+            <input type="text" id="inpRoomCode" placeholder="اكتب كود الغرفة (4 أرقام)...">
+            <button style="background:#8b5cf6; color:#fff;" onclick="connectRoomByCode()">التحقق ودخول الغرفة 🔑</button>
         </div>
     </div>
 
-    <!-- 3. شاشة الانتظار داخل الغرفة (Lobby) -->
-    <div id="screenLobby" class="screen">
+    <!-- 3. شاشة الانتظار ولوحة الأسماء والصور الحية (Lobby) -->
+    <div id="scrLobby" class="screen">
         <div class="lobby-info">
-            🏢 نوع اللعبة: <span id="lobbyGameType">--</span><br>
-            🔑 كود الدخول السري: <span id="lobbyCodeText" style="color:#e74c3c; font-size:1.3rem;">--</span>
+            🏢 نوع الغرفة: <span id="lobGameType">--</span><br>
+            🔑 كود الغرفة السري: <span id="lobCodeText" style="color:#ef4444; font-size:1.3rem;">--</span>
         </div>
 
-        <div style="background:#f1f2f6; padding:10px; border-radius:10px; margin-bottom:15px;">
-            <p style="margin:0 0 5px 0; font-size:0.9rem; font-weight:bold;">✉️ إرسال دعوة سريعة للاعب:</p>
-            <input type="text" id="searchPlayerName" placeholder="اكتب اسم صديقك بالضبط..." style="padding:6px; margin-bottom:5px; font-size:0.9rem;">
-            <button style="background:#34495e; padding:8px; font-size:0.9rem;" onclick="sendInvite()">إرسال طلب دخول 📤</button>
+        <div style="background:#1e293b; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #475569;">
+            <p style="margin:0 0 5px 0; font-size:0.9rem; font-weight:bold; text-align:right; color:#38bdf8;">✉️ دعوة صديق متواجد أونلاين:</p>
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="inpTargetPlayer" placeholder="اكتب اسم صديقك بالضبط..." style="margin:0; padding:10px; font-size:0.9rem; flex:1;">
+                <button style="background:#475569; width:auto; margin:0; padding-inline:15px;" onclick="dispatchInvite()">إرسال</button>
+            </div>
         </div>
 
-        <h3>👥 اللاعبين المتواجدين داخل الغرفة:</h3>
-        <div id="lobbyPlayersList" style="margin-bottom:20px;"></div>
+        <div class="players-panel">
+            <h3 style="font-size:1rem; margin-bottom:10px; text-align:right; color:#cbd5e1;">👥 المتواجدون في الغرفة وصور حساباتهم:</h3>
+            <div class="players-list-grid" id="lobPlayersList"></div>
+        </div>
 
-        <button id="btnStartGame" style="background:#27ae60; display:none;" onclick="hostStartGame()">🚀 بدء اللعبة الآن (للمنظم فقط)</button>
-        <p id="txtWaitHost" style="color:#e67e22; font-weight:bold; display:none;">⏱️ في انتظار قيام المنظم ببدء اللعبة...</p>
+        <button id="btnHostStart" style="background:#10b981; color:#fff; display:none;" onclick="hostFireStart()">🚀 بدء التحدي الفعلي للجميع</button>
+        <p id="lblWaitHost" style="color:#f59e0b; font-weight:bold; text-align:center; display:none;">⏱️ في انتظار قيام منظم الغرفة ببدء اللعب...</p>
     </div>
 
-    <!-- 4. شاشة اللعب الفعلي والتنافس -->
-    <div id="screenGameplay" class="screen">
-        <h3 id="gameQuestionText" style="line-height:1.5;">جاري تحميل السؤال الأول...</h3>
-        <div id="gameOptionsContainer"></div>
-        <div id="gameFeedback" style="font-weight:bold; margin:15px 0;"></div>
-        <button id="btnNextQuestion" style="background:#2c3e50; display:none;" onclick="hostNextQuestion()">السؤال التالي ➡️</button>
+    <!-- 4. شاشة اللعب والتصويت وعرض صور المختارين -->
+    <div id="scrGameplay" class="screen">
+        <div class="timer-bar-container"><div class="timer-bar" id="uiTimerBar"></div></div>
+        <div class="question-box" id="uiQuestionText">جاري مزامنة السؤال الأول...</div>
+        <div class="options-list" id="uiOptionsContainer"></div>
+        <div class="status-footer" id="uiStatusFooter">جاري تحديث الاختيارات...</div>
+        <button id="btnNextQuestion" style="background:#475569; color:#fff; display:none;" onclick="hostAdvanceQuestion()" disabled>السؤال التالي ➡️</button>
     </div>
-</div>
+
+    <!-- 5. شاشة منصة التتويج والنتائج والعودة الجماعية للرئيسية -->
+    <div id="scrPodium" class="screen">
+        <h1>🏆 منصة أبطال التحدي</h1>
+        <p>النتائج النهائية المحتسبة وصور الفائزين:</p>
+        
+        <div class="podium-container">
+            <div class="podium-step second" id="step2">
+                <div style="font-size:1.4rem; margin-bottom:5px;">🥈</div>
+                <div id="p2PhotoContainer"></div>
+                <div id="p2Name" style="font-weight:bold; font-size:0.85rem; text-align:center; width:100%; overflow:hidden;">--</div>
+                <div id="p2Score" style="font-size:0.8rem; color:#cbd5e1; margin-top:2px;">0 ن</div>
+            </div>
+            <div class="podium-step first" id="step1">
+                <div style="font-size:1.6rem; margin-bottom:5px;">🥇</div>
+                <div id="p1PhotoContainer"></div>
+                <div id="p1Name" style="font-weight:bold; font-size:0.9rem; text-align:center; width:100%; overflow:hidden;">--</div>
+                <div id="p1Score" style="font-size:0.85rem; color:#fbbf24; margin-top:2px;">0 ن</div>
+            </div>
+            <div class="podium-step third" id="step3">
+                <div style="font-size:1.3rem; margin-bottom:5px;">🥉</div>
+                <div id="p3PhotoContainer"></div>
+                <div id="p3Name" style="font-weight:bold; font-size:0.85rem; text-align:center; width:100%; overflow:hidden;">--</div>
+                <div id="p3Score" style="font-size:0.8rem; color:#b45309; margin-top:2px;">0 ن</div>
+            </div>
+        </div>
+
+        <button style="background:#ef4444; color:#fff; margin-top:auto;" onclick="terminateSessionAndExit()">إنهاء الجولة والعودة للرئيسية 🚪</button>
+    </div>
+
+</div> <!-- نهاية حاوية الكود المفتوحة في الجزء الأول -->
 <script>
+    // رابط السيرفر المباشر لمشروعك التابع لفايربيس
     const dbURL = "https://sdfq-63ee0-default-rtdb.firebaseio.com/";
 
+    // بنوك الأسئلة المتوافقة مع الضوابط الشرعية وحسب اختيار المنظم
     const questionBanks = {
-        "أسئلة عامة وثقافية": [
-            { q: "ما هي عاصمة دولة ماليزيا؟", os: ["كوالالمبور", "جاكرتا", "مانيلا", "بانكوك"], a: 0 },
-            { q: "من هو الصحابي الملقب بـ أمين هذه الأمة؟", os: ["أبو عبيدة بن الجراح", "عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب"], a: 0 }
+        "أسئلة ثقافية وإسلامية": [
+            { q: "ما هي السورة التي تسمى الفاضحة لسرائر المنافقين؟", os: ["سورة التوبة", "سورة الأنفال", "سورة المنافقون", "سورة الحشر"], a: 0 },
+            { q: "كم عدد السجدات الواردة في القرآن الكريم بالكامل؟", os: ["12 سجدة", "14 سجدة", "15 سجدة", "17 سجدة"], a: 2 },
+            { q: "من هو الصحابي الجليل الذي اهتز لوفاته عرش الرحمن؟", os: ["سعد بن معاذ", "معاذ بن جبل", "مصعب بن عمير", "حمزة بن عبدالمطلب"], a: 0 }
         ],
-        "ألغاز وذكاء": [
-            { q: "ما هو الشيء الذي يكتب ولا يقرأ؟", os: ["الكتاب", "القلم", "الرسالة", "العقل"], a: 1 },
-            { q: "ما هو الشيء الذي يكسو الناس ولكنه يظل عارياً؟", os: ["القماش", "الخياط", "الإبرة", "الشجر"], a: 2 }
+        "ألغاز ومنافسة ذكاء": [
+            { q: "له عين واحدة ولكنه لا يرى بها شيئاً أبداً، فما هو؟", os: ["المجهر", "الإبرة", "الإعصار", "البحر"], a: 1 },
+            { q: "ما هو الشيء الذي ينبض بلا قلب ويسير بلا أقدام؟", os: ["الساعة", "الماء", "الرياح", "القطار"], a: 0 }
         ]
     };
 
+    // صورة افتراضية بيضاء/رمادية في حال لم يختر اللاعب صورة من ملفاته
+    let selectedPhotoBase64 = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 24 24' fill='%2364748b'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
     let myName = "";
     let currentRoomId = "";
     let isHost = false;
     let selectedBank = [];
-    let hasAnsweredQ = false;
+    let hasVotedThisTurn = false;
     let pendingInviteCode = "";
+    let localTimerValue = 20;
+    let timerCountdownInterval = null;
+    let serverSyncInterval = null;
 
-    function changeScreen(screenId) {
+    // دالة معالجة وضغط الصورة المرفوعة من ملفات الجهاز
+    function previewAndProcessPhoto(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // تصغير الصورة برمجياً لتقليل حجمها وضمان سرعة السيرفر المجاني
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    canvas.width = 70;
+                    canvas.height = 70;
+                    ctx.drawImage(img, 0, 0, 70, 70);
+                    selectedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.6);
+                    document.getElementById("profilePhotoPreview").src = selectedPhotoBase64;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function navigate(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
     }
 
-    async function saveProfile() {
-        myName = document.getElementById("inputProfileName").value.trim().replace(/[^a-zA-Z0-9أ-ي]/g, "");
+    async function commitProfile() {
+        myName = document.getElementById("inpPlayerName").value.trim().replace(/[^a-zA-Z0-9أ-ي]/g, "");
         if(myName === "") return alert("الرجاء كتابة اسمك أولاً!");
 
-        await fetch(`${dbURL}online_users/${myName}.json`, { method: 'PUT', body: JSON.stringify({ active: true }) });
-        document.getElementById("welcomeMsg").innerText = `👤 اللاعب الحاضر: ${myName}`;
-        changeScreen("screenHome");
-        setInterval(globalSync, 1500);
+        // رفع الحساب والصورة الحقيقية للسيرفر
+        await fetch(`${dbURL}online_users/${myName}.json`, { 
+            method: 'PUT', 
+            body: JSON.stringify({ photo: selectedPhotoBase64, active: true }) 
+        });
+
+        document.getElementById("homeProfileDisplay").innerHTML = `<img src="${selectedPhotoBase64}" class="user-photo-mini"> اللاعب: ${myName}`;
+        navigate("scrHome");
+
+        if(!serverSyncInterval) {
+            serverSyncInterval = setInterval(executeGlobalSync, 1500);
+        }
     }
 
-    async function createRoom(gameType) {
+    function backToProfileUpdate() {
+        navigate("scrLogin");
+    }
+
+    async function initiateRoom(gameType) {
         isHost = true;
         currentRoomId = Math.floor(1000 + Math.random() * 9000).toString();
 
@@ -146,7 +282,8 @@
             gameType: gameType,
             currentQ: 0,
             status: "waiting",
-            players: { [myName]: { score: 0 } }
+            timer: 20,
+            players: { [myName]: { score: 100, photo: selectedPhotoBase64, lastVote: -1 } }
         };
 
         await fetch(`${dbURL}rooms/${currentRoomId}.json`, {
@@ -154,49 +291,60 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(roomStructure)
         });
-        setupLobbyUI(gameType, currentRoomId);
+
+        renderLobbyUI(gameType, currentRoomId);
     }
 
-    async function joinRoomByCode() {
-        const code = document.getElementById("inputRoomCode").value.trim();
+    async function connectRoomByCode() {
+        const code = document.getElementById("inpRoomCode").value.trim();
         if(code === "") return alert("أدخل كود الغرفة السري أولاً!");
         
         const res = await fetch(`${dbURL}rooms/${code}.json`);
         const room = await res.json();
+        
         if(!room) return alert("عذراً، هذا الكود غير موجود!");
+        if(room.status !== "waiting") return alert("الجولة بدأت بالفعل في هذه الغرفة!");
 
         isHost = false;
         currentRoomId = code;
-        await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}.json`, { method: 'PUT', body: JSON.stringify({ score: 0 }) });
-        setupLobbyUI(room.gameType, currentRoomId);
+
+        await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}.json`, { 
+            method: 'PUT', 
+            body: JSON.stringify({ score: 100, photo: selectedPhotoBase64, lastVote: -1 }) 
+        });
+
+        renderLobbyUI(room.gameType, currentRoomId);
     }
 
-    function setupLobbyUI(gameType, code) {
-        document.getElementById("lobbyGameType").innerText = gameType;
-        document.getElementById("lobbyCodeText").innerText = code;
-        document.getElementById("btnStartGame").style.display = isHost ? "block" : "none";
-        document.getElementById("txtWaitHost").style.display = isHost ? "none" : "block";
-        changeScreen("screenLobby");
+    function renderLobbyUI(gameType, code) {
+        document.getElementById("lobGameType").innerText = gameType;
+        document.getElementById("lobCodeText").innerText = code;
+        document.getElementById("btnHostStart").style.display = isHost ? "block" : "none";
+        document.getElementById("lblWaitHost").style.display = isHost ? "none" : "block";
+        navigate("scrLobby");
+    }
+    async function dispatchInvite() {
+        const targetPlayer = document.getElementById("inpTargetPlayer").value.trim();
+        if(targetPlayer === "") return alert("اكتب اسم اللاعب المستهدف!");
+
+        await fetch(`${dbURL}invites/${targetPlayer}.json`, {
+            method: 'PUT',
+            body: JSON.stringify({ from: myName, roomCode: currentRoomId })
+        });
+        alert(`تم إرسال طلب انضمام بنجاح إلى ${targetPlayer}`);
+        document.getElementById("inpTargetPlayer").value = "";
     }
 
-    async function sendInvite() {
-        const targetPlayer = document.getElementById("searchPlayerName").value.trim();
-        if(targetPlayer === "") return alert("اكتب اسم اللاعب!");
-        await fetch(`${dbURL}invites/${targetPlayer}.json`, { method: 'PUT', body: JSON.stringify({ from: myName, roomCode: currentRoomId }) });
-        alert(`تم إرسال طلب الانضمام بنجاح إلى ${targetPlayer}`);
-        document.getElementById("searchPlayerName").value = "";
-    }
-
-    async function globalSync() {
+    async function executeGlobalSync() {
         if (currentRoomId === "") {
             const resInv = await fetch(`${dbURL}invites/${myName}.json`);
             const invData = await resInv.json();
             if (invData && invData.roomCode) {
                 pendingInviteCode = invData.roomCode;
-                document.getElementById("textInviteMsg").innerText = `✉️ أرسل لك [ ${invData.from} ] دعوة لدخول الغرفة السرية: ${pendingInviteCode}`;
-                document.getElementById("boxIncomingInvite").style.display = "block";
+                document.getElementById("txtInviteNotify").innerText = `✉️ أرسل لك [ ${invData.from} ] دعوة لدخول الغرفة السرية: ${pendingInviteCode}`;
+                document.getElementById("notifInvite").style.display = "block";
             } else {
-                document.getElementById("boxIncomingInvite").style.display = "none";
+                document.getElementById("notifInvite").style.display = "none";
             }
         }
 
@@ -206,79 +354,205 @@
             if(!room) return;
 
             if(room.players) {
-                const listContainer = document.getElementById("lobbyPlayersList");
-                listContainer.innerHTML = "";
-                for(let p in room.players) {
-                    listContainer.innerHTML += `<span class="player-badge">👤 ${p}</span>`;
+                const listContainer = document.getElementById("lobPlayersList");
+                if (document.getElementById("scrLobby").classList.contains("active")) {
+                    listContainer.innerHTML = "";
+                    for(let p in room.players) {
+                        listContainer.innerHTML += `<span class="player-chip"><img src="${room.players[p].photo || selectedPhotoBase64}" class="user-photo-mini"> ${p}</span>`;
+                    }
                 }
             }
+
             if(room.status === "playing") {
                 selectedBank = questionBanks[room.gameType] || [];
-                renderGameplay(room.currentQ);
+                manageGameplayScreen(room);
+            } else if(room.status === "finished") {
+                renderPodiumUI(room.players);
             }
         }
     }
 
     async function acceptDirectInvite() {
         if(pendingInviteCode === "") return;
-        document.getElementById("inputRoomCode").value = pendingInviteCode;
+        document.getElementById("inpRoomCode").value = pendingInviteCode;
         await fetch(`${dbURL}invites/${myName}.json`, { method: 'DELETE' });
-        joinRoomByCode();
+        connectRoomByCode();
     }
 
-    async function hostStartGame() {
+    async function hostFireStart() {
         if(!isHost) return;
         await fetch(`${dbURL}rooms/${currentRoomId}/status.json`, { method: 'PUT', body: JSON.stringify("playing") });
     }
 
-    function renderGameplay(qIndex) {
-        if(document.getElementById("screenGameplay").classList.contains("active") && 
-           document.getElementById("gameQuestionText").getAttribute("data-q-idx") == qIndex) {
-            return;
-        }
-
-        changeScreen("screenGameplay");
-        hasAnsweredQ = false;
-        document.getElementById("gameFeedback").innerText = "";
-        document.getElementById("gameQuestionText").setAttribute("data-q-idx", qIndex);
-        document.getElementById("btnNextQuestion").style.display = isHost ? "block" : "none";
-
-        if(qIndex >= selectedBank.length) {
-            document.getElementById("gameQuestionText").innerText = "🎉 انتهت الجولة التنافسية للغرفة بنجاح!";
-            document.getElementById("gameOptionsContainer").innerHTML = "تفقد النتائج النهائية مع المنظم وأصحابك.";
-            if(isHost) document.getElementById("btnNextQuestion").style.display = "none";
-            return;
-        }
-
+    function startLocalTimerBar() {
+        clearInterval(timerCountdownInterval);
+        document.getElementById("uiTimerBar").style.width = "100%";
+        timerCountdownInterval = setInterval(() => {
+            localTimerValue--;
+            let percent = (localTimerValue / 20) * 100;
+            document.getElementById("uiTimerBar").style.width = `${percent}%`;
+            if(localTimerValue <= 0) {
+                clearInterval(timerCountdownInterval);
+            }
+        }, 1000);
+    }
+    function manageGameplayScreen(room) {
+        const qIndex = room.currentQ;
         const currentData = selectedBank[qIndex];
-        document.getElementById("gameQuestionText").innerText = currentData.q;
         
-        const container = document.getElementById("gameOptionsContainer");
+        if(!currentData) {
+            if(isHost) {
+                fetch(`${dbURL}rooms/${currentRoomId}/status.json`, { method: 'PUT', body: JSON.stringify("finished") });
+            }
+            return;
+        }
+
+        const isNewQuestion = document.getElementById("uiQuestionText").getAttribute("data-q-idx") != qIndex;
+        
+        if(isNewQuestion) {
+            navigate("scrGameplay");
+            hasVotedThisTurn = false;
+            document.getElementById("uiQuestionText").setAttribute("data-q-idx", qIndex);
+            document.getElementById("uiQuestionText").innerText = currentData.q;
+            document.getElementById("btnNextQuestion").style.display = isHost ? "block" : "none";
+            document.getElementById("btnNextQuestion").disabled = true;
+            
+            localTimerValue = 20;
+            startLocalTimerBar();
+        }
+
+        let totalPlayers = 0;
+        let votedCount = 0;
+        let playersWhoVoted = {};
+
+        for(let p in room.players) {
+            totalPlayers++;
+            if(room.players[p].lastVote !== undefined && room.players[p].lastVote !== -1) {
+                votedCount++;
+                playersWhoVoted[p] = { vote: room.players[p].lastVote, photo: room.players[p].photo };
+            }
+        }
+
+        const timeIsUp = localTimerValue <= 0;
+        const allPlayersVoted = votedCount >= totalPlayers;
+
+        const container = document.getElementById("uiOptionsContainer");
         container.innerHTML = "";
+        
         currentData.os.forEach((opt, idx) => {
-            container.innerHTML += `<button class="option-btn" onclick="submitGameAnswer(${idx}, ${qIndex})">${opt}</button>`;
+            let cardClass = "opt-card";
+            if(hasVotedThisTurn && !timeIsUp && !allPlayersVoted) {
+                if(room.players[myName] && room.players[myName].lastVote === idx) cardClass += " selected";
+            }
+            
+            if(timeIsUp || allPlayersVoted) {
+                if(idx === currentData.a) cardClass += " correct";
+                else if(room.players[myName] && room.players[myName].lastVote === idx) cardClass += " wrong";
+            }
+
+            let votersHtml = "";
+            if(timeIsUp || allPlayersVoted) {
+                votersHtml = `<div class="voters-container">`;
+                for(let player in playersWhoVoted) {
+                    if(playersWhoVoted[player].vote === idx) {
+                        votersHtml += `<span class="voter-mini-chip"><img src="${playersWhoVoted[player].photo || selectedPhotoBase64}" class="user-photo-mini" style="width:20px; height:20px; margin-left:3px; border-radius:50%; object-fit:cover;">${player}</span>`;
+                    }
+                }
+                votersHtml += `</div>`;
+            }
+
+            container.innerHTML += `<div class="${cardClass}" onclick="recordVote(${idx}, ${qIndex}, ${timeIsUp || allPlayersVoted})">${opt} ${votersHtml}</div>`;
         });
-    }
 
-    async function submitGameAnswer(selectedIdx, qIndex) {
-        if(hasAnsweredQ) return;
-        hasAnsweredQ = true;
-        const correctAnswer = selectedBank[qIndex].a;
-        const buttons = document.getElementsByClassName("option-btn");
-        for(let b of buttons) b.disabled = true;
-
-        if(selectedIdx === correctAnswer) {
-            document.getElementById("gameFeedback").innerHTML = "<span style='color:#2ed573'>✅ إجابة صحيحة! تم تسجيل النقاط.</span>";
+        if(allPlayersVoted || timeIsUp) {
+            clearInterval(timerCountdownInterval);
+            document.getElementById("uiTimerBar").style.width = "0%";
+            document.getElementById("uiStatusFooter").innerHTML = "<span style='color:#10b981'>انتهى الوقت! تم كشف الاختيارات وتوزيع النقاط والخصومات.</span>";
+            if(isHost) document.getElementById("btnNextQuestion").disabled = false;
+            
+            if(isHost && room.calculatedQ !== qIndex) {
+                processPointsAllocation(room, qIndex, currentData.a);
+            }
         } else {
-            document.getElementById("gameFeedback").innerHTML = `<span style='color:#ff4757'>❌ خاطئة! الصحيح: ${selectedBank[qIndex].os[correctAnswer]}</span>`;
+            document.getElementById("uiStatusFooter").innerText = `بانتظار اختيارات اللاعبين... (${votedCount} من ${totalPlayers} اختاروا)`;
         }
     }
 
-    async function hostNextQuestion() {
+    async function recordVote(idx, qIndex, isLocked) {
+        if(hasVotedThisTurn || isLocked) return;
+        hasVotedThisTurn = true;
+        await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}/lastVote.json`, { method: 'PUT', body: JSON.stringify(idx) });
+    }
+
+    async function processPointsAllocation(room, qIndex, correctAnsIdx) {
+        await fetch(`${dbURL}rooms/${currentRoomId}/calculatedQ.json`, { method: 'PUT', body: JSON.stringify(qIndex) });
+        
+        for(let p in room.players) {
+            let currentScore = room.players[p].score || 0;
+            let pVote = room.players[p].lastVote;
+            let updatedScore = currentScore;
+
+            if(pVote === correctAnsIdx) {
+                updatedScore += 20; 
+            } else {
+                updatedScore -= 10; 
+            }
+
+            await fetch(`${dbURL}rooms/${currentRoomId}/players/${p}/score.json`, { method: 'PUT', body: JSON.stringify(updatedScore) });
+        }
+    }
+
+    async function hostAdvanceQuestion() {
         if(!isHost) return;
         const res = await fetch(`${dbURL}rooms/${currentRoomId}/currentQ.json`);
         let current = await res.json() || 0;
+        
+        const resRoom = await fetch(`${dbURL}rooms/${currentRoomId}.json`);
+        const room = await resRoom.json();
+        for(let p in room.players) {
+            await fetch(`${dbURL}rooms/${currentRoomId}/players/${p}/lastVote.json`, { method: 'PUT', body: JSON.stringify(-1) });
+        }
+
         await fetch(`${dbURL}rooms/${currentRoomId}/currentQ.json`, { method: 'PUT', body: JSON.stringify(current + 1) });
+    }
+
+    function renderPodiumUI(playersData) {
+        clearInterval(timerCountdownInterval);
+        navigate("scrPodium");
+
+        let sorted = [];
+        for(let p in playersData) {
+            sorted.push({ name: p, score: playersData[p].score || 0, photo: playersData[p].photo });
+        }
+        sorted.sort((a,b) => b.score - a.score);
+
+        if(sorted[0]) {
+            document.getElementById("p1PhotoContainer").innerHTML = `<img src="${sorted[0].photo || selectedPhotoBase64}" class="avatar-preview" style="width:50px; height:50px; margin-bottom:5px; border-radius:50%; object-fit:cover;">`;
+            document.getElementById("p1Name").innerText = sorted[0].name;
+            document.getElementById("p1Score").innerText = `${sorted[0].score} ن`;
+        }
+        if(sorted[1]) {
+            document.getElementById("p2PhotoContainer").innerHTML = `<img src="${sorted[1].photo || selectedPhotoBase64}" class="avatar-preview" style="width:45px; height:45px; margin-bottom:5px; border-radius:50%; object-fit:cover;">`;
+            document.getElementById("p2Name").innerText = sorted[1].name;
+            document.getElementById("p2Score").innerText = `${sorted[1].score} ن`;
+        }
+        if(sorted[2]) {
+            document.getElementById("p3PhotoContainer").innerHTML = `<img src="${sorted[2].photo || selectedPhotoBase64}" class="avatar-preview" style="width:40px; height:40px; margin-bottom:5px; border-radius:50%; object-fit:cover;">`;
+            document.getElementById("p3Name").innerText = sorted[2].name;
+            document.getElementById("p3Score").innerText = `${sorted[2].score} ن`;
+        }
+    }
+
+    async function terminateSessionAndExit() {
+        if(isHost) {
+            await fetch(`${dbURL}rooms/${currentRoomId}.json`, { method: 'DELETE' });
+        } else {
+            await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}.json`, { method: 'DELETE' });
+        }
+        currentRoomId = "";
+        isHost = false;
+        hasVotedThisTurn = false;
+        navigate("scrHome");
     }
 </script>
 </body>
