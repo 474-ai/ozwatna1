@@ -3,206 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحدي السرعة الجماعي المصلح</title>
+    <title>منصة الغرف الجماعية</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             color: #333; margin: 0; padding: 15px;
             display: flex; justify-content: center; align-items: center; min-height: 100vh;
         }
-        .game-card {
-            background: white; border-radius: 20px; padding: 25px;
-            width: 100%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        .app-card {
+            background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 20px;
+            width: 100%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             text-align: center;
         }
-        h1 { font-size: 1.6rem; color: #11998e; margin-top: 0; }
+        h1 { font-size: 1.5rem; color: #2c3e50; margin-top: 0; }
         .screen { display: none; }
         .active { display: block; }
-        input[type="text"] {
+        input {
             width: 100%; padding: 12px; border: 2px solid #ddd;
-            border-radius: 10px; margin-bottom: 15px; font-size: 1rem; text-align: center;
+            border-radius: 10px; margin-bottom: 12px; font-size: 1rem; text-align: center; outline: none;
         }
+        input:focus { border-color: #3498db; }
         button {
-            width: 100%; padding: 14px; background: #11998e; color: white;
+            width: 100%; padding: 12px; background: #3498db; color: white;
             border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold;
-            cursor: pointer; transition: 0.2s; margin-bottom: 10px;
+            cursor: pointer; transition: 0.2s; margin-bottom: 8px;
         }
-        button:disabled { background: #95a5a6; cursor: not-allowed; }
         button:active { transform: scale(0.98); }
-        .option-btn { background: #f1f2f6; color: #333; text-align: right; padding: 15px; font-size: 1rem; display: block; width: 100%; border: none; border-radius: 8px; margin-bottom: 8px; cursor: pointer;}
+        .grid-menu { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
+        .game-type-btn { background: #2ecc71; }
+        .join-box { background: #f8f9fa; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-top: 15px; }
+        .player-badge { display: inline-block; background: #34495e; color: white; padding: 5px 10px; margin: 4px; border-radius: 20px; font-size: 0.9rem; }
+        .lobby-info { background: #e8f4fd; padding: 12px; border-radius: 8px; color: #2980b9; font-weight: bold; margin-bottom: 15px; }
+        .invite-box { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; border-radius: 8px; margin-bottom: 15px; color: #856404; font-size: 0.9rem; }
+        .option-btn { background: #f1f2f6; color: #333; text-align: right; padding: 14px; font-size: 1rem; display: block; width: 100%; border: none; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
         .option-btn:hover { background: #e4e7eb; }
-        .leaderboard { margin-top: 20px; background: #f8f9fa; padding: 10px; border-radius: 10px; text-align: right; }
-        .score-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-<div class="game-card">
-    <h1>🎯 تحدي السرعة (أونلاين 12 لاعب)</h1>
-    <p style="font-size:0.85rem; color:#777; margin-top:-10px;">متزامن بالكامل وحلال 🍃</p>
-
-    <!-- شاشة تسجيل الدخول -->
-    <div id="loginScreen" class="screen active">
-        <p>أدخل اسمك للانضمام إلى الغرفة المشتركة مع أصحابك:</p>
-        <input type="text" id="pNameInput" placeholder="اكتب اسمك الفعلي...">
-        <button id="loginBtn" onclick="joinRoom()">دخول الغرفة المشتركة 🚀</button>
+<div class="app-card">
+    <!-- 1. شاشة الدخول وتسجيل الاسم -->
+    <div id="screenLogin" class="screen active">
+        <h1>👋 مرحباً بك في المنصة</h1>
+        <p>أدخل اسمك المميز للبدء:</p>
+        <input type="text" id="inputProfileName" placeholder="اكتب اسمك هنا...">
+        <button onclick="saveProfile()">موافق ودخول 🚀</button>
     </div>
 
-    <!-- شاشة الانتظار واللعب -->
-    <div id="gameScreen" class="screen">
-        <h3 id="questionText">في انتظار بدء السؤال الأول...</h3>
-        <div id="optionsContainer"></div>
-        <div id="feedbackText" style="font-weight:bold; margin: 15px 0;"></div>
+    <!-- 2. الشاشة الرئيسية واختيار الألعاب والدعوات -->
+    <div id="screenHome" class="screen">
+        <h2 id="welcomeMsg" style="color:#2c3e50; font-size:1.2rem;"></h2>
         
-        <button id="nextQBtn" style="background:#2c3e50; display:none;" onclick="triggerNextQuestion()">السؤال التالي عند الجميع ➡️</button>
+        <div id="boxIncomingInvite" class="invite-box" style="display:none;">
+            <span id="textInviteMsg">وصلتك دعوة الآن!</span>
+            <button style="background:#27ae60; padding:6px; font-size:0.9rem; margin-top:5px;" onclick="acceptDirectInvite()">قبول ودخول 📥</button>
+        </div>
 
-        <div class="leaderboard">
-            <strong>📊 الصدارة الحالية (تتحديث تلقائي):</strong>
-            <div id="leaderboardContent"></div>
+        <p style="font-weight:bold; color:#7f8c8d;">اختر نوع اللعبة لتصبح أنت منظم الغرفة:</p>
+        <div class="grid-menu">
+            <button class="game-type-btn" onclick="createRoom('أسئلة عامة وثقافية')">🧠 غرفة أسئلة عامة</button>
+            <button class="game-type-btn" style="background:#e67e22;" onclick="createRoom('ألغاز وذكاء')">🔍 غرفة ألغاز وذكاء</button>
+        </div>
+
+        <div class="join-box">
+            <p style="margin-top:0; font-weight:bold;">هل تملك كود غرفة من صديقك؟</p>
+            <input type="text" id="inputRoomCode" placeholder="أدخل كود الغرفة السري...">
+            <button style="background:#9b59b6;" onclick="joinRoomByCode()">دخول الغرفة 🔑</button>
         </div>
     </div>
-</div>
 
+    <!-- 3. شاشة الانتظار داخل الغرفة (Lobby) -->
+    <div id="screenLobby" class="screen">
+        <div class="lobby-info">
+            🏢 نوع اللعبة: <span id="lobbyGameType">--</span><br>
+            🔑 كود الدخول السري: <span id="lobbyCodeText" style="color:#e74c3c; font-size:1.3rem;">--</span>
+        </div>
+
+        <div style="background:#f1f2f6; padding:10px; border-radius:10px; margin-bottom:15px;">
+            <p style="margin:0 0 5px 0; font-size:0.9rem; font-weight:bold;">✉️ إرسال دعوة سريعة للاعب:</p>
+            <input type="text" id="searchPlayerName" placeholder="اكتب اسم صديقك بالضبط..." style="padding:6px; margin-bottom:5px; font-size:0.9rem;">
+            <button style="background:#34495e; padding:8px; font-size:0.9rem;" onclick="sendInvite()">إرسال طلب دخول 📤</button>
+        </div>
+
+        <h3>👥 اللاعبين المتواجدين داخل الغرفة:</h3>
+        <div id="lobbyPlayersList" style="margin-bottom:20px;"></div>
+
+        <button id="btnStartGame" style="background:#27ae60; display:none;" onclick="hostStartGame()">🚀 بدء اللعبة الآن (للمنظم فقط)</button>
+        <p id="txtWaitHost" style="color:#e67e22; font-weight:bold; display:none;">⏱️ في انتظار قيام المنظم ببدء اللعبة...</p>
+    </div>
+
+    <!-- 4. شاشة اللعب الفعلي والتنافس -->
+    <div id="screenGameplay" class="screen">
+        <h3 id="gameQuestionText" style="line-height:1.5;">جاري تحميل السؤال الأول...</h3>
+        <div id="gameOptionsContainer"></div>
+        <div id="gameFeedback" style="font-weight:bold; margin:15px 0;"></div>
+        <button id="btnNextQuestion" style="background:#2c3e50; display:none;" onclick="hostNextQuestion()">السؤال التالي ➡️</button>
+    </div>
+</div>
 <script>
-    // الرابط المباشر الصحيح والمدعوم لبيانات مشروعك
     const dbURL = "https://sdfq-63ee0-default-rtdb.firebaseio.com/";
 
-    const quizData = [
-        { q: "ما هي السورة التي تعدل ثلث القرآن الكريم؟", os: ["سورة الإخلاص", "سورة الفاتحة", "سورة الكافرون", "سورة الملك"], a: 0 },
-        { q: "من هو أول مؤذن في الإسلام؟", os: ["بلال بن رباح", "عمرو بن العاص", "أبو بكر الصديق", "أنس بن مالك"], a: 0 },
-        { q: "كم عدد أركان الإسلام؟", os: ["3 أركان", "4 أركان", "5 أركان", "6 أركان"], a: 2 },
-        { q: "ما هي أطول سورة في القرآن الكريم？", os: ["سورة آل عمران", "سورة البقرة", "سورة النساء", "سورة المائدة"], a: 1 }
-    ];
+    const questionBanks = {
+        "أسئلة عامة وثقافية": [
+            { q: "ما هي عاصمة دولة ماليزيا؟", os: ["كوالالمبور", "جاكرتا", "مانيلا", "بانكوك"], a: 0 },
+            { q: "من هو الصحابي الملقب بـ أمين هذه الأمة؟", os: ["أبو عبيدة بن الجراح", "عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب"], a: 0 }
+        ],
+        "ألغاز وذكاء": [
+            { q: "ما هو الشيء الذي يكتب ولا يقرأ؟", os: ["الكتاب", "القلم", "الرسالة", "العقل"], a: 1 },
+            { q: "ما هو الشيء الذي يكسو الناس ولكنه يظل عارياً؟", os: ["القماش", "الخياط", "الإبرة", "الشجر"], a: 2 }
+        ]
+    };
 
     let myName = "";
-    let hasAnswered = false;
-    let isManager = false;
+    let currentRoomId = "";
+    let isHost = false;
+    let selectedBank = [];
+    let hasAnsweredQ = false;
+    let pendingInviteCode = "";
 
-    async function joinRoom() {
-        myName = document.getElementById("pNameInput").value.trim();
-        if(myName === "") return alert("اكتب اسمك أولاً!");
+    function changeScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
 
-        document.getElementById("loginBtn").disabled = true;
+    async function saveProfile() {
+        myName = document.getElementById("inputProfileName").value.trim().replace(/[^a-zA-Z0-9أ-ي]/g, "");
+        if(myName === "") return alert("الرجاء كتابة اسمك أولاً!");
 
-        try {
-            // تسجيل اللاعب وحفظه مباشرة في السيرفر
-            await fetch(`${dbURL}players/${myName}.json`, {
-                method: 'PUT',
-                body: JSON.stringify({ score: 0 })
-            });
+        await fetch(`${dbURL}online_users/${myName}.json`, { method: 'PUT', body: JSON.stringify({ active: true }) });
+        document.getElementById("welcomeMsg").innerText = `👤 اللاعب الحاضر: ${myName}`;
+        changeScreen("screenHome");
+        setInterval(globalSync, 1500);
+    }
 
-            document.getElementById("loginScreen").classList.remove("active");
-            document.getElementById("gameScreen").classList.add("active");
+    async function createRoom(gameType) {
+        isHost = true;
+        currentRoomId = Math.floor(1000 + Math.random() * 9000).toString();
 
-            if(confirm("هل أنت منظم اللعبة الرئيسي؟ (اضغط موافق لإعادة تصفير اللعبة والتحكم بالأسئلة)")) {
-                isManager = true;
-                document.getElementById("nextQBtn").style.display = "block";
-                await fetch(`${dbURL}gameState.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ currentQ: 0 })
-                });
+        const roomStructure = {
+            host: myName,
+            gameType: gameType,
+            currentQ: 0,
+            status: "waiting",
+            players: { [myName]: { score: 0 } }
+        };
+
+        await fetch(`${dbURL}rooms/${currentRoomId}.json`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(roomStructure)
+        });
+        setupLobbyUI(gameType, currentRoomId);
+    }
+
+    async function joinRoomByCode() {
+        const code = document.getElementById("inputRoomCode").value.trim();
+        if(code === "") return alert("أدخل كود الغرفة السري أولاً!");
+        
+        const res = await fetch(`${dbURL}rooms/${code}.json`);
+        const room = await res.json();
+        if(!room) return alert("عذراً، هذا الكود غير موجود!");
+
+        isHost = false;
+        currentRoomId = code;
+        await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}.json`, { method: 'PUT', body: JSON.stringify({ score: 0 }) });
+        setupLobbyUI(room.gameType, currentRoomId);
+    }
+
+    function setupLobbyUI(gameType, code) {
+        document.getElementById("lobbyGameType").innerText = gameType;
+        document.getElementById("lobbyCodeText").innerText = code;
+        document.getElementById("btnStartGame").style.display = isHost ? "block" : "none";
+        document.getElementById("txtWaitHost").style.display = isHost ? "none" : "block";
+        changeScreen("screenLobby");
+    }
+
+    async function sendInvite() {
+        const targetPlayer = document.getElementById("searchPlayerName").value.trim();
+        if(targetPlayer === "") return alert("اكتب اسم اللاعب!");
+        await fetch(`${dbURL}invites/${targetPlayer}.json`, { method: 'PUT', body: JSON.stringify({ from: myName, roomCode: currentRoomId }) });
+        alert(`تم إرسال طلب الانضمام بنجاح إلى ${targetPlayer}`);
+        document.getElementById("searchPlayerName").value = "";
+    }
+
+    async function globalSync() {
+        if (currentRoomId === "") {
+            const resInv = await fetch(`${dbURL}invites/${myName}.json`);
+            const invData = await resInv.json();
+            if (invData && invData.roomCode) {
+                pendingInviteCode = invData.roomCode;
+                document.getElementById("textInviteMsg").innerText = `✉️ أرسل لك [ ${invData.from} ] دعوة لدخول الغرفة السرية: ${pendingInviteCode}`;
+                document.getElementById("boxIncomingInvite").style.display = "block";
+            } else {
+                document.getElementById("boxIncomingInvite").style.display = "none";
             }
+        }
 
-            // تشغيل التحديث التلقائي كل ثانية واحدة لمزامنة الأجهزة
-            setInterval(syncGame, 1500);
-            syncGame();
+        if(currentRoomId !== "") {
+            const resRoom = await fetch(`${dbURL}rooms/${currentRoomId}.json`);
+            const room = await resRoom.json();
+            if(!room) return;
 
-        } catch (error) {
-            alert("حدث خطأ في الاتصال بالخادم، تأكد من إعدادات وضع الاختبار في فايربيس.");
-            document.getElementById("loginBtn").disabled = false;
+            if(room.players) {
+                const listContainer = document.getElementById("lobbyPlayersList");
+                listContainer.innerHTML = "";
+                for(let p in room.players) {
+                    listContainer.innerHTML += `<span class="player-badge">👤 ${p}</span>`;
+                }
+            }
+            if(room.status === "playing") {
+                selectedBank = questionBanks[room.gameType] || [];
+                renderGameplay(room.currentQ);
+            }
         }
     }
 
-    async function syncGame() {
-        try {
-            // مزامنة حالة السؤال الحالي لجميع الجوالات
-            const resState = await fetch(`${dbURL}gameState.json`);
-            const state = await resState.json();
-            
-            if(state && state.currentQ !== undefined) {
-                const qIndex = state.currentQ;
-                
-                // إذا تغير السؤال عند الموزع، نقوم بإعادة تفعيل الاختيارات
-                if(document.getElementById("questionText").getAttribute("data-q-idx") != qIndex) {
-                    hasAnswered = false;
-                    document.getElementById("feedbackText").innerText = "";
-                    document.getElementById("questionText").setAttribute("data-q-idx", qIndex);
-                    
-                    if(qIndex >= quizData.length) {
-                        document.getElementById("questionText").innerText = "🎉 انتهت اللعبة! تفقد لوحة الصدارة لمعرفة الفائز.";
-                        document.getElementById("optionsContainer").innerHTML = "";
-                    } else {
-                        const currentData = quizData[qIndex];
-                        document.getElementById("questionText").innerText = currentData.q;
-                        
-                        const container = document.getElementById("optionsContainer");
-                        container.innerHTML = "";
-                        currentData.os.forEach((opt, idx) => {
-                            container.innerHTML += `<button class="option-btn" onclick="submitAnswer(${idx}, ${qIndex})">${opt}</button>`;
-                        });
-                    }
-                }
-            }
-
-            // مزامنة وتحديث لوحة الصدارة فورياً عند اللاعبين الـ 12
-            const resPlayers = await fetch(`${dbURL}players.json`);
-            const playersData = await resPlayers.json();
-            
-            if(playersData) {
-                const leaderboard = document.getElementById("leaderboardContent");
-                leaderboard.innerHTML = "";
-                
-                let sorted = [];
-                for(let p in playersData) { if(playersData[p]) sorted.push({name: p, score: playersData[p].score || 0}); }
-                sorted.sort((a,b) => b.score - a.score);
-
-                sorted.forEach(p => {
-                    leaderboard.innerHTML += `<div class="score-row"><span>👤 ${p.name}</span><span><b>${p.score}</b> نقطة</span></div>`;
-                });
-            }
-        } catch(e) { console.log("خطأ في المزامنة المباشرة"); }
+    async function acceptDirectInvite() {
+        if(pendingInviteCode === "") return;
+        document.getElementById("inputRoomCode").value = pendingInviteCode;
+        await fetch(`${dbURL}invites/${myName}.json`, { method: 'DELETE' });
+        joinRoomByCode();
     }
 
-    async function submitAnswer(selectedIdx, qIndex) {
-        if(hasAnswered) return;
-        hasAnswered = true;
+    async function hostStartGame() {
+        if(!isHost) return;
+        await fetch(`${dbURL}rooms/${currentRoomId}/status.json`, { method: 'PUT', body: JSON.stringify("playing") });
+    }
 
-        const correctAnswer = quizData[qIndex].a;
+    function renderGameplay(qIndex) {
+        if(document.getElementById("screenGameplay").classList.contains("active") && 
+           document.getElementById("gameQuestionText").getAttribute("data-q-idx") == qIndex) {
+            return;
+        }
+
+        changeScreen("screenGameplay");
+        hasAnsweredQ = false;
+        document.getElementById("gameFeedback").innerText = "";
+        document.getElementById("gameQuestionText").setAttribute("data-q-idx", qIndex);
+        document.getElementById("btnNextQuestion").style.display = isHost ? "block" : "none";
+
+        if(qIndex >= selectedBank.length) {
+            document.getElementById("gameQuestionText").innerText = "🎉 انتهت الجولة التنافسية للغرفة بنجاح!";
+            document.getElementById("gameOptionsContainer").innerHTML = "تفقد النتائج النهائية مع المنظم وأصحابك.";
+            if(isHost) document.getElementById("btnNextQuestion").style.display = "none";
+            return;
+        }
+
+        const currentData = selectedBank[qIndex];
+        document.getElementById("gameQuestionText").innerText = currentData.q;
+        
+        const container = document.getElementById("gameOptionsContainer");
+        container.innerHTML = "";
+        currentData.os.forEach((opt, idx) => {
+            container.innerHTML += `<button class="option-btn" onclick="submitGameAnswer(${idx}, ${qIndex})">${opt}</button>`;
+        });
+    }
+
+    async function submitGameAnswer(selectedIdx, qIndex) {
+        if(hasAnsweredQ) return;
+        hasAnsweredQ = true;
+        const correctAnswer = selectedBank[qIndex].a;
         const buttons = document.getElementsByClassName("option-btn");
         for(let b of buttons) b.disabled = true;
 
         if(selectedIdx === correctAnswer) {
-            document.getElementById("feedbackText").innerHTML = "<span style='color:#2ed573'>✅ ممتاز! إجابة صحيحة جاري إضافة النقاط...</span>";
-            try {
-                // جلب النقاط الحالية وزيادتها بـ 10 نقاط
-                const res = await fetch(`${dbURL}players/${myName}/score.json`);
-                const currentScore = await res.json() || 0;
-                
-                await fetch(`${dbURL}players/${myName}/score.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify(currentScore + 10)
-                });
-                document.getElementById("feedbackText").innerHTML = "<span style='color:#2ed573'>✅ ممتاز! تم احتساب النقاط (+10)</span>";
-            } catch(e) { }
+            document.getElementById("gameFeedback").innerHTML = "<span style='color:#2ed573'>✅ إجابة صحيحة! تم تسجيل النقاط.</span>";
         } else {
-            document.getElementById("feedbackText").innerHTML = `<span style='color:#ff4757'>❌ خاطئة! الإجابة الصحيحة هي: ${quizData[qIndex].os[correctAnswer]}</span>`;
+            document.getElementById("gameFeedback").innerHTML = `<span style='color:#ff4757'>❌ خاطئة! الصحيح: ${selectedBank[qIndex].os[correctAnswer]}</span>`;
         }
     }
 
-    async function triggerNextQuestion() {
-        if(!isManager) return;
-        try {
-            const res = await fetch(`${dbURL}gameState/currentQ.json`);
-            const current = await res.json() || 0;
-            
-            await fetch(`${dbURL}gameState/currentQ.json`, {
-                method: 'PUT',
-                body: JSON.stringify(current + 1)
-            });
-        } catch(e) {}
+    async function hostNextQuestion() {
+        if(!isHost) return;
+        const res = await fetch(`${dbURL}rooms/${currentRoomId}/currentQ.json`);
+        let current = await res.json() || 0;
+        await fetch(`${dbURL}rooms/${currentRoomId}/currentQ.json`, { method: 'PUT', body: JSON.stringify(current + 1) });
     }
 </script>
-
 </body>
 </html>
