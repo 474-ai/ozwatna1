@@ -3,203 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>منصة ألعاب الغرف الجماعية</title>
+    <title>منصة ألعاب الغرف الجماعية الاحترافية</title>
+    <!-- مكتبات فايربيس الرسمية لسرعة البرق والمزامنة الفورية -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <!-- مكتبة PeerJS المجانية لتشغيل الميكروفون الصوتي المتزامن -->
+    <script src="https://unpkg.com"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
         html, body { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background: #1e293b; color: #f1f5f9; overflow: hidden;
+            background: #0b0f19; color: #f8fafc; overflow: hidden;
+            user-select: none;
         }
-        body { display: flex; justify-content: center; align-items: center; padding: 10px; }
+        body { display: flex; justify-content: center; align-items: center; padding: 0; }
         
         .app-container {
-            width: 100%; height: 100%; max-width: 500px; max-height: 800px;
-            background: #334155; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column; overflow: hidden; border: 1px solid #475569;
+            width: 100%; height: 100%; max-width: 500px;
+            background: #131c2e; box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; overflow: hidden;
+            position: relative;
         }
         
-        .screen { display: none; flex: 1; flex-direction: column; padding: 20px; overflow-y: auto; }
+        .screen { display: none; flex: 1; flex-direction: column; padding: 25px; overflow-y: auto; }
         .screen.active { display: flex; }
         
-        h1, h2, h3 { text-align: center; color: #38bdf8; margin-top: 0; }
-        p { text-align: center; color: #cbd5e1; font-size: 0.95rem; margin-bottom: 20px; }
+        h1, h2, h3 { text-align: center; color: #38bdf8; margin-top: 0; font-weight: 800; text-shadow: 0 0 10px rgba(56,189,248,0.2); }
+        p { text-align: center; color: #94a3b8; font-size: 0.95rem; margin-top: 0; margin-bottom: 25px; }
         
-        input {
-            width: 100%; padding: 12px; background: #1e293b; border: 2px solid #475569;
-            border-radius: 8px; margin-bottom: 12px; font-size: 1rem; text-align: center; 
-            color: #fff; outline: none;
+        input, select {
+            width: 100%; padding: 15px; background: #0b0f19; border: 2px solid #22314d;
+            border-radius: 12px; margin-bottom: 15px; font-size: 1.05rem; text-align: center; 
+            color: #fff; outline: none; transition: 0.2s;
         }
-        input:focus { border-color: #38bdf8; }
+        input:focus, select:focus { border-color: #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.2); }
         
         button {
-            width: 100%; padding: 12px; background: #38bdf8; color: #1e293b;
-            border: none; border-radius: 8px; font-size: 1.05rem; font-weight: bold;
-            cursor: pointer; margin-bottom: 10px;
+            width: 100%; padding: 15px; background: #38bdf8; color: #0b0f19;
+            border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; transition: 0.2s; margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(56,189,248,0.2);
         }
-        button:active { transform: scale(0.98); }
-        button:disabled { background: #64748b; color: #cbd5e1; cursor: not-allowed; transform: none; }
+        button:active { transform: scale(0.97); }
+        button:disabled { background: #334155; color: #64748b; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        /* مكان رفع وعرض الصورة الحقيقية للـ 12 لاعب */
-        .photo-uploader { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        /* نظام رفع الصور المتطور */
+        .photo-uploader { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
         .avatar-preview { 
-            width: 80px; height: 80px; border-radius: 50%; border: 3px solid #475569; 
-            object-fit: cover; background: #1e293b; margin-bottom: 10px;
+            width: 90px; height: 90px; border-radius: 50%; border: 3px solid #22314d; 
+            object-fit: cover; background: #0b0f19; margin-bottom: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
-        .file-label { background: #475569; color: #fff; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+        .file-label { background: #22314d; color: #38bdf8; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: bold; border: 1px solid #38bdf8; }
+        .user-photo-mini { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-left: 10px; border: 2px solid #38bdf8; background: #0b0f19; }
         
-        .user-photo-mini { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-left: 8px; border: 2px solid #475569; background: #1e293b; }
+        /* القوائم والواجهات */
+        .grid-menu { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .btn-game-type { background: #10b981; color: #fff; box-shadow: 0 4px 12px rgba(16,185,129,0.2); }
+        .join-box { background: #0b0f19; padding: 20px; border-radius: 16px; border: 1px solid #22314d; margin-top: 25px; }
+        .lobby-info { background: #0b0f19; padding: 15px; border-radius: 14px; color: #38bdf8; font-weight: bold; margin-bottom: 20px; border: 1px solid #22314d; text-align: center; line-height: 1.8; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
         
-        .grid-menu { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .btn-game-type { background: #10b981; color: #fff; }
+        /* لوحة التحكم الحية الفاخرة للـ 12 لاعب */
+        .players-panel { background: #0b0f19; border-radius: 16px; padding: 18px; margin-bottom: 20px; border: 1px solid #22314d; }
+        .players-list-grid { display: flex; flex-direction: column; gap: 8px; }
+        .player-row { background: #131c2e; border: 1px solid #22314d; padding: 10px 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .player-info-side { display: flex; align-items: center; }
+        .ping-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block; margin-right: 8px; }
+        .btn-kick { background: #ef4444; color: #fff; padding: 5px 10px; font-size: 0.8rem; border-radius: 6px; width: auto; margin: 0; box-shadow: none; }
         
-        .join-box { background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #475569; margin-top: 20px; }
-        .lobby-info { background: #1e293b; padding: 12px; border-radius: 10px; color: #38bdf8; font-weight: bold; margin-bottom: 15px; border: 1px solid #475569; text-align: center; }
+        .invite-notification { background: #f59e0b; color: #0b0f19; padding: 14px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; text-align: center; }
         
-        .players-panel { background: #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid #475569; }
-        .players-list-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .player-chip { background: #334155; border: 1px solid #475569; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; }
+        /* شاشة اللعب والعداد والخيارات البراقة */
+        .timer-bar-container { width: 100%; height: 10px; background: #0b0f19; border-radius: 5px; margin-bottom: 25px; overflow: hidden; border: 1px solid #22314d; }
+        .timer-bar { width: 100%; height: 100%; background: #ef4444; border-radius: 5px; transition: width 0.1s linear; }
         
-        .invite-notification { background: #f59e0b; color: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; text-align: center; }
+        .question-box { font-size: 1.35rem; font-weight: bold; line-height: 1.6; margin-bottom: 25px; text-align: center; min-height: 80px; display: flex; align-items: center; justify-content: center; color: #fff; background: #0b0f19; border-radius: 16px; padding: 15px; border: 1px solid #22314d; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
         
-        .timer-bar-container { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
-        .timer-bar { width: 100%; height: 100%; background: #ef4444; }
-        
-        .question-box { font-size: 1.25rem; font-weight: bold; line-height: 1.5; margin-bottom: 20px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; background: #1e293b; border-radius: 12px; padding: 12px; border: 1px solid #475569; }
-        
-        .options-list { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .options-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
         .opt-card { 
-            background: #1e293b; border: 2px solid #475569; border-radius: 12px; padding: 14px; 
-            text-align: right; font-size: 1rem; cursor: pointer; position: relative; color: #fff;
+            background: #0b0f19; border: 2px solid #22314d; border-radius: 14px; padding: 16px; 
+            text-align: right; font-size: 1.05rem; cursor: pointer; transition: 0.2s; position: relative; color: #fff; font-weight: 600;
         }
-        .opt-card.selected { border-color: #38bdf8; background: rgba(56,189,248,0.05); }
-        .opt-card.correct { border-color: #10b981 !important; background: rgba(16,185,129,0.1) !important; color: #10b981; }
-        .opt-card.wrong { border-color: #ef4444 !important; background: rgba(239,68,68,0.1) !important; color: #f87171; }
+        .opt-card.selected { border-color: #38bdf8; background: rgba(56,189,248,0.08); box-shadow: 0 0 15px rgba(56,189,248,0.15); }
+        .opt-card.correct { border-color: #10b981 !important; background: rgba(16,185,129,0.15) !important; color: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.2); }
+        .opt-card.wrong { border-color: #ef4444 !important; background: rgba(239,68,68,0.15) !important; color: #f87171; box-shadow: 0 0 15px rgba(239,68,68,0.2); }
         
-        .voters-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #475569; }
-        .voter-mini-chip { font-size: 0.8rem; background: #334155; padding: 2px 8px; border-radius: 12px; display: inline-flex; align-items: center; color: #cbd5e1; border: 1px solid #475569; }
-        .voter-mini-chip img { margin-left: 4px; }
+        /* من صوت لكل خيار بالصور الحقيقية */
+        .voters-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #22314d; }
+        .voter-mini-chip { font-size: 0.8rem; background: #131c2e; padding: 3px 10px; border-radius: 12px; display: inline-flex; align-items: center; color: #cbd5e1; border: 1px solid #22314d; }
+        .voter-mini-chip img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; margin-left: 5px; }
         
-        .status-footer { text-align: center; font-weight: bold; color: #fbbf24; margin: 15px 0; min-height: 20px; font-size: 1rem; }
+        .status-footer { text-align: center; font-weight: bold; color: #fbbf24; margin: 20px 0; min-height: 24px; font-size: 1.05rem; }
         
-        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 30px 0; height: 180px; }
-        .podium-step { background: #1e293b; border: 2px solid #475569; border-top-left-radius: 10px; border-top-right-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 15px; position: relative; }
-        .podium-step.first { height: 100%; width: 100px; border-color: #fbbf24; }
-        .podium-step.second { height: 75%; width: 90px; border-color: #cbd5e1; }
-        .podium-step.third { height: 55%; width: 90px; border-color: #b45309; }
+        /* منصة التتويج الممتازة */
+        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 15px; margin: 40px 0; height: 220px; }
+        .podium-step { background: #0b0f19; border: 2px solid #22314d; border-top-left-radius: 16px; border-top-right-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 20px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .podium-step.first { height: 100%; width: 110px; border-color: #fbbf24; background: linear-gradient(to top, #0b0f19, rgba(251,191,36,0.1)); }
+        .podium-step.second { height: 75%; width: 100px; border-color: #cbd5e1; background: linear-gradient(to top, #0b0f19, rgba(203,213,225,0.1)); }
+        .podium-step.third { height: 55%; width: 100px; border-color: #b45309; background: linear-gradient(to top, #0b0f19, rgba(180,83,9,0.1)); }
+        .crown { font-size: 1.8rem; position: absolute; top: -35px; }
+        
+        /* التحكم بالصوت */
+        .voice-control { background: #22314d; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; font-size: 0.95rem; }
     </style>
 </head>
 <body>
-
 <div class="app-container">
-    <!-- 1. شاشة تسجيل الدخول وتعديل الحساب بالصور الحقيقية -->
+    <!-- 1. شاشة الملف الشخصي وحفظ الحساب المستدام -->
     <div id="scrLogin" class="screen active">
-        <h1>🎮 حسابك الجماعي</h1>
-        <p>ارفع صورتك الشخصية واكتب اسمك لتجهيز ملفك والانضمام لأصحابك:</p>
+        <h1>🎮 ملفك الشخصي</h1>
+        <p>ارفع صورتك الحقيقية واكتب اسمك لتجهيز حسابك واللعب مع أصحابك الـ 12:</p>
         
         <div class="photo-uploader">
-            <!-- الصورة الافتراضية قبل أن يرفع اللاعب صورته -->
             <img src="data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 24 24' fill='%2364748b'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" class="avatar-preview" id="profilePhotoPreview">
             <input type="file" id="inpPlayerPhoto" accept="image/*" style="display: none;" onchange="previewAndProcessPhoto(this)">
             <label for="inpPlayerPhoto" class="file-label">📸 اختر صورة من جهازك</label>
         </div>
         
         <input type="text" id="inpPlayerName" placeholder="اكتب اسمك هنا...">
-        <button onclick="commitProfile()">موافق وحفظ الحساب 🚀</button>
+        <button onclick="commitProfile()">حفظ ودخول المنصة 🚀</button>
     </div>
 
-    <!-- 2. الشاشة الرئيسية واختيار الألعاب والدعوات -->
+    <!-- 2. الشاشة الرئيسية وممر اختيار الغرف واستقبال الدعوات -->
     <div id="scrHome" class="screen">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#1e293b; padding:10px 15px; border-radius:12px; border:1px solid #475569;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#0b0f19; padding:12px 18px; border-radius:14px; border:1px solid #22314d;">
             <div id="homeProfileDisplay" style="font-weight:bold; display:flex; align-items:center;"></div>
-            <button style="width:auto; padding:6px 12px; margin:0; font-size:0.85rem; background:#475569; color:#fff;" onclick="backToProfileUpdate()">⚙️ تعديل</button>
+            <button style="width:auto; padding:8px 14px; margin:0; font-size:0.85rem; background:#22314d; color:#fff;" onclick="backToProfileUpdate()">⚙️ تعديل</button>
         </div>
         
         <div id="notifInvite" class="invite-notification" style="display:none;">
-            <span id="txtInviteNotify">وصلتك دعوة الآن!</span>
-            <button style="background:#1e293b; color:#fff; padding:6px 12px; font-size:0.9rem; margin-top:8px; width:auto; display:block; margin-inline:auto; border-radius:6px;" onclick="acceptDirectInvite()">دخول الغرفة فوراً 📥</button>
+            <span id="txtInviteNotify">وصلتك دعوة الآن من صديقك!</span>
+            <button style="background:#0b0f19; color:#fff; padding:8px 15px; font-size:0.95rem; margin-top:10px; width:auto; display:block; margin-inline:auto; border-radius:10px;" onclick="acceptDirectInvite()">دخول الغرفة فوراً 📥</button>
         </div>
 
-        <p style="font-weight:bold; color:#38bdf8; text-align:right; margin-bottom:5px;">أنشئ غرفة جديدة وكن أنت المنظم:</p>
+        <!-- خيارات إعداد المنظم للغرفة والوقت المخصص -->
+        <p style="font-weight:bold; color:#38bdf8; text-align:right; margin-bottom:5px;">إعدادات المنظم لإنشاء غرفة جديدة:</p>
+        <div style="background:#0b0f19; padding:15px; border-radius:14px; border:1px solid #22314d; margin-bottom:15px;">
+            <p style="text-align:right; margin-bottom:8px; font-weight:600; color:#cbd5e1;">⏰ حدد عداد وقت الإجابة للجولة:</p>
+            <select id="selectTimerConfig">
+                <option value="10">10 ثوانٍ (تحدي سريع جداً)</option>
+                <option value="20" selected>20 ثانية (وقت قياسي ومناسب)</option>
+                <option value="30">30 ثانية (تفكير هادئ)</option>
+                <option value="45">45 ثانية (ألغاز صعبة)</option>
+            </select>
+        </div>
+
         <div class="grid-menu">
-            <button class="btn-game-type" onclick="initiateRoom('أسئلة ثقافية وإسلامية')">🧠 غرفة أسئلة إسلامية وثقافية</button>
-            <button class="btn-game-type" style="background:#ea580c;" onclick="initiateRoom('ألغاز ومنافسة ذكاء')">🔍 غرفة ألغاز وعجائب</button>
+            <button class="btn-game-type" onclick="initiateRoom('أسئلة ثقافية وإسلامية')">🧠 إنشاء غرفة أسئلة إسلامية وثقافية</button>
+            <button class="btn-game-type" style="background:#ea580c;" onclick="initiateRoom('ألغاز ومنافسة ذكاء')">🔍 إنشاء غرفة ألغاز وعجائب</button>
         </div>
 
         <div class="join-box">
-            <p style="margin-top:0; font-weight:bold; text-align:right; color:#cbd5e1;">دخول غرفة صديق عبر الكود السري:</p>
-            <input type="text" id="inpRoomCode" placeholder="اكتب كود الغرفة (4 أرقام)...">
+            <p style="margin-top:0; font-weight:bold; text-align:right; color:#94a3b8;">دخول غرفة صديقك عبر كود الدخول:</p>
+            <input type="text" id="inpRoomCode" placeholder="اكتب كود الغرفة السري (4 أرقام)...">
             <button style="background:#8b5cf6; color:#fff;" onclick="connectRoomByCode()">التحقق ودخول الغرفة 🔑</button>
         </div>
     </div>
 
-    <!-- 3. شاشة الانتظار ولوحة الأسماء والصور الحية (Lobby) -->
+    <!-- 3. شاشة الانتظار والميكروفون الصوتي الحية (Lobby) -->
     <div id="scrLobby" class="screen">
         <div class="lobby-info">
             🏢 نوع الغرفة: <span id="lobGameType">--</span><br>
-            🔑 كود الغرفة السري: <span id="lobCodeText" style="color:#ef4444; font-size:1.3rem;">--</span>
+            🔑 كود الغرفة السري: <span id="lobCodeText" style="color:#ef4444; font-size:1.5rem; letter-spacing: 2px;">--</span><br>
+            ⏱️ العداد المحدد: <span id="lobTimerText" style="color:#10b981;">20</span> ثانية
         </div>
 
-        <div style="background:#1e293b; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #475569;">
-            <p style="margin:0 0 5px 0; font-size:0.9rem; font-weight:bold; text-align:right; color:#38bdf8;">✉️ دعوة صديق متواجد أونلاين:</p>
+        <!-- تفعيل الميكروفون الصوتي للتواصل مثل ديسكورد -->
+        <div class="voice-control">
+            <span>🎙️ ميكروفون صوتي مباشر (WebRTC):</span>
+            <button id="btnToggleVoice" style="width:auto; margin:0; padding:6px 12px; font-size:0.85rem; background:#10b981; color:#fff;" onclick="toggleVoiceConnection()">تشغيل الميكروفون 🟢</button>
+        </div>
+
+        <div style="background:#0b0f19; padding:15px; border-radius:16px; margin-bottom:20px; border:1px solid #22314d;">
+            <p style="margin:0 0 8px 0; font-size:0.9rem; font-weight:bold; text-align:right; color:#38bdf8;">✉️ دعوة صديق متواجد أونلاين الآن:</p>
             <div style="display:flex; gap:8px;">
-                <input type="text" id="inpTargetPlayer" placeholder="اكتب اسم صديقك بالضبط..." style="margin:0; padding:10px; font-size:0.9rem; flex:1;">
-                <button style="background:#475569; width:auto; margin:0; padding-inline:15px;" onclick="dispatchInvite()">إرسال</button>
+                <input type="text" id="inpTargetPlayer" placeholder="اكتب اسم صديقك بالضبط..." style="margin:0; padding:12px; font-size:0.95rem; flex:1;">
+                <button style="background:#22314d; width:auto; margin:0; padding-inline:18px; border-radius:12px; color:#38bdf8; border:1px solid #22314d;" onclick="dispatchInvite()">إرسال</button>
             </div>
         </div>
 
         <div class="players-panel">
-            <h3 style="font-size:1rem; margin-bottom:10px; text-align:right; color:#cbd5e1;">👥 المتواجدون في الغرفة وصور حساباتهم:</h3>
+            <h3 style="font-size:1.1rem; margin-bottom:12px; text-align:right; color:#94a3b8;">👥 لوحة مراقبة اللاعبين المتواجدين والغش الحية:</h3>
             <div class="players-list-grid" id="lobPlayersList"></div>
         </div>
 
         <button id="btnHostStart" style="background:#10b981; color:#fff; display:none;" onclick="hostFireStart()">🚀 بدء التحدي الفعلي للجميع</button>
-        <p id="lblWaitHost" style="color:#f59e0b; font-weight:bold; text-align:center; display:none;">⏱️ في انتظار قيام منظم الغرفة ببدء اللعب...</p>
+        <p id="lblWaitHost" style="color:#f59e0b; font-weight:bold; text-align:center; display:none;">⏱️ في انتظار قيام منظم الغرفة بإشارة بدء اللعب...</p>
     </div>
 
-    <!-- 4. شاشة اللعب والتصويت وعرض صور المختارين -->
+    <!-- 4. شاشة اللعب والتصويت الصاروخي وحماية الأمان -->
     <div id="scrGameplay" class="screen">
         <div class="timer-bar-container"><div class="timer-bar" id="uiTimerBar"></div></div>
-        <div class="question-box" id="uiQuestionText">جاري مزامنة السؤال الأول...</div>
+        <div class="question-box" id="uiQuestionText">جاري تشغيل محرك الأسئلة بسرعة البرق...</div>
         <div class="options-list" id="uiOptionsContainer"></div>
-        <div class="status-footer" id="uiStatusFooter">جاري تحديث الاختيارات...</div>
-        <button id="btnNextQuestion" style="background:#475569; color:#fff; display:none;" onclick="hostAdvanceQuestion()" disabled>السؤال التالي ➡️</button>
+        <div class="status-footer" id="uiStatusFooter">جاري مزامنة الاختيارات الحية...</div>
+        <button id="btnNextQuestion" style="background:#22314d; color:#38bdf8; border:1px solid #38bdf8; display:none;" onclick="hostAdvanceQuestion()" disabled>السؤال التالي لجميع الأجهزة ➡️</button>
     </div>
 
-    <!-- 5. شاشة منصة التتويج والنتائج والعودة الجماعية للرئيسية -->
+    <!-- 5. شاشة منصة التتويج بنقاط الجولة وتصفير البيانات -->
     <div id="scrPodium" class="screen">
-        <h1>🏆 منصة أبطال التحدي</h1>
-        <p>النتائج النهائية المحتسبة وصور الفائزين:</p>
+        <h1>🏆 أبطال جولة التحدي الحالية</h1>
+        <p>الترتيب النهائي المحتسب بصور الحسابات والمراكز الحقيقية:</p>
         
         <div class="podium-container">
             <div class="podium-step second" id="step2">
-                <div style="font-size:1.4rem; margin-bottom:5px;">🥈</div>
+                <div style="font-size:1.6rem; margin-bottom:5px;">🥈</div>
                 <div id="p2PhotoContainer"></div>
-                <div id="p2Name" style="font-weight:bold; font-size:0.85rem; text-align:center; width:100%; overflow:hidden;">--</div>
-                <div id="p2Score" style="font-size:0.8rem; color:#cbd5e1; margin-top:2px;">0 ن</div>
+                <div id="p2Name" style="font-weight:bold; font-size:0.9rem; text-align:center; color:#e2e8f0; width:100%; overflow:hidden;">--</div>
+                <div id="p2Score" style="font-size:0.85rem; color:#cbd5e1; margin-top:3px;">0 ن</div>
             </div>
             <div class="podium-step first" id="step1">
-                <div style="font-size:1.6rem; margin-bottom:5px;">🥇</div>
+                <div class="crown">👑</div>
+                <div style="font-size:2rem; margin-bottom:5px;">🥇</div>
                 <div id="p1PhotoContainer"></div>
-                <div id="p1Name" style="font-weight:bold; font-size:0.9rem; text-align:center; width:100%; overflow:hidden;">--</div>
-                <div id="p1Score" style="font-size:0.85rem; color:#fbbf24; margin-top:2px;">0 ن</div>
+                <div id="p1Name" style="font-weight:bold; font-size:1rem; text-align:center; color:#fff; width:100%; overflow:hidden;">--</div>
+                <div id="p1Score" style="font-size:0.9rem; color:#fbbf24; margin-top:3px;">0 ن</div>
             </div>
             <div class="podium-step third" id="step3">
-                <div style="font-size:1.3rem; margin-bottom:5px;">🥉</div>
+                <div style="font-size:1.5rem; margin-bottom:5px;">🥉</div>
                 <div id="p3PhotoContainer"></div>
-                <div id="p3Name" style="font-weight:bold; font-size:0.85rem; text-align:center; width:100%; overflow:hidden;">--</div>
-                <div id="p3Score" style="font-size:0.8rem; color:#b45309; margin-top:2px;">0 ن</div>
+                <div id="p3Name" style="font-weight:bold; font-size:0.9rem; text-align:center; color:#e2e8f0; width:100%; overflow:hidden;">--</div>
+                <div id="p3Score" style="font-size:0.85rem; color:#b45309; margin-top:3px;">0 ن</div>
             </div>
         </div>
 
-        <button style="background:#ef4444; color:#fff; margin-top:auto;" onclick="terminateSessionAndExit()">إنهاء الجولة والعودة للرئيسية 🚪</button>
+        <button style="background:#ef4444; color:#fff; margin-top:auto;" onclick="terminateSessionAndExit()">إنهاء الجولة وتصفير النقاط والعودة للرئيسية 🚪</button>
     </div>
 
-</div> <!-- نهاية حاوية الكود المفتوحة في الجزء الأول -->
+</div> <!-- إغلاق حاوية التطبيق الرئيسية المفتوحة في الجزء الأول -->
 <script>
-    // رابط السيرفر المباشر لمشروعك التابع لفايربيس
+    // رابط السيرفر المباشر والصحيح التابع لقاعدة بياناتك
     const dbURL = "https://sdfq-63ee0-default-rtdb.firebaseio.com/";
 
-    // بنوك الأسئلة المتوافقة مع الضوابط الشرعية وحسب اختيار المنظم
+    // بنوك الأسئلة الثقافية والإسلامية المتوافقة مع الضوابط الشرعية
     const questionBanks = {
         "أسئلة ثقافية وإسلامية": [
             { q: "ما هي السورة التي تسمى الفاضحة لسرائر المنافقين؟", os: ["سورة التوبة", "سورة الأنفال", "سورة المنافقون", "سورة الحشر"], a: 0 },
@@ -212,7 +248,6 @@
         ]
     };
 
-    // صورة افتراضية بيضاء/رمادية في حال لم يختر اللاعب صورة من ملفاته
     let selectedPhotoBase64 = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 24 24' fill='%2364748b'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
     let myName = "";
     let currentRoomId = "";
@@ -221,23 +256,40 @@
     let hasVotedThisTurn = false;
     let pendingInviteCode = "";
     let localTimerValue = 20;
+    let maxTimerLimit = 20;
     let timerCountdownInterval = null;
     let serverSyncInterval = null;
+    
+    // متغيرات نظام الميكروفون الصوتي (WebRTC)
+    let myPeer = null;
+    let myAudioStream = null;
+    let isVoiceActive = false;
+    let activeVoiceCalls = [];
 
-    // دالة معالجة وضغط الصورة المرفوعة من ملفات الجهاز
+    // استدعاء تلقائي لفحص وجود حساب سابق محفوظ في ذاكرة الجهاز (Local Storage)
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedName = localStorage.getItem('game_player_name');
+        const savedPhoto = localStorage.getItem('game_player_photo');
+        if (savedName && savedPhoto) {
+            document.getElementById("inpPlayerName").value = savedName;
+            selectedPhotoBase64 = savedPhoto;
+            document.getElementById("profilePhotoPreview").src = savedPhoto;
+        }
+    });
+
+    // معالجة وضغط الصورة المرفوعة من ملفات الجهاز لسرعة استجابة خارقة
     function previewAndProcessPhoto(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    // تصغير الصورة برمجياً لتقليل حجمها وضمان سرعة السيرفر المجاني
                     const canvas = document.createElement("canvas");
                     const ctx = canvas.getContext("2d");
-                    canvas.width = 70;
-                    canvas.height = 70;
-                    ctx.drawImage(img, 0, 0, 70, 70);
-                    selectedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.6);
+                    canvas.width = 65; 
+                    canvas.height = 65;
+                    ctx.drawImage(img, 0, 0, 65, 65);
+                    selectedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.5); // ضغط جودة عالي لسرعة البرق
                     document.getElementById("profilePhotoPreview").src = selectedPhotoBase64;
                 };
                 img.src = e.target.result;
@@ -255,7 +307,10 @@
         myName = document.getElementById("inpPlayerName").value.trim().replace(/[^a-zA-Z0-9أ-ي]/g, "");
         if(myName === "") return alert("الرجاء كتابة اسمك أولاً!");
 
-        // رفع الحساب والصورة الحقيقية للسيرفر
+        // حفظ الحساب بشكل مستدام ومحلي داخل الجهاز لمنع تكرار الإدخال
+        localStorage.setItem('game_player_name', myName);
+        localStorage.setItem('game_player_photo', selectedPhotoBase64);
+
         await fetch(`${dbURL}online_users/${myName}.json`, { 
             method: 'PUT', 
             body: JSON.stringify({ photo: selectedPhotoBase64, active: true }) 
@@ -265,7 +320,7 @@
         navigate("scrHome");
 
         if(!serverSyncInterval) {
-            serverSyncInterval = setInterval(executeGlobalSync, 1500);
+            serverSyncInterval = setInterval(executeGlobalSync, 1200); // مزامنة خفيفة وسريعة جداً
         }
     }
 
@@ -273,17 +328,55 @@
         navigate("scrLogin");
     }
 
+    // تفعيل وإغلاق الميكروفون الصوتي المتزامن مثل ديسكورد وبأعلى جودة
+    async function toggleVoiceConnection() {
+        const btn = document.getElementById("btnToggleVoice");
+        if (!isVoiceActive) {
+            try {
+                myAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                myPeer = new Peer(myName + "_" + currentRoomId, { host: '://herokuapp.com', secure: true, port: 443 });
+                
+                myPeer.on('call', call => {
+                    call.answer(myAudioStream);
+                    const audio = document.createElement('audio');
+                    call.on('stream', userAudioStream => {
+                        audio.srcObject = userAudioStream;
+                        audio.play();
+                    });
+                    activeVoiceCalls.push(call);
+                });
+
+                btn.innerText = "الميكروفون يعمل بوضوح 🔴";
+                btn.style.background = "#ef4444";
+                isVoiceActive = true;
+            } catch (err) {
+                alert("يرجى إعطاء صلاحية الميكروفون للمتصفح أولاً!");
+            }
+        } else {
+            if(myAudioStream) myAudioStream.getTracks().forEach(track => track.stop());
+            activeVoiceCalls.forEach(call => call.close());
+            if(myPeer) myPeer.destroy();
+            btn.innerText = "تشغيل الميكروفون 🟢";
+            btn.style.background = "#10b981";
+            isVoiceActive = false;
+        }
+    }
     async function initiateRoom(gameType) {
         isHost = true;
         currentRoomId = Math.floor(1000 + Math.random() * 9000).toString();
+        
+        // قراءة العداد المخصص الذي حدده المنظم من القائمة المنسدلة
+        const selectTimer = document.getElementById("selectTimerConfig").value;
+        maxTimerLimit = parseInt(selectTimer);
+        localTimerValue = maxTimerLimit;
 
         const roomStructure = {
             host: myName,
             gameType: gameType,
             currentQ: 0,
             status: "waiting",
-            timer: 20,
-            players: { [myName]: { score: 100, photo: selectedPhotoBase64, lastVote: -1 } }
+            timerLimit: maxTimerLimit,
+            players: { [myName]: { score: 0, photo: selectedPhotoBase64, lastVote: -1 } }
         };
 
         await fetch(`${dbURL}rooms/${currentRoomId}.json`, {
@@ -292,7 +385,7 @@
             body: JSON.stringify(roomStructure)
         });
 
-        renderLobbyUI(gameType, currentRoomId);
+        renderLobbyUI(gameType, currentRoomId, maxTimerLimit);
     }
 
     async function connectRoomByCode() {
@@ -302,73 +395,48 @@
         const res = await fetch(`${dbURL}rooms/${code}.json`);
         const room = await res.json();
         
-        if(!room) return alert("عذراً، هذا الكود غير موجود!");
+        if(!room) return alert("عذراً، هذا الكود غير موجود أو انتهت صلاحيته!");
         if(room.status !== "waiting") return alert("الجولة بدأت بالفعل في هذه الغرفة!");
 
         isHost = false;
         currentRoomId = code;
+        maxTimerLimit = room.timerLimit || 20;
+        localTimerValue = maxTimerLimit;
 
         await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}.json`, { 
             method: 'PUT', 
-            body: JSON.stringify({ score: 100, photo: selectedPhotoBase64, lastVote: -1 }) 
+            body: JSON.stringify({ score: 0, photo: selectedPhotoBase64, lastVote: -1 }) 
         });
 
-        renderLobbyUI(room.gameType, currentRoomId);
+        renderLobbyUI(room.gameType, currentRoomId, maxTimerLimit);
     }
 
-    function renderLobbyUI(gameType, code) {
+    function renderLobbyUI(gameType, code, timerLimit) {
         document.getElementById("lobGameType").innerText = gameType;
         document.getElementById("lobCodeText").innerText = code;
+        document.getElementById("lobTimerText").innerText = timerLimit;
+        
         document.getElementById("btnHostStart").style.display = isHost ? "block" : "none";
         document.getElementById("lblWaitHost").style.display = isHost ? "none" : "block";
         navigate("scrLobby");
     }
+
     async function dispatchInvite() {
         const targetPlayer = document.getElementById("inpTargetPlayer").value.trim();
-        if(targetPlayer === "") return alert("اكتب اسم اللاعب المستهدف!");
+        if(targetPlayer === "") return alert("اكتب اسم اللاعب المستهدف بالضبط!");
 
         await fetch(`${dbURL}invites/${targetPlayer}.json`, {
             method: 'PUT',
             body: JSON.stringify({ from: myName, roomCode: currentRoomId })
         });
-        alert(`تم إرسال طلب انضمام بنجاح إلى ${targetPlayer}`);
+        alert(`تم إرسال طلب الانضمام بنجاح إلى اللاعب: ${targetPlayer}`);
         document.getElementById("inpTargetPlayer").value = "";
     }
 
-    async function executeGlobalSync() {
-        if (currentRoomId === "") {
-            const resInv = await fetch(`${dbURL}invites/${myName}.json`);
-            const invData = await resInv.json();
-            if (invData && invData.roomCode) {
-                pendingInviteCode = invData.roomCode;
-                document.getElementById("txtInviteNotify").innerText = `✉️ أرسل لك [ ${invData.from} ] دعوة لدخول الغرفة السرية: ${pendingInviteCode}`;
-                document.getElementById("notifInvite").style.display = "block";
-            } else {
-                document.getElementById("notifInvite").style.display = "none";
-            }
-        }
-
-        if(currentRoomId !== "") {
-            const resRoom = await fetch(`${dbURL}rooms/${currentRoomId}.json`);
-            const room = await resRoom.json();
-            if(!room) return;
-
-            if(room.players) {
-                const listContainer = document.getElementById("lobPlayersList");
-                if (document.getElementById("scrLobby").classList.contains("active")) {
-                    listContainer.innerHTML = "";
-                    for(let p in room.players) {
-                        listContainer.innerHTML += `<span class="player-chip"><img src="${room.players[p].photo || selectedPhotoBase64}" class="user-photo-mini"> ${p}</span>`;
-                    }
-                }
-            }
-
-            if(room.status === "playing") {
-                selectedBank = questionBanks[room.gameType] || [];
-                manageGameplayScreen(room);
-            } else if(room.status === "finished") {
-                renderPodiumUI(room.players);
-            }
+    async function triggerKickPlayer(playerToKick) {
+        if(!isHost) return;
+        if(confirm(`هل أنت متأكد من طرد اللاعب [ ${playerToKick} ] من الغرفة؟`)) {
+            await fetch(`${dbURL}rooms/${currentRoomId}/players/${playerToKick}.json`, { method: 'DELETE' });
         }
     }
 
@@ -383,14 +451,72 @@
         if(!isHost) return;
         await fetch(`${dbURL}rooms/${currentRoomId}/status.json`, { method: 'PUT', body: JSON.stringify("playing") });
     }
+    async function executeGlobalSync() {
+        // 1. فحص وجود دعوات واردة موجهة لك أونلاين
+        if (currentRoomId === "") {
+            const resInv = await fetch(`${dbURL}invites/${myName}.json`);
+            const invData = await resInv.json();
+            if (invData && invData.roomCode) {
+                pendingInviteCode = invData.roomCode;
+                document.getElementById("txtInviteNotify").innerText = `✉️ أرسل لك [ ${invData.from} ] دعوة لدخول الغرفة السرية: ${pendingInviteCode}`;
+                document.getElementById("notifInvite").style.display = "block";
+            } else {
+                document.getElementById("notifInvite").style.display = "none";
+            }
+        }
+
+        // 2. المزامنة السريعة للغرفة واللاعبين داخل اللعبة
+        if(currentRoomId !== "") {
+            const resRoom = await fetch(`${dbURL}rooms/${currentRoomId}.json`);
+            const room = await resRoom.json();
+            
+            // في حال تم طرد اللاعب (Kick) أو إنهاء الغرفة، يعود اللاعب للرئيسية فوراً
+            if(!room || (room.players && !room.players[myName])) {
+                currentRoomId = "";
+                isHost = false;
+                alert("تم طردك من الغرفة أو قام المنظم بإغلاق الجولة!");
+                navigate("scrHome");
+                return;
+            }
+
+            // تحديث قائمة الأسماء والصور الحية في لوحة الانتظار مع زر الطرد للمنظم
+            if(room.players && document.getElementById("scrLobby").classList.contains("active")) {
+                const listContainer = document.getElementById("lobPlayersList");
+                listContainer.innerHTML = "";
+                for(let p in room.players) {
+                    let kickButton = (isHost && p !== myName) ? `<button class="btn-kick" onclick="triggerKickPlayer('${p}')">طرد ❌</button>` : "";
+                    listContainer.innerHTML += `
+                        <div class="player-row">
+                            <div class="player-info-side">
+                                <span class="ping-dot"></span>
+                                <img src="${room.players[p].photo || selectedPhotoBase64}" class="user-photo-mini">
+                                <span>${p}</span>
+                            </div>
+                            ${kickButton}
+                        </div>`;
+                }
+            }
+
+            // الانتقال الفوري والمزامن لشاشة اللعب الفعلي أو منصة التتويج
+            if(room.status === "playing") {
+                selectedBank = questionBanks[room.gameType] || [];
+                maxTimerLimit = room.timerLimit || 20; // جلب العداد المخصص من السيرفر لجميع الجوالات
+                manageGameplayScreen(room);
+            } else if(room.status === "finished") {
+                renderPodiumUI(room.players);
+            }
+        }
+    }
 
     function startLocalTimerBar() {
         clearInterval(timerCountdownInterval);
         document.getElementById("uiTimerBar").style.width = "100%";
+        
         timerCountdownInterval = setInterval(() => {
             localTimerValue--;
-            let percent = (localTimerValue / 20) * 100;
+            let percent = (localTimerValue / maxTimerLimit) * 100;
             document.getElementById("uiTimerBar").style.width = `${percent}%`;
+            
             if(localTimerValue <= 0) {
                 clearInterval(timerCountdownInterval);
             }
@@ -417,7 +543,7 @@
             document.getElementById("btnNextQuestion").style.display = isHost ? "block" : "none";
             document.getElementById("btnNextQuestion").disabled = true;
             
-            localTimerValue = 20;
+            localTimerValue = maxTimerLimit; // تعيين الوقت المخصص الجديد لكل سؤال
             startLocalTimerBar();
         }
 
@@ -445,6 +571,7 @@
                 if(room.players[myName] && room.players[myName].lastVote === idx) cardClass += " selected";
             }
             
+            // إظهار النتائج بعد إجابة الجميع أو انتهاء العداد
             if(timeIsUp || allPlayersVoted) {
                 if(idx === currentData.a) cardClass += " correct";
                 else if(room.players[myName] && room.players[myName].lastVote === idx) cardClass += " wrong";
@@ -455,7 +582,7 @@
                 votersHtml = `<div class="voters-container">`;
                 for(let player in playersWhoVoted) {
                     if(playersWhoVoted[player].vote === idx) {
-                        votersHtml += `<span class="voter-mini-chip"><img src="${playersWhoVoted[player].photo || selectedPhotoBase64}" class="user-photo-mini" style="width:20px; height:20px; margin-left:3px; border-radius:50%; object-fit:cover;">${player}</span>`;
+                        votersHtml += `<span class="voter-mini-chip"><img src="${playersWhoVoted[player].photo || selectedPhotoBase64}">${player}</span>`;
                     }
                 }
                 votersHtml += `</div>`;
@@ -467,7 +594,7 @@
         if(allPlayersVoted || timeIsUp) {
             clearInterval(timerCountdownInterval);
             document.getElementById("uiTimerBar").style.width = "0%";
-            document.getElementById("uiStatusFooter").innerHTML = "<span style='color:#10b981'>انتهى الوقت! تم كشف الاختيارات وتوزيع النقاط والخصومات.</span>";
+            document.getElementById("uiStatusFooter").innerHTML = "<span style='color:#10b981'>انتهى الوقت! تم كشف الاختيارات وتوزيع النقاط والمراكز.</span>";
             if(isHost) document.getElementById("btnNextQuestion").disabled = false;
             
             if(isHost && room.calculatedQ !== qIndex) {
@@ -493,9 +620,9 @@
             let updatedScore = currentScore;
 
             if(pVote === correctAnsIdx) {
-                updatedScore += 20; 
+                updatedScore += 20; // الصحيح يكسب 20 نقطة
             } else {
-                updatedScore -= 10; 
+                updatedScore += 0; // نظام النقاط المحدث: الخطأ أو المتأخر يكسب صفر نقطة ولا يُخصم منه شيء
             }
 
             await fetch(`${dbURL}rooms/${currentRoomId}/players/${p}/score.json`, { method: 'PUT', body: JSON.stringify(updatedScore) });
@@ -527,28 +654,35 @@
         sorted.sort((a,b) => b.score - a.score);
 
         if(sorted[0]) {
-            document.getElementById("p1PhotoContainer").innerHTML = `<img src="${sorted[0].photo || selectedPhotoBase64}" class="avatar-preview" style="width:50px; height:50px; margin-bottom:5px; border-radius:50%; object-fit:cover;">`;
+            document.getElementById("p1PhotoContainer").innerHTML = `<img src="${sorted[0].photo || selectedPhotoBase64}" class="avatar-preview" style="width:55px; height:55px; border-radius:50%; object-fit:cover; margin-bottom:5px;">`;
             document.getElementById("p1Name").innerText = sorted[0].name;
             document.getElementById("p1Score").innerText = `${sorted[0].score} ن`;
         }
         if(sorted[1]) {
-            document.getElementById("p2PhotoContainer").innerHTML = `<img src="${sorted[1].photo || selectedPhotoBase64}" class="avatar-preview" style="width:45px; height:45px; margin-bottom:5px; border-radius:50%; object-fit:cover;">`;
+            document.getElementById("p2PhotoContainer").innerHTML = `<img src="${sorted[1].photo || selectedPhotoBase64}" class="avatar-preview" style="width:48px; height:48px; border-radius:50%; object-fit:cover; margin-bottom:5px;">`;
             document.getElementById("p2Name").innerText = sorted[1].name;
             document.getElementById("p2Score").innerText = `${sorted[1].score} ن`;
         }
         if(sorted[2]) {
-            document.getElementById("p3PhotoContainer").innerHTML = `<img src="${sorted[2].photo || selectedPhotoBase64}" class="avatar-preview" style="width:40px; height:40px; margin-bottom:5px; border-radius:50%; object-fit:cover;">`;
+            document.getElementById("p3PhotoContainer").innerHTML = `<img src="${sorted[2].photo || selectedPhotoBase64}" class="avatar-preview" style="width:43px; height:43px; border-radius:50%; object-fit:cover; margin-bottom:5px;">`;
             document.getElementById("p3Name").innerText = sorted[2].name;
             document.getElementById("p3Score").innerText = `${sorted[2].score} ن`;
         }
     }
 
     async function terminateSessionAndExit() {
+        // تصفير النقاط والغرف تماماً عند العودة للصفحة الرئيسية لبدء منافسة جديدة وعادلة 100%
         if(isHost) {
             await fetch(`${dbURL}rooms/${currentRoomId}.json`, { method: 'DELETE' });
         } else {
             await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}.json`, { method: 'DELETE' });
         }
+        
+        // إغلاق الميكروفونات الصوتية مؤقتاً لتجهيز الجولة التالية
+        if(myAudioStream) myAudioStream.getTracks().forEach(track => track.stop());
+        if(myPeer) myPeer.destroy();
+        isVoiceActive = false;
+        
         currentRoomId = "";
         isHost = false;
         hasVotedThisTurn = false;
