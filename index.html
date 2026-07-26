@@ -35,9 +35,6 @@
             #chatArea { max-width: 100%; }
         }
     </style>
-    <!-- استخدام روابط Unpkg لتخطي حظر متصفح كروم لحزم gstatic -->
-    <script src="https://unpkg.com"></script>
-    <script src="https://unpkg.com"></script>
 </head>
 <body>
 
@@ -75,8 +72,11 @@
     </div>
 </div>
 
-<script>
-// إعدادات البناء والاتصال المباشر
+<script type="module">
+// استخدام استدعاء مباشر من شبكة الحزم لمتصفح كروم لكسر أمان CORS بشكل نهائي
+import { initializeApp } from "https://gstatic.com";
+import { getDatabase, ref, push, onValue, set, onChildAdded } from "https://gstatic.com";
+
 const firebaseConfig = {
     apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
     authDomain: "://firebaseapp.com",
@@ -84,15 +84,11 @@ const firebaseConfig = {
     projectId: "sdfq-63ee0",
     storageBucket: "sdfq-63ee0.firebasestorage.app",
     messagingSenderId: "210107075463",
-    appId: "1:210107075463:web:469133f4305ecd61d42122",
-    measurementId: "G-0CNB95E2X4"
+    appId: "1:210107075463:web:469133f4305ecd61d42122"
 };
 
-// تشغيل وتهيئة النظام البرمجي
-if (!window.firebase || !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const database = firebase.database();
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 const lobby = document.getElementById('lobby');
 const gameArea = document.getElementById('gameArea');
@@ -145,45 +141,31 @@ function getPos(e) {
     };
 }
 
-function startDrawing(e) {
-    isDrawing = true;
-    draw(e);
-}
-
+function startDrawing(e) { isDrawing = true; draw(e); }
 function stopDrawing() {
     if (!isDrawing) return;
     isDrawing = false;
     ctx.beginPath();
-    database.ref(`rooms/${roomCode}/drawing`).push({ action: 'stop' });
+    push(ref(database, `rooms/${roomCode}/drawing`), { action: 'stop' });
 }
 
 function draw(e) {
     if(!isDrawing) return;
     const pos = getPos(e);
-    
-    database.ref(`rooms/${roomCode}/drawing`).push({
-        x: pos.x,
-        y: pos.y,
-        color: currentColor,
-        action: 'draw'
+    push(ref(database, `rooms/${roomCode}/drawing`), {
+        x: pos.x, y: pos.y, color: currentColor, action: 'draw'
     });
 }
 
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 window.addEventListener('mouseup', stopDrawing);
-
 canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); }, { passive: false });
 canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
 canvas.addEventListener('touchend', stopDrawing);
 
-window.changeColor = function(color) {
-    currentColor = color;
-}
-
-clearBtn.addEventListener('click', () => {
-    database.ref(`rooms/${roomCode}/drawing`).set(null);
-});
+window.changeColor = function(color) { currentColor = color; }
+clearBtn.addEventListener('click', () => { set(ref(database, `rooms/${roomCode}/drawing`), null); });
 
 sendGuessBtn.addEventListener('click', sendGuess);
 guessInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendGuess(); });
@@ -191,26 +173,19 @@ guessInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendGuess
 function sendGuess() {
     const text = guessInput.value.trim();
     if(!text) return;
-    
-    database.ref(`rooms/${roomCode}/chat`).push({
-        sender: myName,
-        message: text
-    });
+    push(ref(database, `rooms/${roomCode}/chat`), { sender: myName, message: text });
     guessInput.value = "";
 }
 
 function listenToRoom() {
-    database.ref(`rooms/${roomCode}/drawing`).on('value', (snapshot) => {
+    onValue(ref(database, `rooms/${roomCode}/drawing`), (snapshot) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
-        
         const data = snapshot.val();
         if(!data) return;
-        
         Object.values(data).forEach(point => {
-            if(point.action === 'stop') {
-                ctx.beginPath();
-            } else if(point.action === 'draw') {
+            if(point.action === 'stop') { ctx.beginPath(); }
+            else if(point.action === 'draw') {
                 ctx.strokeStyle = point.color;
                 const actualX = point.x * canvas.width;
                 const actualY = point.y * canvas.height;
@@ -222,7 +197,7 @@ function listenToRoom() {
         });
     });
     
-    database.ref(`rooms/${roomCode}/chat`).on('child_added', (snapshot) => {
+    onChildAdded(ref(database, `rooms/${roomCode}/chat`), (snapshot) => {
         const data = snapshot.val();
         const msgElement = document.createElement('div');
         msgElement.style.marginBottom = "5px";
