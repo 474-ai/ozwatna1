@@ -16,9 +16,9 @@
         
         #gameArea { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
         #canvasContainer { width: 100%; max-width: 600px; aspect-ratio: 4/3; background: #fff; border: 3px solid #333; border-radius: 8px; touch-action: none; position: relative; }
-        canvas { width: 100%; height: 100%; display: block; background: white; cursor: crosshair; }
+        canvas { width: 100%; height: 100%; display: block; background: white; cursor: crosshair; touch-action: none; }
         
-        .controls { display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 600px; }
+        .controls { display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 600px; flex-wrap: wrap; }
         .color-btn { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.3); cursor: pointer; }
         #clearBtn { background: #dc3545; color: white; max-width: 100px; padding: 8px; }
         
@@ -72,15 +72,25 @@
     </div>
 </div>
 
-<script type="module">
-// استخدام استدعاء مباشر من شبكة الحزم لمتصفح كروم لكسر أمان CORS بشكل نهائي
-import { initializeApp } from "https://gstatic.com";
-import { getDatabase, ref, push, onValue, set, onChildAdded } from "https://gstatic.com";
+<script type="importmap">
+{
+    "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"
+    }
+}
+</script>
 
+<script type="module">
+// استيراد Firebase بشكل صحيح
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, push, onValue, set, onChildAdded } from "firebase/database";
+
+// إعدادات Firebase الصحيحة
 const firebaseConfig = {
     apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
-    authDomain: "://firebaseapp.com",
-    databaseURL: "https://firebaseio.com",
+    authDomain: "sdfq-63ee0.firebaseapp.com",
+    databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com",
     projectId: "sdfq-63ee0",
     storageBucket: "sdfq-63ee0.firebasestorage.app",
     messagingSenderId: "210107075463",
@@ -106,13 +116,20 @@ let myName = "";
 let roomCode = "";
 let isDrawing = false;
 let currentColor = "#000000";
+let lastX = 0;
+let lastY = 0;
 
+// دالة ضبط حجم اللوحة
 function resizeCanvas() {
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
     ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     ctx.lineWidth = 4;
 }
+
+// استدعاء resize عند تحميل الصفحة وعند تغيير الحجم
 window.addEventListener('resize', resizeCanvas);
 
 joinBtn.addEventListener('click', () => {
@@ -126,23 +143,44 @@ joinBtn.addEventListener('click', () => {
     
     lobby.classList.add('hidden');
     gameArea.classList.remove('hidden');
-    resizeCanvas();
+    
+    // تأخير ضبط حجم اللوحة حتى تظهر
+    setTimeout(resizeCanvas, 100);
     
     listenToRoom();
 });
 
+// دالة الحصول على موقع المؤشر بدقة
 function getPos(e) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches.clientX : e.clientX;
-    const clientY = e.touches ? e.touches.clientY : e.clientY;
+    let clientX, clientY;
+    
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+        e.preventDefault();
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+    
     return {
-        x: (clientX - rect.left) / canvas.clientWidth,
-        y: (clientY - rect.top) / canvas.clientHeight
+        x: (clientX - rect.left) / canvas.width,
+        y: (clientY - rect.top) / canvas.height
     };
 }
 
-function startDrawing(e) { isDrawing = true; draw(e); }
-function stopDrawing() {
+function startDrawing(e) {
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+    ctx.beginPath();
+    ctx.moveTo(pos.x * canvas.width, pos.y * canvas.height);
+}
+
+function stopDrawing(e) {
     if (!isDrawing) return;
     isDrawing = false;
     ctx.beginPath();
@@ -151,21 +189,47 @@ function stopDrawing() {
 
 function draw(e) {
     if(!isDrawing) return;
+    e.preventDefault();
     const pos = getPos(e);
+    
+    // الرسم المحلي للتجاوب السريع
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = 4;
+    ctx.lineTo(pos.x * canvas.width, pos.y * canvas.height);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(pos.x * canvas.width, pos.y * canvas.height);
+    
+    // إرسال البيانات للخادم
     push(ref(database, `rooms/${roomCode}/drawing`), {
-        x: pos.x, y: pos.y, color: currentColor, action: 'draw'
+        x: pos.x, 
+        y: pos.y, 
+        color: currentColor, 
+        action: 'draw'
     });
 }
 
+// أحداث الماوس
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
-window.addEventListener('mouseup', stopDrawing);
-canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); }, { passive: false });
-canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
-canvas.addEventListener('touchend', stopDrawing);
+canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('mouseleave', stopDrawing);
 
-window.changeColor = function(color) { currentColor = color; }
-clearBtn.addEventListener('click', () => { set(ref(database, `rooms/${roomCode}/drawing`), null); });
+// أحداث اللمس
+canvas.addEventListener('touchstart', startDrawing, { passive: false });
+canvas.addEventListener('touchmove', draw, { passive: false });
+canvas.addEventListener('touchend', stopDrawing, { passive: false });
+
+window.changeColor = function(color) { 
+    currentColor = color; 
+}
+
+clearBtn.addEventListener('click', () => { 
+    if(confirm('هل أنت متأكد من مسح اللوحة؟')) {
+        set(ref(database, `rooms/${roomCode}/drawing`), null);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+});
 
 sendGuessBtn.addEventListener('click', sendGuess);
 guessInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendGuess(); });
@@ -173,23 +237,40 @@ guessInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendGuess
 function sendGuess() {
     const text = guessInput.value.trim();
     if(!text) return;
-    push(ref(database, `rooms/${roomCode}/chat`), { sender: myName, message: text });
+    push(ref(database, `rooms/${roomCode}/chat`), { 
+        sender: myName, 
+        message: text,
+        timestamp: Date.now()
+    });
     guessInput.value = "";
 }
 
 function listenToRoom() {
+    // الاستماع لتحديثات الرسم
     onValue(ref(database, `rooms/${roomCode}/drawing`), (snapshot) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
         const data = snapshot.val();
         if(!data) return;
+        
+        let isFirst = true;
         Object.values(data).forEach(point => {
-            if(point.action === 'stop') { ctx.beginPath(); }
+            if(point.action === 'stop') { 
+                ctx.beginPath();
+                isFirst = true;
+            }
             else if(point.action === 'draw') {
                 ctx.strokeStyle = point.color;
+                ctx.lineWidth = 4;
                 const actualX = point.x * canvas.width;
                 const actualY = point.y * canvas.height;
-                ctx.lineTo(actualX, actualY);
+                
+                if (isFirst) {
+                    ctx.moveTo(actualX, actualY);
+                    isFirst = false;
+                } else {
+                    ctx.lineTo(actualX, actualY);
+                }
                 ctx.stroke();
                 ctx.beginPath();
                 ctx.moveTo(actualX, actualY);
@@ -197,10 +278,14 @@ function listenToRoom() {
         });
     });
     
+    // الاستماع للرسائل الجديدة
     onChildAdded(ref(database, `rooms/${roomCode}/chat`), (snapshot) => {
         const data = snapshot.val();
         const msgElement = document.createElement('div');
         msgElement.style.marginBottom = "5px";
+        msgElement.style.padding = "5px";
+        msgElement.style.backgroundColor = "#f8f9fa";
+        msgElement.style.borderRadius = "4px";
         msgElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
         chatBox.appendChild(msgElement);
         chatBox.scrollTop = chatBox.scrollHeight;
