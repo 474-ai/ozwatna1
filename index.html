@@ -3,33 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎨 Draw Battle Pro - لعبة الرسم الجماعية</title>
+    <title>🎯 كلمة ذكية - Smart Word</title>
     <style>
-        /* ===== RESET & BASE ===== */
+        /* ===== RESET ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
         }
-
         :root {
             --primary: #6C63FF;
-            --primary-dark: #5A52D5;
-            --secondary: #FF6584;
+            --primary-dark: #5a52d5;
             --success: #2ECC71;
-            --warning: #F1C40F;
             --danger: #E74C3C;
-            --dark: #2D3436;
-            --light: #F8F9FA;
-            --gray: #95A5A6;
-            --shadow: 0 10px 40px rgba(0,0,0,0.15);
+            --warning: #F1C40F;
+            --dark: #0f0c29;
+            --dark-card: #1a1a3e;
+            --light: #f0f2f5;
+            --gray: #7f8fa6;
             --radius: 16px;
+            --shadow: 0 12px 48px rgba(0,0,0,0.4);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         body {
-            font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -37,30 +35,36 @@
             padding: 16px;
             margin: 0;
         }
-
-        /* ===== CONTAINER ===== */
         .container {
             width: 100%;
-            max-width: 1400px;
-            background: rgba(255,255,255,0.98);
+            max-width: 1200px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border-radius: var(--radius);
+            padding: 20px;
             box-shadow: var(--shadow);
-            padding: 24px;
-            backdrop-filter: blur(20px);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.06);
+            min-height: 90vh;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 20%, rgba(108, 99, 255, 0.05) 0%, transparent 50%);
-            pointer-events: none;
+        /* ===== SCREENS ===== */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .screen.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ===== HEADER ===== */
@@ -69,929 +73,472 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
         }
-
-        .logo {
+        .header h1 {
+            font-size: clamp(22px, 2.8vw, 32px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .user-info {
             display: flex;
             align-items: center;
             gap: 12px;
+            color: #fff;
+        }
+        .header .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            object-fit: cover;
         }
 
-        .logo h1 {
-            font-size: clamp(20px, 3vw, 32px);
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .logo .icon {
-            font-size: clamp(28px, 4vw, 40px);
-        }
-
-        .game-stats {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .stat-box {
-            background: var(--light);
-            padding: 8px 16px;
-            border-radius: 12px;
-            text-align: center;
-            min-width: 80px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .stat-box .label {
-            font-size: 10px;
-            color: var(--gray);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-box .value {
-            font-size: clamp(16px, 2vw, 22px);
-            color: var(--dark);
-            font-weight: 700;
-        }
-
-        .stat-box .value.highlight {
-            color: var(--primary);
-        }
-
-        /* ===== LOBBY ===== */
-        #lobby {
-            background: var(--light);
-            padding: 40px 20px;
-            border-radius: var(--radius);
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        #lobby h2 {
-            color: var(--dark);
-            font-size: clamp(22px, 3vw, 32px);
-            margin-bottom: 8px;
-        }
-
-        #lobby p {
-            color: var(--gray);
-            margin-bottom: 24px;
-            font-size: clamp(14px, 1.5vw, 18px);
-        }
-
-        .input-group {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .input-group input {
-            flex: 1;
-            min-width: 150px;
-            padding: 14px 20px;
-            font-size: 16px;
-            border: 2px solid #E2E8F0;
-            border-radius: 12px;
-            transition: var(--transition);
-            background: white;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.15);
-        }
-
+        /* ===== BUTTONS ===== */
         .btn {
-            padding: 14px 32px;
+            padding: 12px 28px;
             font-size: 16px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
             font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
             transition: var(--transition);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            justify-content: center;
             touch-action: manipulation;
-            user-select: none;
         }
-
         .btn:active {
             transform: scale(0.95);
         }
-
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
+            background: linear-gradient(135deg, #6C63FF, #5a52d5);
+            color: #fff;
+            box-shadow: 0 8px 28px rgba(108, 99, 255, 0.3);
         }
-
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4);
+            box-shadow: 0 12px 36px rgba(108, 99, 255, 0.45);
         }
-
         .btn-success {
             background: var(--success);
-            color: white;
+            color: #fff;
         }
-
         .btn-success:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.4);
         }
-
         .btn-danger {
             background: var(--danger);
-            color: white;
+            color: #fff;
         }
-
         .btn-danger:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 8px 24px rgba(231, 76, 60, 0.4);
         }
-
         .btn-warning {
             background: var(--warning);
-            color: var(--dark);
+            color: #1a1a2e;
         }
-
         .btn-warning:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(241, 196, 15, 0.4);
+            box-shadow: 0 8px 24px rgba(241, 196, 15, 0.35);
         }
-
-        .btn-secondary {
-            background: var(--gray);
-            color: white;
+        .btn-outline {
+            background: transparent;
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.2);
         }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(149, 165, 166, 0.4);
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--primary);
         }
-
         .btn-sm {
-            padding: 8px 16px;
+            padding: 8px 18px;
             font-size: 13px;
         }
+        .btn-lg {
+            padding: 16px 40px;
+            font-size: 18px;
+        }
 
-        .hidden {
-            display: none !important;
+        /* ===== LOGIN SCREEN ===== */
+        #loginScreen {
+            max-width: 480px;
+            margin: 60px auto;
+            background: rgba(255,255,255,0.04);
+            padding: 40px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        #loginScreen h2 {
+            color: #fff;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        #loginScreen p {
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 16px;
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            transition: var(--transition);
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.1);
+        }
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .avatar-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: var(--transition);
+            object-fit: cover;
+            background: rgba(255,255,255,0.05);
+        }
+        .avatar-option:hover {
+            transform: scale(1.05);
+        }
+        .avatar-option.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.2);
+        }
+
+        /* ===== LOBBY SCREEN ===== */
+        #lobbyScreen {
+            padding: 10px 0;
+        }
+        .lobby-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .lobby-header h2 {
+            color: #fff;
+            font-size: 24px;
+        }
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .room-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .room-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255,255,255,0.08);
+            border-color: var(--primary);
+        }
+        .room-card h3 {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .room-card p {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+        .room-card .room-code {
+            display: inline-block;
+            background: rgba(108, 99, 255, 0.2);
+            color: #a78bfa;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+        .room-card .players-count {
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* ===== ROOM SCREEN ===== */
+        #roomScreen {
+            padding: 10px 0;
+        }
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .room-header .room-title {
+            color: #fff;
+            font-size: 22px;
+        }
+        .room-header .room-code-display {
+            background: rgba(108, 99, 255, 0.15);
+            color: #a78bfa;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .room-content {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .room-content {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ===== GAME AREA ===== */
-        #gameArea {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 20px;
-            margin-top: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        @media (max-width: 1024px) {
-            #gameArea {
-                grid-template-columns: 1fr 280px;
-                gap: 16px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            #gameArea {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-        }
-
-        /* ===== CANVAS WRAPPER ===== */
-        .canvas-wrapper {
-            background: white;
+        .game-area {
+            background: rgba(255,255,255,0.04);
             border-radius: var(--radius);
-            border: 3px solid #E2E8F0;
-            position: relative;
-            aspect-ratio: 4/3;
-            touch-action: none;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            min-height: 300px;
-        }
-
-        #paintCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: crosshair;
-            touch-action: none;
-            background: white;
-        }
-
-        /* ===== OVERLAY ===== */
-        .canvas-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.75);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 20;
-            border-radius: 12px;
-            backdrop-filter: blur(8px);
             padding: 20px;
-            text-align: center;
-            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.06);
+            min-height: 400px;
         }
-
-        .canvas-overlay h2 {
-            color: white;
-            font-size: clamp(28px, 4vw, 42px);
+        .game-area .game-status {
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .game-area .game-status h3 {
+            color: #fff;
+            font-size: 20px;
             margin-bottom: 8px;
         }
+        .game-area .game-status .big-icon {
+            font-size: 64px;
+            margin-bottom: 12px;
+        }
 
-        .canvas-overlay p {
-            color: rgba(255,255,255,0.8);
-            font-size: clamp(16px, 2vw, 22px);
-            margin-bottom: 16px;
+        /* Word Game */
+        .word-game {
+            text-align: center;
+        }
+        .word-game .word-display {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 16px 0;
+            letter-spacing: 4px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .word-game .word-display .letter {
+            display: inline-block;
+            min-width: 30px;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 4px;
+            font-size: 28px;
+        }
+        .word-game .word-display .letter.revealed {
+            border-bottom-color: var(--success);
+            color: #6ee7b7;
+        }
+        .word-game .hint-text {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            margin: 8px 0 16px;
+        }
+        .word-game .guess-input-group {
+            display: flex;
+            gap: 10px;
             max-width: 400px;
+            margin: 0 auto;
         }
-
-        .canvas-overlay .word-reveal {
-            color: var(--success);
-            font-size: clamp(24px, 3vw, 36px);
-            font-weight: 700;
-            margin: 8px 0 20px;
-            padding: 8px 24px;
-            background: rgba(46, 204, 113, 0.2);
-            border-radius: 12px;
-            border: 2px solid var(--success);
-        }
-
-        .canvas-overlay .btn {
-            font-size: clamp(16px, 1.5vw, 20px);
-            padding: 14px 40px;
-        }
-
-        /* ===== WORD DISPLAY ===== */
-        .word-display {
-            position: absolute;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.85);
-            color: white;
-            padding: 10px 24px;
-            border-radius: 12px;
-            font-size: clamp(18px, 2.5vw, 28px);
-            font-weight: 700;
-            letter-spacing: 2px;
-            backdrop-filter: blur(10px);
-            z-index: 10;
-            text-align: center;
-            min-width: 120px;
-            border: 2px solid rgba(255,255,255,0.1);
-        }
-
-        .word-display .hint {
-            font-size: 12px;
-            font-weight: 400;
-            color: rgba(255,255,255,0.6);
-            display: block;
-            margin-top: 4px;
-            letter-spacing: 0;
-        }
-
-        .word-display .hint .emoji {
+        .word-game .guess-input-group input {
+            flex: 1;
+            padding: 12px 18px;
             font-size: 16px;
-        }
-
-        /* ===== TIMER ===== */
-        .timer {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(0,0,0,0.85);
-            color: white;
-            padding: 8px 16px;
+            border: 2px solid rgba(255,255,255,0.08);
             border-radius: 12px;
-            font-size: clamp(24px, 3vw, 36px);
-            font-weight: 700;
-            backdrop-filter: blur(10px);
-            z-index: 10;
-            min-width: 60px;
-            text-align: center;
-            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
         }
-
-        .timer.warning {
-            color: var(--danger);
-            animation: timerPulse 0.8s infinite;
-            border-color: var(--danger);
+        .word-game .guess-input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
         }
-
-        @keyframes timerPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        .word-game .guesses-list {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .word-game .guesses-list .guess-tag {
+            background: rgba(255,255,255,0.06);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+        }
+        .word-game .guesses-list .guess-tag.correct {
+            background: rgba(46, 204, 113, 0.2);
+            color: #6ee7b7;
         }
 
         /* ===== SIDEBAR ===== */
-        .sidebar {
+        .room-sidebar {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            min-width: 0;
         }
-
-        /* ===== CONTROLS ===== */
-        .controls {
-            background: var(--light);
-            padding: 12px;
+        .room-sidebar .section {
+            background: rgba(255,255,255,0.04);
             border-radius: var(--radius);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-items: center;
-            justify-content: center;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.06);
         }
-
-        .controls .color-group {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .color-btn {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-            touch-action: manipulation;
-        }
-
-        .color-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .color-btn.active {
-            border-color: var(--dark);
-            transform: scale(1.15);
-            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.4);
-        }
-
-        .color-btn:active {
-            transform: scale(0.9);
-        }
-
-        .controls .divider {
-            width: 1px;
-            height: 30px;
-            background: #E2E8F0;
-            margin: 0 4px;
-        }
-
-        .brush-size-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .brush-size-group input[type="range"] {
-            width: 60px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .brush-size-group .size-label {
-            font-size: 12px;
-            color: var(--gray);
-            font-weight: 600;
-            min-width: 20px;
-            text-align: center;
-        }
-
-        .controls .action-group {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-
-        /* ===== PLAYERS ===== */
-        #playersArea {
-            background: var(--light);
-            border-radius: var(--radius);
-            padding: 12px;
-            max-height: 180px;
-            overflow-y: auto;
-        }
-
-        #playersArea::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        #playersArea::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
-        }
-
-        #playersArea h3 {
-            color: var(--dark);
+        .room-sidebar .section h4 {
+            color: rgba(255,255,255,0.6);
             font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin-bottom: 10px;
         }
-
-        #playersArea h3 .count {
-            color: var(--gray);
-            font-size: 12px;
-        }
-
-        .player-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 10px;
-            background: white;
-            border-radius: 8px;
-            margin-bottom: 4px;
-            border: 1px solid #E2E8F0;
-            transition: var(--transition);
-        }
-
-        .player-item .name {
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .player-item .name .badge {
-            font-size: 10px;
-            background: var(--primary);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-
-        .player-item .score {
-            background: var(--primary);
-            color: white;
-            padding: 2px 12px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 13px;
-            min-width: 30px;
-            text-align: center;
-        }
-
-        .player-item .status-drawer {
-            font-size: 16px;
-        }
-
-        /* ===== CHAT ===== */
-        #chatArea {
-            background: var(--light);
-            border-radius: var(--radius);
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 200px;
-        }
-
-        #chatBox {
-            flex: 1;
-            overflow-y: auto;
-            text-align: right;
-            padding: 8px;
-            background: white;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            border: 1px solid #E2E8F0;
-            min-height: 120px;
-            max-height: 200px;
-        }
-
-        #chatBox::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        #chatBox::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
-        }
-
-        .chat-message {
-            padding: 6px 10px;
-            margin-bottom: 4px;
-            background: #F0F2F5;
-            border-radius: 8px;
-            animation: slideIn 0.3s ease;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-
-        .chat-message.correct {
-            background: #D4EDDA;
-            border-right: 4px solid var(--success);
-        }
-
-        .chat-message.system {
-            background: #E8E8E8;
-            font-style: italic;
-            color: var(--gray);
-            text-align: center;
-        }
-
-        .chat-message .sender {
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .chat-message .points-badge {
-            background: var(--success);
-            color: white;
-            padding: 1px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-            margin-right: 4px;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .chat-input-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .chat-input-group input {
-            flex: 1;
-            padding: 10px 14px;
-            font-size: 14px;
-            border: 2px solid #E2E8F0;
-            border-radius: 10px;
-            transition: var(--transition);
-            background: white;
-            min-width: 0;
-        }
-
-        .chat-input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15);
-        }
-
-        .chat-input-group .btn {
-            padding: 10px 18px;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .container {
-                padding: 12px;
-                border-radius: 12px;
-            }
-
-            .header {
-                gap: 10px;
-            }
-
-            .game-stats {
-                gap: 6px;
-            }
-
-            .stat-box {
-                padding: 6px 12px;
-                min-width: 60px;
-            }
-
-            .stat-box .value {
-                font-size: 14px;
-            }
-
-            .canvas-wrapper {
-                aspect-ratio: 4/3;
-                min-height: 200px;
-            }
-
-            .word-display {
-                padding: 6px 14px;
-                font-size: 16px;
-                min-width: 80px;
-                top: 10px;
-            }
-
-            .word-display .hint {
-                font-size: 10px;
-            }
-
-            .timer {
-                padding: 4px 12px;
-                font-size: 20px;
-                min-width: 45px;
-                top: 10px;
-                right: 10px;
-            }
-
-            .controls {
-                padding: 8px;
-                gap: 4px;
-            }
-
-            .color-btn {
-                width: 28px;
-                height: 28px;
-            }
-
-            .brush-size-group input[type="range"] {
-                width: 40px;
-            }
-
-            .sidebar {
-                gap: 8px;
-            }
-
-            #chatArea {
-                min-height: 150px;
-            }
-
-            #chatBox {
-                min-height: 80px;
-                max-height: 150px;
-            }
-
-            .chat-message {
-                font-size: 13px;
-                padding: 4px 8px;
-            }
-
-            #playersArea {
-                max-height: 140px;
-            }
-
-            .player-item {
-                padding: 4px 8px;
-            }
-
-            .player-item .name {
-                font-size: 13px;
-            }
-
-            .btn {
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-
-            .btn-sm {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            .input-group input {
-                padding: 10px 14px;
-                font-size: 14px;
-                min-width: 120px;
-            }
-
-            #lobby {
-                padding: 24px 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 8px;
-                border-radius: 8px;
-            }
-
-            .logo h1 {
-                font-size: 18px;
-            }
-
-            .stat-box {
-                padding: 4px 8px;
-                min-width: 50px;
-            }
-
-            .stat-box .label {
-                font-size: 8px;
-            }
-
-            .stat-box .value {
-                font-size: 12px;
-            }
-
-            .color-btn {
-                width: 24px;
-                height: 24px;
-            }
-
-            .controls .divider {
-                height: 20px;
-            }
-
-            .chat-input-group .btn {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-
-            .chat-input-group input {
-                font-size: 13px;
-                padding: 8px 10px;
-            }
-
-            .canvas-overlay h2 {
-                font-size: 22px;
-            }
-
-            .canvas-overlay p {
-                font-size: 14px;
-            }
-
-            .canvas-overlay .word-reveal {
-                font-size: 20px;
-                padding: 4px 16px;
-            }
-
-            .canvas-overlay .btn {
-                font-size: 14px;
-                padding: 10px 24px;
-            }
-
-            .word-display {
-                font-size: 14px;
-                padding: 4px 10px;
-                min-width: 60px;
-                top: 6px;
-            }
-
-            .timer {
-                font-size: 16px;
-                padding: 3px 8px;
-                min-width: 35px;
-                top: 6px;
-                right: 6px;
-            }
-
-            #chatBox {
-                min-height: 60px;
-                max-height: 100px;
-            }
-
-            #playersArea {
-                max-height: 100px;
-            }
-
-            .player-item .name {
-                font-size: 12px;
-            }
-
-            .player-item .score {
-                font-size: 11px;
-                padding: 1px 8px;
-            }
-        }
-
-        @media (min-width: 1400px) {
-            #gameArea {
-                grid-template-columns: 1fr 360px;
-                gap: 24px;
-            }
-
-            .sidebar {
-                gap: 16px;
-            }
-
-            .controls {
-                padding: 16px;
-                gap: 10px;
-            }
-
-            .color-btn {
-                width: 40px;
-                height: 40px;
-            }
-
-            #playersArea {
-                max-height: 220px;
-                padding: 16px;
-            }
-
-            #chatArea {
-                padding: 16px;
-                min-height: 250px;
-            }
-
-            #chatBox {
-                min-height: 140px;
-                max-height: 250px;
-            }
-        }
-
-        /* ===== UTILITIES ===== */
-        .flex-center {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .gap-2 { gap: 8px; }
-        .gap-4 { gap: 16px; }
-
-        .text-muted {
-            color: var(--gray);
-            font-size: 13px;
-        }
-
-        .mt-2 { margin-top: 8px; }
-        .mb-2 { margin-bottom: 8px; }
-
-        /* ===== TOAST NOTIFICATIONS ===== */
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-width: 350px;
-            width: 100%;
-        }
-
-        .toast {
-            background: var(--dark);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-            animation: toastIn 0.4s ease;
-            font-size: 14px;
+        .room-sidebar .players-list .player-item {
             display: flex;
             align-items: center;
             gap: 10px;
-            backdrop-filter: blur(10px);
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        .room-sidebar .players-list .player-item img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .room-sidebar .players-list .player-item .player-name {
+            flex: 1;
+        }
+        .room-sidebar .players-list .player-item .player-score {
+            color: #a78bfa;
+            font-weight: 700;
+        }
+        .room-sidebar .players-list .player-item .host-badge {
+            font-size: 10px;
+            background: var(--warning);
+            color: #1a1a2e;
+            padding: 1px 10px;
+            border-radius: 20px;
+        }
+        .room-sidebar .room-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .room-sidebar .room-actions .btn {
+            width: 100%;
+            justify-content: center;
         }
 
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--danger); }
-        .toast.warning { background: var(--warning); color: var(--dark); }
-
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 360px;
+            width: 100%;
+        }
+        .toast {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 14px 22px;
+            border-radius: 40px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+            animation: toastIn 0.4s ease;
+            font-size: 14px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .toast.success {
+            background: #065f46;
+            color: #a7f3d0;
+        }
+        .toast.error {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+        .toast.warning {
+            background: #78350f;
+            color: #fde68a;
+        }
         @keyframes toastIn {
             from {
                 opacity: 0;
-                transform: translateX(100px);
+                transform: translateX(80px);
             }
             to {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
-
         .toast.out {
             animation: toastOut 0.3s ease forwards;
         }
-
         @keyframes toastOut {
             from {
                 opacity: 1;
@@ -999,903 +546,761 @@
             }
             to {
                 opacity: 0;
-                transform: translateX(100px);
+                transform: translateX(80px);
             }
         }
 
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #1a1a3e;
+            border-radius: var(--radius);
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal h3 {
+            color: #fff;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+        .modal p {
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 20px;
+        }
+        .modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
         }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 8px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-
-        /* ===== LOADING ===== */
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s infinite;
-        }
-
-        @keyframes dots {
-            0% { content: ''; }
-            33% { content: '.'; }
-            66% { content: '..'; }
-            100% { content: '...'; }
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 520px) {
+            .container {
+                padding: 12px;
+            }
+            #loginScreen {
+                padding: 24px;
+                margin: 20px auto;
+            }
+            .avatar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .room-content {
+                grid-template-columns: 1fr;
+            }
+            .word-game .word-display {
+                font-size: 24px;
+                padding: 14px;
+            }
+            .word-game .word-display .letter {
+                font-size: 20px;
+                min-width: 22px;
+            }
+            .modal {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- HEADER -->
-    <header class="header">
-        <div class="logo">
-            <span class="icon">🎨</span>
-            <h1>Draw Battle Pro</h1>
-        </div>
-        <div class="game-stats" id="gameStats">
-            <div class="stat-box">
-                <div class="label">الجولة</div>
-                <div class="value" id="roundNumber">0/5</div>
+    <div class="container">
+        <!-- Header -->
+        <header class="header" id="mainHeader">
+            <h1>🎯 كلمة ذكية</h1>
+            <div class="user-info" id="userInfo" style="display:none;">
+                <span id="userNameDisplay"></span>
+                <img id="userAvatarDisplay" src="" alt="avatar">
             </div>
-            <div class="stat-box">
-                <div class="label">الراسم</div>
-                <div class="value highlight" id="currentDrawer">-</div>
-            </div>
-            <div class="stat-box">
-                <div class="label">اللاعبين</div>
-                <div class="value" id="playerCount">0</div>
-            </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- LOBBY -->
-    <div id="lobby">
-        <h2>🎮 انضم إلى اللعبة</h2>
-        <p>أدخل اسمك ورمز الغرفة للانضمام أو إنشاء غرفة جديدة</p>
-        <div class="input-group">
-            <input type="text" id="username" placeholder="👤 اسمك" maxlength="20">
-            <input type="text" id="roomCode" placeholder="🔑 رمز الغرفة" maxlength="10">
-            <button class="btn btn-primary" id="joinBtn">🚀 دخول</button>
-        </div>
-        <div class="text-muted mt-2">
-            💡 يمكنك إنشاء غرفة جديدة بأي رمز تختاره
-        </div>
-    </div>
-
-    <!-- GAME AREA -->
-    <div id="gameArea" class="hidden">
-        <!-- Canvas -->
-        <div class="canvas-wrapper">
-            <canvas id="paintCanvas"></canvas>
-
-            <!-- Word Display -->
-            <div class="word-display" id="wordDisplay">
-                <span id="currentWord">???</span>
-                <span class="hint" id="wordHint">⏳ انتظر بدء الجولة</span>
-            </div>
-
-            <!-- Timer -->
-            <div class="timer" id="timer">60</div>
-
-            <!-- Game Overlay -->
-            <div class="canvas-overlay hidden" id="gameOverlay">
-                <h2 id="overlayTitle">⏰ انتهى الوقت!</h2>
-                <p id="overlayMessage">الكلمة كانت:</p>
-                <div class="word-reveal" id="revealWord">---</div>
-                <button class="btn btn-primary" id="nextRoundBtn">➜ الجولة التالية</button>
-            </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <!-- Controls -->
-            <div class="controls">
-                <div class="color-group">
-                    <div class="color-btn active" style="background: #000000;" data-color="#000000" title="أسود"></div>
-                    <div class="color-btn" style="background: #FF0000;" data-color="#FF0000" title="أحمر"></div>
-                    <div class="color-btn" style="background: #00CC00;" data-color="#00CC00" title="أخضر"></div>
-                    <div class="color-btn" style="background: #0066FF;" data-color="#0066FF" title="أزرق"></div>
-                    <div class="color-btn" style="background: #FF8C00;" data-color="#FF8C00" title="برتقالي"></div>
-                    <div class="color-btn" style="background: #8B00FF;" data-color="#8B00FF" title="بنفسجي"></div>
-                    <div class="color-btn" style="background: #FF1493;" data-color="#FF1493" title="وردي"></div>
-                    <div class="color-btn" style="background: #8B4513;" data-color="#8B4513" title="بني"></div>
+        <!-- ===== LOGIN SCREEN ===== -->
+        <div class="screen active" id="loginScreen">
+            <h2>👋 مرحباً بك!</h2>
+            <p>أنشئ حسابك للانضمام إلى اللعبة</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>اسم المستخدم</label>
+                    <input type="text" id="loginUsername" placeholder="أدخل اسمك..." maxlength="20" required>
                 </div>
-
-                <div class="divider"></div>
-
-                <div class="brush-size-group">
-                    <input type="range" id="brushSize" min="1" max="20" value="4">
-                    <span class="size-label" id="sizeLabel">4</span>
+                <div class="form-group">
+                    <label>اختر صورتك الشخصية</label>
+                    <div class="avatar-grid" id="avatarGrid">
+                        <!-- Will be populated by JS -->
+                    </div>
                 </div>
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
+                    🚀 دخول
+                </button>
+            </form>
+        </div>
 
-                <div class="divider"></div>
-
-                <div class="action-group">
-                    <button class="btn btn-danger btn-sm" id="clearBtn" title="مسح اللوحة">🗑️</button>
-                    <button class="btn btn-secondary btn-sm" id="undoBtn" title="تراجع">↩️</button>
+        <!-- ===== LOBBY SCREEN ===== -->
+        <div class="screen" id="lobbyScreen">
+            <div class="lobby-header">
+                <h2>🏠 القاعة الرئيسية</h2>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn btn-success" id="createRoomBtn">➕ إنشاء غرفة</button>
+                    <button class="btn btn-outline btn-sm" id="joinRoomBtn">🔑 دخول برمز</button>
                 </div>
             </div>
+            <div class="rooms-grid" id="roomsList">
+                <p style="color:rgba(255,255,255,0.3);text-align:center;grid-column:1/-1;padding:40px 0;">
+                    لا توجد غرف حالياً. اضغط "إنشاء غرفة" للبدء!
+                </p>
+            </div>
+        </div>
 
-            <!-- Players -->
-            <div id="playersArea">
-                <h3>
-                    👥 اللاعبين
-                    <span class="count" id="playerCountLabel">0</span>
-                </h3>
-                <div id="playersList"></div>
+        <!-- ===== ROOM SCREEN ===== -->
+        <div class="screen" id="roomScreen">
+            <div class="room-header">
+                <div>
+                    <div class="room-title" id="roomTitle">غرفة اللعبة</div>
+                    <div class="room-code-display" id="roomCodeDisplay">#000000</div>
+                </div>
+                <button class="btn btn-outline btn-sm" id="leaveRoomBtn">🚪 خروج</button>
             </div>
 
-            <!-- Chat -->
-            <div id="chatArea">
-                <div id="chatBox"></div>
-                <div class="chat-input-group">
-                    <input type="text" id="guessInput" placeholder="✏️ اكتب تخمينك...">
-                    <button class="btn btn-success" id="sendGuessBtn">إرسال</button>
+            <div class="room-content">
+                <!-- Game Area -->
+                <div class="game-area" id="gameArea">
+                    <div class="game-status" id="gameStatus">
+                        <div class="big-icon">🎮</div>
+                        <h3>انتظر بدء الجولة</h3>
+                        <p>المضيف سيبدأ اللعبة قريباً...</p>
+                    </div>
+                    <div id="gameContent" style="display:none;">
+                        <!-- Game content rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="room-sidebar">
+                    <div class="section">
+                        <h4>👥 اللاعبين</h4>
+                        <div class="players-list" id="roomPlayersList"></div>
+                    </div>
+                    <div class="section">
+                        <h4>⚙️ التحكم</h4>
+                        <div class="room-actions" id="roomActions">
+                            <button class="btn btn-primary" id="startGameBtn">▶️ بدء الجولة</button>
+                            <button class="btn btn-danger btn-sm" id="kickPlayerBtn">👢 طرد لاعب</button>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <h4>📊 النتائج</h4>
+                        <div id="resultsDisplay" style="color:rgba(255,255,255,0.6);font-size:14px;">
+                            لم تبدأ الجولات بعد
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
+    <!-- ===== MODAL ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3 id="modalTitle">عنوان</h3>
+            <p id="modalDesc">وصف</p>
+            <div id="modalBody"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline btn-sm" id="modalCancelBtn">إلغاء</button>
+                <button class="btn btn-primary btn-sm" id="modalConfirmBtn">تأكيد</button>
+            </div>
+        </div>
+    </div>
 
-<script type="importmap">
-{
-    "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-        "firebase/database": "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"
-    }
-}
-</script>
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container" id="toastContainer"></div>
 
-<script type="module">
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, push, onValue, set, onChildAdded, update, remove, onDisconnect } from "firebase/database";
+    <!-- ===== FIREBASE ===== -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"
+            }
+        }
+    </script>
 
-// ===== FIREBASE CONFIG =====
-const firebaseConfig = {
-    apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
-    authDomain: "sdfq-63ee0.firebaseapp.com",
-    databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com",
-    projectId: "sdfq-63ee0",
-    storageBucket: "sdfq-63ee0.firebasestorage.app",
-    messagingSenderId: "210107075463",
-    appId: "1:210107075463:web:469133f4305ecd61d42122"
-};
+    <script type="module">
+        import { initializeApp } from "firebase/app";
+        import { getDatabase, ref, push, onValue, set, update, remove, onDisconnect, onChildAdded } from "firebase/database";
 
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-
-// ===== DOM ELEMENTS =====
-const lobby = document.getElementById('lobby');
-const gameArea = document.getElementById('gameArea');
-const joinBtn = document.getElementById('joinBtn');
-const usernameInput = document.getElementById('username');
-const roomInput = document.getElementById('roomCode');
-const canvas = document.getElementById('paintCanvas');
-const ctx = canvas.getContext('2d');
-const clearBtn = document.getElementById('clearBtn');
-const undoBtn = document.getElementById('undoBtn');
-const guessInput = document.getElementById('guessInput');
-const sendGuessBtn = document.getElementById('sendGuessBtn');
-const chatBox = document.getElementById('chatBox');
-const playersList = document.getElementById('playersList');
-const currentWord = document.getElementById('currentWord');
-const wordHint = document.getElementById('wordHint');
-const timerDisplay = document.getElementById('timer');
-const roundNumber = document.getElementById('roundNumber');
-const currentDrawer = document.getElementById('currentDrawer');
-const playerCount = document.getElementById('playerCount');
-const playerCountLabel = document.getElementById('playerCountLabel');
-const gameOverlay = document.getElementById('gameOverlay');
-const overlayTitle = document.getElementById('overlayTitle');
-const overlayMessage = document.getElementById('overlayMessage');
-const revealWord = document.getElementById('revealWord');
-const nextRoundBtn = document.getElementById('nextRoundBtn');
-const brushSize = document.getElementById('brushSize');
-const sizeLabel = document.getElementById('sizeLabel');
-const toastContainer = document.getElementById('toastContainer');
-
-// ===== GAME STATE =====
-const state = {
-    myName: '',
-    roomCode: '',
-    isDrawing: false,
-    currentColor: '#000000',
-    brushSize: 4,
-    isDrawer: false,
-    isPlaying: false,
-    round: 0,
-    maxRounds: 5,
-    drawer: '',
-    word: '',
-    timeLeft: 60,
-    players: {},
-    scores: {},
-    drawingHistory: [],
-    timerInterval: null,
-    isGameOver: false,
-    lastDrawTime: 0,
-    drawBuffer: [],
-    isProcessing: false
-};
-
-// ===== WORD LIST =====
-const WORDS = {
-    animals: ['قطة', 'كلب', 'أسد', 'فيل', 'زرافة', 'نمر', 'أرنب', 'سلحفاة', 'دلفين', 'نسر', 'ببغاء', 'فراشة', 'سمكة', 'حوت', 'قرد'],
-    objects: ['سيارة', 'طائرة', 'قلم', 'كتاب', 'هاتف', 'حاسوب', 'ساعة', 'مصباح', 'كرسي', 'طاولة', 'مظلة', 'نظارة', 'حقيبة', 'مرآة', 'مفتاح'],
-    food: ['بيتزا', 'برغر', 'معكرونة', 'شوكولاتة', 'آيس كريم', 'فطيرة', 'كعكة', 'سوشي', 'تفاح', 'موز', 'عنب', 'بطيخ', 'دجاج', 'سمك', 'خبز'],
-    places: ['مدرسة', 'مستشفى', 'مطعم', 'حديقة', 'شاطئ', 'جبل', 'غابة', 'مدينة', 'قرية', 'جامعة', 'مسجد', 'كنيسة', 'سوق', 'مطار', 'ميناء'],
-    actions: ['رقص', 'غناء', 'قراءة', 'كتابة', 'سباحة', 'جري', 'قفز', 'رسم', 'طبخ', 'نوم', 'تسلق', 'غوص', 'تصوير', 'لعب', 'عمل']
-};
-
-function getRandomWord() {
-    const categories = Object.values(WORDS);
-    const category = categories[Math.floor(Math.random() * categories.length)];
-    return category[Math.floor(Math.random() * category.length)];
-}
-
-// ===== TOAST NOTIFICATIONS =====
-function showToast(message, type = 'info', duration = 3000) {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    toastContainer.appendChild(toast);
-
-    setTimeout(() => {
-        toast.classList.add('out');
-        setTimeout(() => toast.remove(), 300);
-    }, duration);
-}
-
-// ===== CANVAS RESIZE =====
-function resizeCanvas() {
-    const container = canvas.parentElement;
-    const rect = container.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-
-    ctx.scale(dpr, dpr);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.lineWidth = state.brushSize;
-
-    // Redraw if there's history
-    if (state.drawingHistory.length > 0) {
-        redrawCanvas();
-    }
-}
-
-// ===== CANVAS DRAWING =====
-function getCanvasPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    let clientX, clientY;
-
-    if (e.touches) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-        e.preventDefault();
-    } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
-    }
-
-    return {
-        x: (clientX - rect.left) / rect.width,
-        y: (clientY - rect.top) / rect.height
-    };
-}
-
-function startDrawing(e) {
-    if (!state.isPlaying || !state.isDrawer || state.isGameOver) return;
-    e.preventDefault();
-
-    state.isDrawing = true;
-    const pos = getCanvasPos(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x * canvas.width / (window.devicePixelRatio || 1),
-               pos.y * canvas.height / (window.devicePixelRatio || 1));
-}
-
-function stopDrawing(e) {
-    if (!state.isDrawing) return;
-    state.isDrawing = false;
-    ctx.beginPath();
-
-    // Send stop action to database
-    push(ref(database, `rooms/${state.roomCode}/drawing`), {
-        action: 'stop',
-        timestamp: Date.now()
-    });
-}
-
-function draw(e) {
-    if (!state.isDrawing || !state.isPlaying || !state.isDrawer || state.isGameOver) return;
-    e.preventDefault();
-
-    const pos = getCanvasPos(e);
-    const x = pos.x * canvas.width / (window.devicePixelRatio || 1);
-    const y = pos.y * canvas.height / (window.devicePixelRatio || 1);
-
-    ctx.strokeStyle = state.currentColor;
-    ctx.lineWidth = state.brushSize;
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-
-    // Throttle database updates
-    const now = Date.now();
-    if (now - state.lastDrawTime > 30) {
-        state.lastDrawTime = now;
-        const point = {
-            x: pos.x,
-            y: pos.y,
-            color: state.currentColor,
-            size: state.brushSize,
-            action: 'draw',
-            timestamp: now
+        // ===== FIREBASE CONFIG =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
+            authDomain: "sdfq-63ee0.firebaseapp.com",
+            databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com",
+            projectId: "sdfq-63ee0",
+            storageBucket: "sdfq-63ee0.firebasestorage.app",
+            messagingSenderId: "210107075463",
+            appId: "1:210107075463:web:469133f4305ecd61d42122"
         };
-        state.drawingHistory.push(point);
-        push(ref(database, `rooms/${state.roomCode}/drawing`), point);
-    }
-}
 
-// Canvas Events
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', stopDrawing);
-canvas.addEventListener('mouseleave', stopDrawing);
-canvas.addEventListener('touchstart', startDrawing, { passive: false });
-canvas.addEventListener('touchmove', draw, { passive: false });
-canvas.addEventListener('touchend', stopDrawing, { passive: false });
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-// ===== REDRAW =====
-function redrawCanvas() {
-    const dpr = window.devicePixelRatio || 1;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
+        // ===== DOM REFS =====
+        const $ = id => document.getElementById(id);
+        const loginScreen = $('loginScreen');
+        const lobbyScreen = $('lobbyScreen');
+        const roomScreen = $('roomScreen');
+        const loginForm = $('loginForm');
+        const loginUsername = $('loginUsername');
+        const avatarGrid = $('avatarGrid');
+        const userInfo = $('userInfo');
+        const userNameDisplay = $('userNameDisplay');
+        const userAvatarDisplay = $('userAvatarDisplay');
+        const roomsList = $('roomsList');
+        const createRoomBtn = $('createRoomBtn');
+        const joinRoomBtn = $('joinRoomBtn');
+        const roomTitle = $('roomTitle');
+        const roomCodeDisplay = $('roomCodeDisplay');
+        const roomPlayersList = $('roomPlayersList');
+        const gameArea = $('gameArea');
+        const gameStatus = $('gameStatus');
+        const gameContent = $('gameContent');
+        const startGameBtn = $('startGameBtn');
+        const kickPlayerBtn = $('kickPlayerBtn');
+        const leaveRoomBtn = $('leaveRoomBtn');
+        const resultsDisplay = $('resultsDisplay');
+        const modalOverlay = $('modalOverlay');
+        const modalTitle = $('modalTitle');
+        const modalDesc = $('modalDesc');
+        const modalBody = $('modalBody');
+        const modalCancelBtn = $('modalCancelBtn');
+        const modalConfirmBtn = $('modalConfirmBtn');
+        const toastContainer = $('toastContainer');
 
-    state.drawingHistory.forEach(point => {
-        if (point.action === 'stop') {
-            ctx.beginPath();
-        } else if (point.action === 'draw') {
-            const x = point.x * canvas.width / dpr;
-            const y = point.y * canvas.height / dpr;
-            ctx.strokeStyle = point.color || '#000000';
-            ctx.lineWidth = point.size || 4;
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-        }
-    });
-}
+        // ===== AVATARS =====
+        const AVATARS = [
+            '👨', '👩', '🧑', '👦', '👧', '🧒', '👨‍🦰', '👩‍🦰',
+            '👨‍🦳', '👩‍🦳', '👨‍🦲', '👩‍🦲', '🧔', '👳‍♂️', '👳‍♀️', '🧕',
+            '🦸‍♂️', '🦸‍♀️', '🧙‍♂️', '🧙‍♀️', '🧝‍♂️', '🧝‍♀️', '🧛‍♂️', '🧛‍♀️'
+        ];
 
-// ===== CONTROLS =====
-// Color buttons
-document.querySelectorAll('.color-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.currentColor = btn.dataset.color;
-    });
-});
-
-// Brush size
-brushSize.addEventListener('input', (e) => {
-    state.brushSize = parseInt(e.target.value);
-    sizeLabel.textContent = state.brushSize;
-    ctx.lineWidth = state.brushSize;
-});
-
-// Clear
-clearBtn.addEventListener('click', () => {
-    if (!state.isDrawer) {
-        showToast('❌ ليس دورك للرسم!', 'warning');
-        return;
-    }
-    if (confirm('هل أنت متأكد من مسح اللوحة؟')) {
-        set(ref(database, `rooms/${state.roomCode}/drawing`), null);
-        state.drawingHistory = [];
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        showToast('🗑️ تم مسح اللوحة', 'warning');
-    }
-});
-
-// Undo
-undoBtn.addEventListener('click', () => {
-    if (!state.isDrawer) {
-        showToast('❌ ليس دورك للرسم!', 'warning');
-        return;
-    }
-    if (state.drawingHistory.length === 0) {
-        showToast('لا يوجد شيء للتراجع عنه', 'warning');
-        return;
-    }
-
-    // Remove last 20 points
-    const removeCount = Math.min(20, state.drawingHistory.length);
-    const removed = state.drawingHistory.splice(-removeCount);
-
-    // Remove from Firebase
-    const drawingRef = ref(database, `rooms/${state.roomCode}/drawing`);
-    onValue(drawingRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            const keys = Object.keys(data);
-            const toRemove = keys.slice(-removeCount);
-            toRemove.forEach(key => {
-                remove(ref(database, `rooms/${state.roomCode}/drawing/${key}`));
-            });
-        }
-    }, { onlyOnce: true });
-
-    redrawCanvas();
-    showToast(`↩️ تم التراجع عن ${removeCount} حركة`, 'info');
-});
-
-// ===== GAME FUNCTIONS =====
-function startGame() {
-    const playerKeys = Object.keys(state.players);
-    if (playerKeys.length < 2) {
-        showToast('❌ يلزم وجود لاعبين على الأقل للبدء!', 'error');
-        return;
-    }
-
-    // Reset scores
-    playerKeys.forEach(player => {
-        update(ref(database, `rooms/${state.roomCode}/players/${player}`), { score: 0 });
-    });
-
-    state.round = 0;
-    startRound(playerKeys);
-}
-
-function startRound(players) {
-    const drawerIndex = state.round % players.length;
-    const drawer = players[drawerIndex];
-    const word = getRandomWord();
-
-    state.round++;
-    state.drawer = drawer;
-    state.word = word;
-    state.isPlaying = true;
-    state.isGameOver = false;
-    state.timeLeft = 60;
-    state.drawingHistory = [];
-    state.isDrawer = (drawer === state.myName);
-
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    set(ref(database, `rooms/${state.roomCode}/drawing`), null);
-
-    // Update game state in Firebase
-    update(ref(database, `rooms/${state.roomCode}/game`), {
-        round: state.round,
-        maxRounds: state.maxRounds,
-        drawer: drawer,
-        word: word,
-        isPlaying: true,
-        timeLeft: 60,
-        startTime: Date.now()
-    });
-
-    // Hide overlay
-    gameOverlay.classList.add('hidden');
-
-    // Start timer
-    startTimer();
-
-    // Update UI
-    updateUI();
-
-    // Show word only to drawer
-    if (state.isDrawer) {
-        currentWord.textContent = word;
-        wordHint.textContent = '🎯 ارسم الكلمة!';
-        showToast(`🎨 دورك لرسم: "${word}"`, 'success', 5000);
-    } else {
-        currentWord.textContent = '???';
-        wordHint.textContent = '🔍 حاول تخمين الكلمة!';
-        showToast(`🎯 ${drawer} يرسم الآن! خمّن الكلمة`, 'info', 3000);
-    }
-
-    // Add system message
-    addChatMessage('🎮', `بدأت الجولة ${state.round}! ${drawer} يرسم الآن...`, 'system');
-}
-
-function startTimer() {
-    if (state.timerInterval) clearInterval(state.timerInterval);
-
-    state.timerInterval = setInterval(() => {
-        state.timeLeft--;
-        timerDisplay.textContent = state.timeLeft;
-
-        if (state.timeLeft <= 10) {
-            timerDisplay.classList.add('warning');
-        }
-
-        update(ref(database, `rooms/${state.roomCode}/game`), { timeLeft: state.timeLeft });
-
-        if (state.timeLeft <= 0) {
-            clearInterval(state.timerInterval);
-            endRound(false);
-        }
-    }, 1000);
-}
-
-function endRound(wasGuessed = false) {
-    state.isPlaying = false;
-    state.isGameOver = true;
-    clearInterval(state.timerInterval);
-    timerDisplay.classList.remove('warning');
-
-    // Show overlay
-    gameOverlay.classList.remove('hidden');
-    revealWord.textContent = state.word;
-
-    if (wasGuessed) {
-        overlayTitle.textContent = '🎉 تم التخمين!';
-        overlayMessage.textContent = 'أحسنت! الكلمة كانت:';
-    } else {
-        overlayTitle.textContent = '⏰ انتهى الوقت!';
-        overlayMessage.textContent = 'الكلمة كانت:';
-    }
-
-    update(ref(database, `rooms/${state.roomCode}/game`), {
-        isPlaying: false,
-        isGameOver: true
-    });
-
-    // Check if game finished
-    if (state.round >= state.maxRounds) {
-        nextRoundBtn.textContent = '🏆 النتائج النهائية';
-        overlayTitle.textContent = '🏆 انتهت اللعبة!';
-        showFinalResults();
-    } else {
-        nextRoundBtn.textContent = `➜ الجولة ${state.round + 1}`;
-    }
-}
-
-function showFinalResults() {
-    const players = Object.values(state.players);
-    players.sort((a, b) => (b.score || 0) - (a.score || 0));
-
-    let results = '';
-    players.forEach((p, i) => {
-        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
-        results += `${medal} ${p.name}: ${p.score || 0} نقطة\n`;
-    });
-
-    overlayMessage.textContent = results;
-    revealWord.textContent = '🎮 انتهت اللعبة!';
-    showToast('🏆 انتهت اللعبة! شاهد النتائج', 'success', 5000);
-}
-
-// ===== NEXT ROUND =====
-nextRoundBtn.addEventListener('click', () => {
-    if (state.round >= state.maxRounds) {
-        // Reset game
-        state.round = 0;
-        state.isGameOver = false;
-        update(ref(database, `rooms/${state.roomCode}/game`), {
-            round: 0,
+        // ===== STATE =====
+        const state = {
+            uid: '',
+            name: '',
+            avatar: '👨',
+            roomId: '',
+            isHost: false,
             isPlaying: false,
-            isGameOver: false
-        });
-        lobby.classList.remove('hidden');
-        gameArea.classList.add('hidden');
-        showToast('🔄 تم إعادة تعيين اللعبة', 'info');
-        return;
-    }
+            currentGame: null, // 'word' or 'quiz'
+            players: {},
+            gameData: {},
+            myScore: 0
+        };
 
-    const players = Object.keys(state.players);
-    if (players.length < 2) {
-        showToast('❌ لا يوجد لاعبين كافيين!', 'error');
-        return;
-    }
-    startRound(players);
-});
-
-// ===== GUESS =====
-function sendGuess() {
-    const text = guessInput.value.trim();
-    if (!text || !state.isPlaying || state.isDrawer || state.isGameOver) {
-        if (!state.isPlaying) showToast('⏳ انتظر بدء الجولة!', 'warning');
-        if (state.isDrawer) showToast('❌ أنت الراسم! لا يمكنك التخمين', 'warning');
-        return;
-    }
-
-    // Check if guess is correct
-    if (text === state.word) {
-        const points = Math.max(5, Math.ceil(state.timeLeft / 3) + 5);
-        const playerRef = ref(database, `rooms/${state.roomCode}/players/${state.myName}`);
-        const currentScore = state.players[state.myName]?.score || 0;
-        update(playerRef, { score: currentScore + points });
-
-        addChatMessage(state.myName, `🎉 تخمين صحيح! +${points} نقطة`, 'correct');
-        showToast(`🎉 ${points} نقطة! أحسنت التخمين!`, 'success', 4000);
-
-        // End round early
-        clearInterval(state.timerInterval);
-        endRound(true);
-    } else {
-        push(ref(database, `rooms/${state.roomCode}/chat`), {
-            sender: state.myName,
-            message: text,
-            type: 'guess',
-            timestamp: Date.now()
-        });
-    }
-
-    guessInput.value = "";
-}
-
-sendGuessBtn.addEventListener('click', sendGuess);
-guessInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendGuess();
-});
-
-// ===== CHAT =====
-function addChatMessage(sender, message, type = 'normal') {
-    const msgElement = document.createElement('div');
-    msgElement.className = `chat-message ${type}`;
-
-    if (type === 'system') {
-        msgElement.innerHTML = `<span style="color: #718096;">${message}</span>`;
-    } else if (type === 'correct') {
-        msgElement.innerHTML = `
-            <span class="sender">${sender}</span> 
-            ${message}
-            <span class="points-badge">🎉</span>
-        `;
-    } else {
-        const isGuess = message.startsWith('تخمين:');
-        msgElement.innerHTML = `
-            <span class="sender">${sender}:</span> 
-            ${isGuess ? '🔍 ' : ''}${message}
-        `;
-    }
-
-    chatBox.appendChild(msgElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Limit chat messages
-    while (chatBox.children.length > 100) {
-        chatBox.removeChild(chatBox.firstChild);
-    }
-}
-
-// ===== UPDATE UI =====
-function updateUI() {
-    roundNumber.textContent = `${state.round}/${state.maxRounds}`;
-    currentDrawer.textContent = state.drawer || '-';
-    timerDisplay.textContent = state.timeLeft || 60;
-    playerCount.textContent = Object.keys(state.players).length;
-    playerCountLabel.textContent = Object.keys(state.players).length;
-}
-
-function updatePlayersList() {
-    playersList.innerHTML = '';
-    const players = Object.values(state.players);
-    players.sort((a, b) => (b.score || 0) - (a.score || 0));
-
-    players.forEach(player => {
-        const div = document.createElement('div');
-        div.className = 'player-item';
-        const isCurrentDrawer = player.name === state.drawer && state.isPlaying;
-
-        let badge = '';
-        if (isCurrentDrawer) badge = '<span class="badge">🎨 يرسم</span>';
-        if (player.name === state.myName) badge += ' <span class="badge" style="background:#2ECC71;">أنت</span>';
-
-        div.innerHTML = `
-            <div class="name">
-                ${player.name}
-                ${badge}
-            </div>
-            <span class="score">${player.score || 0}</span>
-        `;
-        playersList.appendChild(div);
-    });
-}
-
-// ===== FIREBASE LISTENERS =====
-function listenToRoom() {
-    const gameRef = ref(database, `rooms/${state.roomCode}/game`);
-    onValue(gameRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            state.round = data.round || 0;
-            state.maxRounds = data.maxRounds || 5;
-            state.drawer = data.drawer || '';
-            state.word = data.word || '';
-            state.isPlaying = data.isPlaying || false;
-            state.isGameOver = data.isGameOver || false;
-            state.timeLeft = data.timeLeft || 60;
-
-            if (data.isPlaying) {
-                state.isDrawer = (data.drawer === state.myName);
-                if (state.isDrawer) {
-                    currentWord.textContent = state.word;
-                    wordHint.textContent = '🎯 ارسم الكلمة!';
-                } else {
-                    currentWord.textContent = '???';
-                    wordHint.textContent = '🔍 حاول تخمين الكلمة!';
-                }
-                timerDisplay.textContent = data.timeLeft || 60;
-            }
-
-            updateUI();
+        // ===== TOAST =====
+        function toast(msg, type = 'info', duration = 3200) {
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.textContent = msg;
+            toastContainer.appendChild(el);
+            setTimeout(() => {
+                el.classList.add('out');
+                setTimeout(() => el.remove(), 300);
+            }, duration);
         }
-    });
-}
 
-function listenToPlayers() {
-    const playersRef = ref(database, `rooms/${state.roomCode}/players`);
-    onValue(playersRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            state.players = data;
-            updatePlayersList();
-            updateUI();
-
-            // Auto start if 2+ players and game not started
-            const playerCount = Object.keys(data).length;
-            if (playerCount >= 2 && !state.isPlaying && state.round === 0 && !state.isGameOver) {
-                setTimeout(startGame, 2000);
-            }
-        }
-    });
-}
-
-function listenToChat() {
-    const chatRef = ref(database, `rooms/${state.roomCode}/chat`);
-    onChildAdded(chatRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            addChatMessage(data.sender, data.message, data.type || 'normal');
-        }
-    });
-}
-
-function listenToDrawing() {
-    const drawingRef = ref(database, `rooms/${state.roomCode}/drawing`);
-    onValue(drawingRef, (snapshot) => {
-        const data = snapshot.val();
-        if (!data) return;
-
-        // Only redraw if not the drawer or if game is not playing
-        if (!state.isDrawer || !state.isPlaying) {
-            const dpr = window.devicePixelRatio || 1;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
-            state.drawingHistory = [];
-
-            Object.values(data).forEach(point => {
-                if (point.action === 'stop') {
-                    ctx.beginPath();
-                } else if (point.action === 'draw') {
-                    const x = point.x * canvas.width / dpr;
-                    const y = point.y * canvas.height / dpr;
-                    ctx.strokeStyle = point.color || '#000000';
-                    ctx.lineWidth = point.size || 4;
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(x, y);
-                    state.drawingHistory.push(point);
-                }
+        // ===== AVATAR GRID =====
+        function renderAvatars() {
+            avatarGrid.innerHTML = '';
+            AVATARS.forEach((emoji, i) => {
+                const div = document.createElement('div');
+                div.className = 'avatar-option' + (i === 0 ? ' selected' : '');
+                div.textContent = emoji;
+                div.style.fontSize = '32px';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'center';
+                div.dataset.avatar = emoji;
+                div.addEventListener('click', () => {
+                    document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                });
+                avatarGrid.appendChild(div);
             });
         }
-    });
-}
+        renderAvatars();
 
-// ===== JOIN GAME =====
-joinBtn.addEventListener('click', () => {
-    state.myName = usernameInput.value.trim();
-    state.roomCode = roomInput.value.trim();
+        // ===== SCREEN MANAGEMENT =====
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            $(screenId).classList.add('active');
+        }
 
-    if (!state.myName || !state.roomCode) {
-        showToast('❌ الرجاء كتابة اسمك ورمز الغرفة!', 'error');
-        return;
-    }
+        // ===== LOGIN =====
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = loginUsername.value.trim();
+            if (!name) { toast('❌ أدخل اسمك!', 'error'); return; }
+            if (name.length < 2) { toast('❌ الاسم قصير جداً!', 'error'); return; }
 
-    if (state.myName.length < 2) {
-        showToast('❌ الاسم يجب أن يكون حرفين على الأقل', 'error');
-        return;
-    }
+            const selected = document.querySelector('.avatar-option.selected');
+            const avatar = selected ? selected.dataset.avatar : '👨';
 
-    lobby.classList.add('hidden');
-    gameArea.classList.remove('hidden');
-    setTimeout(resizeCanvas, 100);
+            state.name = name;
+            state.avatar = avatar;
+            state.uid = Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
 
-    // Add player to room
-    const playerRef = ref(database, `rooms/${state.roomCode}/players/${state.myName}`);
-    set(playerRef, {
-        name: state.myName,
-        score: 0,
-        joined: Date.now()
-    });
+            // Save user data locally
+            localStorage.setItem('smartword_user', JSON.stringify({
+                uid: state.uid,
+                name: state.name,
+                avatar: state.avatar
+            }));
 
-    // Remove player on disconnect
-    onDisconnect(playerRef).remove();
+            // Update UI
+            userNameDisplay.textContent = state.name;
+            userAvatarDisplay.textContent = state.avatar;
+            userAvatarDisplay.style.fontSize = '24px';
+            userAvatarDisplay.style.display = 'flex';
+            userAvatarDisplay.style.alignItems = 'center';
+            userAvatarDisplay.style.justifyContent = 'center';
+            userAvatarDisplay.style.background = 'rgba(255,255,255,0.05)';
+            userInfo.style.display = 'flex';
 
-    // Initialize game if not exists
-    const gameRef = ref(database, `rooms/${state.roomCode}/game`);
-    onValue(gameRef, (snapshot) => {
-        const data = snapshot.val();
-        if (!data) {
-            set(gameRef, {
-                round: 0,
-                maxRounds: 5,
+            showScreen('lobbyScreen');
+            toast(`✅ مرحباً ${state.name}!`, 'success');
+            listenRooms();
+        });
+
+        // ===== ROOMS =====
+        function listenRooms() {
+            const roomsRef = ref(db, 'rooms');
+            onValue(roomsRef, (snap) => {
+                const data = snap.val();
+                roomsList.innerHTML = '';
+                if (!data) {
+                    roomsList.innerHTML =
+                        `<p style="color:rgba(255,255,255,0.3);text-align:center;grid-column:1/-1;padding:40px 0;">
+                        لا توجد غرف حالياً. اضغط "إنشاء غرفة" للبدء!
+                    </p>`;
+                    return;
+                }
+                const entries = Object.entries(data);
+                entries.forEach(([roomId, roomData]) => {
+                    const card = document.createElement('div');
+                    card.className = 'room-card';
+                    const playersCount = roomData.players ? Object.keys(roomData.players).length : 0;
+                    card.innerHTML = `
+                        <h3>${roomData.name || 'غرفة'}</h3>
+                        <p>المضيف: ${roomData.hostName || 'غير معروف'}</p>
+                        <div class="room-code">#${roomId}</div>
+                        <div class="players-count">👥 ${playersCount} لاعب</div>
+                    `;
+                    card.addEventListener('click', () => joinRoom(roomId));
+                    roomsList.appendChild(card);
+                });
+            });
+        }
+
+        // ===== CREATE ROOM =====
+        createRoomBtn.addEventListener('click', () => {
+            const roomId = Math.random().toString(36).substr(2, 6).toUpperCase();
+            const roomRef = ref(db, `rooms/${roomId}`);
+            set(roomRef, {
+                name: `غرفة ${state.name}`,
+                host: state.uid,
+                hostName: state.name,
+                createdAt: Date.now(),
+                gameType: 'word', // 'word' or 'quiz'
                 isPlaying: false,
-                isGameOver: false
+                round: 0,
+                maxRounds: 3
+            }).then(() => {
+                joinRoom(roomId);
+                toast(`✅ تم إنشاء الغرفة #${roomId}`, 'success');
+            });
+        });
+
+        // ===== JOIN ROOM =====
+        joinRoomBtn.addEventListener('click', () => {
+            modalTitle.textContent = '🔑 دخول الغرفة';
+            modalDesc.textContent = 'أدخل رمز الغرفة للانضمام';
+            modalBody.innerHTML = `
+                <input type="text" id="joinRoomInput" placeholder="مثال: ABC123" 
+                       style="width:100%;padding:12px;border:2px solid rgba(255,255,255,0.08);
+                       border-radius:12px;background:rgba(255,255,255,0.06);color:#fff;font-size:16px;">
+            `;
+            modalConfirmBtn.onclick = () => {
+                const code = document.getElementById('joinRoomInput').value.trim().toUpperCase();
+                if (!code) { toast('❌ أدخل رمز الغرفة!', 'error'); return; }
+                modalOverlay.classList.remove('active');
+                joinRoom(code);
+            };
+            modalCancelBtn.onclick = () => modalOverlay.classList.remove('active');
+            modalOverlay.classList.add('active');
+        });
+
+        function joinRoom(roomId) {
+            if (!roomId) return;
+            state.roomId = roomId;
+
+            // Add player to room
+            const playerRef = ref(db, `rooms/${roomId}/players/${state.uid}`);
+            set(playerRef, {
+                name: state.name,
+                avatar: state.avatar,
+                score: 0,
+                joinedAt: Date.now()
+            });
+            onDisconnect(playerRef).remove();
+
+            // Listen to room data
+            listenRoom(roomId);
+            showScreen('roomScreen');
+            roomTitle.textContent = `غرفة #${roomId}`;
+            roomCodeDisplay.textContent = `#${roomId}`;
+        }
+
+        // ===== LISTEN ROOM =====
+        function listenRoom(roomId) {
+            const roomRef = ref(db, `rooms/${roomId}`);
+
+            onValue(roomRef, (snap) => {
+                const data = snap.val();
+                if (!data) {
+                    toast('❌ الغرفة غير موجودة!', 'error');
+                    showScreen('lobbyScreen');
+                    return;
+                }
+
+                state.isHost = (data.host === state.uid);
+                state.isPlaying = data.isPlaying || false;
+                state.currentGame = data.gameType || 'word';
+
+                // Update players
+                if (data.players) {
+                    state.players = data.players;
+                    renderPlayers(data.players);
+                    updateRoomActions();
+                }
+
+                // Update game status
+                if (data.isPlaying) {
+                    gameStatus.style.display = 'none';
+                    gameContent.style.display = 'block';
+                    renderGame(data);
+                } else {
+                    gameStatus.style.display = 'block';
+                    gameContent.style.display = 'none';
+                    document.querySelector('#gameStatus h3').textContent = '⏳ انتظر بدء الجولة';
+                    document.querySelector('#gameStatus p').textContent = 'المضيف سيبدأ اللعبة قريباً...';
+                }
+
+                // Update results
+                if (data.players) {
+                    const scores = Object.values(data.players).sort((a, b) => (b.score || 0) - (a.score || 0));
+                    resultsDisplay.innerHTML = scores.map(p =>
+                        `${p.avatar} ${p.name}: ${p.score || 0} نقطة`
+                    ).join('<br>');
+                }
             });
         }
-    }, { onlyOnce: true });
 
-    listenToRoom();
-    listenToPlayers();
-    listenToChat();
-    listenToDrawing();
-
-    showToast(`✅ مرحباً ${state.myName}! انتظر بدء اللعبة`, 'success', 3000);
-});
-
-// ===== WINDOW EVENTS =====
-window.addEventListener('resize', resizeCanvas);
-window.addEventListener('orientationchange', () => {
-    setTimeout(resizeCanvas, 300);
-});
-
-// ===== KEYBOARD SHORTCUTS =====
-document.addEventListener('keydown', (e) => {
-    // Ctrl+Z for undo
-    if (e.ctrlKey && e.key === 'z') {
-        e.preventDefault();
-        undoBtn.click();
-    }
-    // Escape to close overlay
-    if (e.key === 'Escape') {
-        if (!gameOverlay.classList.contains('hidden')) {
-            // Don't close if game is over
-            if (state.isGameOver && state.round >= state.maxRounds) return;
-            gameOverlay.classList.add('hidden');
+        // ===== RENDER PLAYERS =====
+        function renderPlayers(players) {
+            roomPlayersList.innerHTML = '';
+            const entries = Object.entries(players);
+            entries.forEach(([uid, player]) => {
+                const div = document.createElement('div');
+                div.className = 'player-item';
+                const isHost = uid === state.uid && state.isHost;
+                div.innerHTML = `
+                    <span style="font-size:20px;">${player.avatar || '👤'}</span>
+                    <span class="player-name">${player.name} ${isHost ? '<span class="host-badge">👑 مضيف</span>' : ''}</span>
+                    <span class="player-score">${player.score || 0}</span>
+                `;
+                if (state.isHost && uid !== state.uid) {
+                    div.style.cursor = 'pointer';
+                    div.addEventListener('dblclick', () => {
+                        if (confirm(`طرد ${player.name} من الغرفة؟`)) {
+                            remove(ref(db, `rooms/${state.roomId}/players/${uid}`));
+                            toast(`👢 تم طرد ${player.name}`, 'warning');
+                        }
+                    });
+                }
+                roomPlayersList.appendChild(div);
+            });
         }
-    }
-});
 
-// ===== INIT =====
-resizeCanvas();
-console.log('🎨 Draw Battle Pro loaded successfully!');
-console.log('💡 Enter your name and room code to start');
+        // ===== UPDATE ROOM ACTIONS =====
+        function updateRoomActions() {
+            if (state.isHost) {
+                startGameBtn.style.display = 'block';
+                kickPlayerBtn.style.display = 'block';
+            } else {
+                startGameBtn.style.display = 'none';
+                kickPlayerBtn.style.display = 'none';
+            }
+        }
 
-// Prevent default touch behaviors
-document.addEventListener('touchmove', (e) => {
-    if (e.target.closest('.canvas-wrapper')) {
-        e.preventDefault();
-    }
-}, { passive: false });
-</script>
+        // ===== START GAME =====
+        startGameBtn.addEventListener('click', () => {
+            if (!state.isHost) { toast('❌ فقط المضيف يمكنه بدء اللعبة!', 'error'); return; }
+            const players = Object.keys(state.players);
+            if (players.length < 2) {
+                toast('❌ يحتاج على الأقل 2 لاعبين!', 'error');
+                return;
+            }
+            startGame();
+        });
+
+        function startGame() {
+            const roomRef = ref(db, `rooms/${state.roomId}`);
+            update(roomRef, {
+                isPlaying: true,
+                round: 0,
+                maxRounds: 3,
+                gameType: state.currentGame || 'word',
+                gameData: {
+                    word: getRandomWord(),
+                    revealed: [],
+                    guesses: [],
+                    round: 1,
+                    turn: 0
+                }
+            });
+            toast('🎮 بدأت الجولة!', 'success');
+        }
+
+        // ===== WORD GAME =====
+        const WORDS = [
+            'قط', 'كلب', 'أسد', 'فيل', 'زرافة', 'نمر', 'أرنب', 'سلحفاة', 'دلفين', 'نسر',
+            'سيارة', 'طائرة', 'قلم', 'كتاب', 'هاتف', 'حاسوب', 'ساعة', 'مصباح', 'كرسي', 'طاولة',
+            'بيتزا', 'برغر', 'معكرونة', 'شوكولاتة', 'آيس كريم', 'فطيرة', 'كعكة', 'سوشي', 'تفاح', 'موز',
+            'مدرسة', 'مستشفى', 'مطعم', 'حديقة', 'شاطئ', 'جبل', 'غابة', 'مدينة', 'قرية', 'جامعة',
+            'رقص', 'غناء', 'قراءة', 'كتابة', 'سباحة', 'جري', 'قفز', 'رسم', 'طبخ', 'نوم'
+        ];
+
+        function getRandomWord() {
+            return WORDS[Math.floor(Math.random() * WORDS.length)];
+        }
+
+        function renderGame(data) {
+            const gameData = data.gameData || {};
+            const word = gameData.word || '???';
+            const revealed = gameData.revealed || [];
+            const guesses = gameData.guesses || [];
+            const round = gameData.round || 1;
+            const maxRounds = data.maxRounds || 3;
+
+            // Check if game is over
+            if (round > maxRounds) {
+                gameStatus.style.display = 'block';
+                gameContent.style.display = 'none';
+                document.querySelector('#gameStatus h3').textContent = '🏆 انتهت اللعبة!';
+                document.querySelector('#gameStatus p').textContent = 'شاهد النتائج في الجانب';
+                return;
+            }
+
+            // Render word with revealed letters
+            const wordLetters = word.split('');
+            let wordHTML = '';
+            wordLetters.forEach((letter, i) => {
+                const isRevealed = revealed.includes(i);
+                wordHTML += `<span class="letter ${isRevealed ? 'revealed' : ''}">${isRevealed ? letter : '_'}</span>`;
+            });
+
+            gameContent.innerHTML = `
+                <div class="word-game">
+                    <h3 style="color:#fff;font-size:20px;">🎯 الجولة ${round}/${maxRounds}</h3>
+                    <div class="word-display">${wordHTML}</div>
+                    <div class="hint-text">💡 خمّن الحروف أو الكلمة كاملة</div>
+                    <div class="guess-input-group">
+                        <input type="text" id="wordGuessInput" placeholder="أدخل حرف أو كلمة..." maxlength="20">
+                        <button class="btn btn-success" id="wordGuessBtn">تخمين</button>
+                    </div>
+                    <div class="guesses-list">
+                        ${guesses.map(g => 
+                            `<span class="guess-tag ${g.correct ? 'correct' : ''}">${g.text} ${g.correct ? '✅' : '❌'}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Guess handler
+            const guessInput = document.getElementById('wordGuessInput');
+            const guessBtn = document.getElementById('wordGuessBtn');
+
+            function handleGuess() {
+                const text = guessInput.value.trim();
+                if (!text) return;
+                if (text.length === 0) return;
+
+                const roomRef = ref(db, `rooms/${state.roomId}`);
+                const gameDataRef = ref(db, `rooms/${state.roomId}/gameData`);
+
+                // Check if letter or word
+                if (text.length === 1) {
+                    // Letter guess
+                    const letter = text;
+                    const wordLetters = word.split('');
+                    const newRevealed = [...revealed];
+                    let found = false;
+                    wordLetters.forEach((l, i) => {
+                        if (l === letter && !newRevealed.includes(i)) {
+                            newRevealed.push(i);
+                            found = true;
+                        }
+                    });
+
+                    if (found) {
+                        update(gameDataRef, { revealed: newRevealed });
+                        toast(`✅ الحرف "${letter}" موجود!`, 'success');
+                    } else {
+                        toast(`❌ الحرف "${letter}" غير موجود`, 'error');
+                    }
+
+                    // Add guess
+                    const guessesRef = ref(db, `rooms/${state.roomId}/gameData/guesses`);
+                    push(guessesRef, { text: letter, correct: found });
+
+                } else {
+                    // Word guess
+                    const isCorrect = text === word;
+                    if (isCorrect) {
+                        // Award points
+                        const playerRef = ref(db, `rooms/${state.roomId}/players/${state.uid}`);
+                        const currentScore = state.players[state.uid]?.score || 0;
+                        const points = 10 + (data.gameData?.round || 1) * 2;
+                        update(playerRef, { score: currentScore + points });
+                        toast(`🎉 ${points} نقطة! الكلمة صحيحة!`, 'success', 4000);
+
+                        // End round
+                        update(roomRef, {
+                            isPlaying: false,
+                            'gameData/word': '',
+                            round: (data.gameData?.round || 1) + 1
+                        });
+
+                        // Check if game over
+                        const newRound = (data.gameData?.round || 1) + 1;
+                        if (newRound > (data.maxRounds || 3)) {
+                            toast('🏆 انتهت اللعبة!', 'success', 5000);
+                        } else {
+                            toast(`🔄 جولة ${newRound} تبدأ قريباً...`, 'info', 3000);
+                            setTimeout(() => {
+                                update(roomRef, {
+                                    isPlaying: true,
+                                    'gameData/word': getRandomWord(),
+                                    'gameData/revealed': [],
+                                    'gameData/guesses': [],
+                                    'gameData/round': newRound
+                                });
+                            }, 2000);
+                        }
+                    } else {
+                        toast(`❌ "${text}" ليست الكلمة الصحيحة`, 'error');
+                        const guessesRef = ref(db, `rooms/${state.roomId}/gameData/guesses`);
+                        push(guessesRef, { text: text, correct: false });
+                    }
+                }
+
+                guessInput.value = '';
+            }
+
+            guessBtn.addEventListener('click', handleGuess);
+            guessInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleGuess();
+            });
+        }
+
+        // ===== KICK PLAYER =====
+        kickPlayerBtn.addEventListener('click', () => {
+            if (!state.isHost) { toast('❌ فقط المضيف يمكنه الطرد!', 'error'); return; }
+            const players = Object.values(state.players);
+            if (players.length <= 1) { toast('❌ لا يوجد لاعبين للطرد!', 'warning'); return; }
+
+            modalTitle.textContent = '👢 طرد لاعب';
+            modalDesc.textContent = 'اختر لاعب لطرده من الغرفة';
+            modalBody.innerHTML = `
+                <select id="kickSelect" style="width:100%;padding:12px;border:2px solid rgba(255,255,255,0.08);
+                        border-radius:12px;background:rgba(255,255,255,0.06);color:#fff;font-size:16px;">
+                    ${Object.entries(state.players)
+                        .filter(([uid]) => uid !== state.uid)
+                        .map(([uid, p]) => `<option value="${uid}">${p.avatar} ${p.name}</option>`)
+                        .join('')}
+                </select>
+            `;
+            modalConfirmBtn.onclick = () => {
+                const uid = document.getElementById('kickSelect').value;
+                if (uid) {
+                    remove(ref(db, `rooms/${state.roomId}/players/${uid}`));
+                    toast('👢 تم طرد اللاعب', 'warning');
+                    modalOverlay.classList.remove('active');
+                }
+            };
+            modalCancelBtn.onclick = () => modalOverlay.classList.remove('active');
+            modalOverlay.classList.add('active');
+        });
+
+        // ===== LEAVE ROOM =====
+        leaveRoomBtn.addEventListener('click', () => {
+            if (state.isHost) {
+                if (!confirm('أنت المضيف. حذف الغرفة سيؤدي إلى طرد جميع اللاعبين. متأكد؟')) return;
+                remove(ref(db, `rooms/${state.roomId}`));
+                toast('🗑️ تم حذف الغرفة', 'warning');
+            } else {
+                remove(ref(db, `rooms/${state.roomId}/players/${state.uid}`));
+                toast('🚪 غادرت الغرفة', 'info');
+            }
+            state.roomId = '';
+            showScreen('lobbyScreen');
+        });
+
+        // ===== MODAL CONTROLS =====
+        modalCancelBtn.addEventListener('click', () => modalOverlay.classList.remove('active'));
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) modalOverlay.classList.remove('active');
+        });
+
+        // ===== CHECK USER SESSION =====
+        const savedUser = localStorage.getItem('smartword_user');
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                state.uid = user.uid;
+                state.name = user.name;
+                state.avatar = user.avatar;
+                userNameDisplay.textContent = state.name;
+                userAvatarDisplay.textContent = state.avatar;
+                userAvatarDisplay.style.fontSize = '24px';
+                userAvatarDisplay.style.display = 'flex';
+                userAvatarDisplay.style.alignItems = 'center';
+                userAvatarDisplay.style.justifyContent = 'center';
+                userAvatarDisplay.style.background = 'rgba(255,255,255,0.05)';
+                userInfo.style.display = 'flex';
+                showScreen('lobbyScreen');
+                listenRooms();
+                toast(`👋 مرحباً بعودتك ${state.name}!`, 'success');
+            } catch (e) {
+                localStorage.removeItem('smartword_user');
+            }
+        }
+
+        console.log('🎯 كلمة ذكية - Smart Word Game Loaded!');
+    </script>
 </body>
 </html>
