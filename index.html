@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة الرسم الجماعية</title>
+    <title>لعبة الرسم الجماعية السريعة</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 10px; }
@@ -35,6 +35,9 @@
             #chatArea { max-width: 100%; }
         }
     </style>
+    <!-- استخدام روابط Unpkg لتخطي حظر متصفح كروم لحزم gstatic -->
+    <script src="https://unpkg.com"></script>
+    <script src="https://unpkg.com"></script>
 </head>
 <body>
 
@@ -72,11 +75,8 @@
     </div>
 </div>
 
-<!-- استدعاء وحدات الموديول الحديثة المتوافقة كلياً مع معايير الويب ومتصفح كروم -->
-<script type="module">
-import { initializeApp, getApps } from "https://gstatic.com";
-import { getDatabase, ref, push, onValue, set, onChildAdded } from "https://gstatic.com";
-
+<script>
+// إعدادات البناء والاتصال المباشر
 const firebaseConfig = {
     apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
     authDomain: "://firebaseapp.com",
@@ -88,13 +88,11 @@ const firebaseConfig = {
     measurementId: "G-0CNB95E2X4"
 };
 
-let app;
-if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
-} else {
-    app = getApps()[0];
+// تشغيل وتهيئة النظام البرمجي
+if (!window.firebase || !firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
 }
-const database = getDatabase(app);
+const database = firebase.database();
 
 const lobby = document.getElementById('lobby');
 const gameArea = document.getElementById('gameArea');
@@ -156,14 +154,14 @@ function stopDrawing() {
     if (!isDrawing) return;
     isDrawing = false;
     ctx.beginPath();
-    push(ref(database, `rooms/${roomCode}/drawing`), { action: 'stop' });
+    database.ref(`rooms/${roomCode}/drawing`).push({ action: 'stop' });
 }
 
 function draw(e) {
     if(!isDrawing) return;
     const pos = getPos(e);
     
-    push(ref(database, `rooms/${roomCode}/drawing`), {
+    database.ref(`rooms/${roomCode}/drawing`).push({
         x: pos.x,
         y: pos.y,
         color: currentColor,
@@ -184,7 +182,7 @@ window.changeColor = function(color) {
 }
 
 clearBtn.addEventListener('click', () => {
-    set(ref(database, `rooms/${roomCode}/drawing`), null);
+    database.ref(`rooms/${roomCode}/drawing`).set(null);
 });
 
 sendGuessBtn.addEventListener('click', sendGuess);
@@ -194,7 +192,7 @@ function sendGuess() {
     const text = guessInput.value.trim();
     if(!text) return;
     
-    push(ref(database, `rooms/${roomCode}/chat`), {
+    database.ref(`rooms/${roomCode}/chat`).push({
         sender: myName,
         message: text
     });
@@ -202,7 +200,7 @@ function sendGuess() {
 }
 
 function listenToRoom() {
-    onValue(ref(database, `rooms/${roomCode}/drawing`), (snapshot) => {
+    database.ref(`rooms/${roomCode}/drawing`).on('value', (snapshot) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
         
@@ -224,7 +222,7 @@ function listenToRoom() {
         });
     });
     
-    onChildAdded(ref(database, `rooms/${roomCode}/chat`), (snapshot) => {
+    database.ref(`rooms/${roomCode}/chat`).on('child_added', (snapshot) => {
         const data = snapshot.val();
         const msgElement = document.createElement('div');
         msgElement.style.marginBottom = "5px";
