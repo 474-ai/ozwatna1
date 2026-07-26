@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>منصة التحدي الجماعي المشترك</title>
+    <title>منصة التحدي الجماعي - البرق</title>
     <style>
-        /* --- تحسينات وتنسيق متقدم --- */
+        /* --- تنسيق سريع وحديث --- */
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -28,31 +28,28 @@
             align-items: center;
         }
 
-        /* حاوية التطبيق الرئيسية - تصميم زجاجي فاخر */
         .app-container {
             width: 100%;
             height: 100%;
             max-width: 480px;
             max-height: 860px;
-            background: rgba(10, 20, 40, 0.7);
-            backdrop-filter: blur(18px) saturate(180%);
-            -webkit-backdrop-filter: blur(18px) saturate(180%);
-            border-radius: 36px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+            background: rgba(10, 20, 40, 0.6);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border-radius: 32px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 4px;
-            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 3px;
         }
 
-        /* شاشات مرنة مع تمرير داخلي */
         .screen {
             display: none;
             flex: 1;
             flex-direction: column;
-            padding: 18px 20px 20px;
+            padding: 16px 18px 18px;
             overflow-y: auto;
             width: 100%;
             height: 100%;
@@ -62,402 +59,379 @@
             display: flex;
         }
 
-        /* تنسيق النصوص والعناوين */
         h1 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 800;
             text-align: center;
             background: linear-gradient(135deg, #00d2ff, #3a7bd5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             letter-spacing: -0.5px;
-            text-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
         }
         h2 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #b0c7e7;
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         p {
             text-align: center;
             color: #a0b8d9;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
         }
 
-        /* مدخلات و أزرار بتصميم عصري */
         input,
         select {
             width: 100%;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1.5px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            font-size: 1rem;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            font-size: 0.95rem;
             text-align: center;
             color: #fff;
             outline: none;
-            transition: all 0.25s ease;
-            margin-bottom: 14px;
-            backdrop-filter: blur(4px);
+            transition: all 0.15s ease;
+            margin-bottom: 10px;
         }
         input:focus,
         select:focus {
             border-color: #00d2ff;
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 25px rgba(0, 210, 255, 0.15), inset 0 0 0 1px rgba(0, 210, 255, 0.2);
-            transform: scale(1.01);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.08);
         }
 
         button {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: linear-gradient(145deg, #00c6ff, #0072ff);
             color: #fff;
             border: none;
-            border-radius: 18px;
-            font-size: 1.05rem;
+            border-radius: 16px;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 8px 24px rgba(0, 114, 255, 0.25);
-            margin-bottom: 12px;
-            letter-spacing: 0.3px;
+            transition: all 0.15s ease;
+            box-shadow: 0 6px 20px rgba(0, 114, 255, 0.2);
+            margin-bottom: 10px;
+            letter-spacing: 0.2px;
         }
         button:active {
-            transform: scale(0.96);
-            box-shadow: 0 4px 12px rgba(0, 114, 255, 0.3);
+            transform: scale(0.97);
         }
         button:disabled {
             background: #3a4a66;
             color: #7a8aa6;
             cursor: not-allowed;
             box-shadow: none;
-            transform: none;
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
-        /* معاينة الصورة */
         .photo-uploader {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
         .avatar-preview {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             border: 3px solid #00d2ff;
             object-fit: cover;
-            background: rgba(0, 0, 0, 0.25);
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
-            transition: 0.3s;
-            padding: 3px;
+            background: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.15);
+            transition: 0.2s;
+            padding: 2px;
         }
         .file-label {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             color: #c0d0f0;
-            padding: 10px 24px;
+            padding: 8px 20px;
             border-radius: 40px;
             cursor: pointer;
             font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: 0.2s;
-            margin-top: 12px;
-            backdrop-filter: blur(4px);
-            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: 0.15s;
+            margin-top: 8px;
+            font-size: 0.85rem;
         }
         .file-label:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.06);
         }
         .user-photo-mini {
-            width: 34px;
-            height: 34px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #00d2ff;
-            margin-left: 8px;
+            margin-left: 6px;
             vertical-align: middle;
             flex-shrink: 0;
         }
 
-        /* قائمة الأزرار الرئيسية */
         .grid-menu {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin: 6px 0 10px;
+            gap: 8px;
+            margin: 4px 0 8px;
         }
         .btn-game-type {
             background: linear-gradient(145deg, #00b894, #00a381);
             color: #fff;
-            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.25);
-            font-size: 1.05rem;
+            box-shadow: 0 6px 18px rgba(0, 184, 148, 0.2);
         }
         .btn-game-type:nth-child(2) {
             background: linear-gradient(145deg, #fdcb6e, #e17055);
-            box-shadow: 0 8px 20px rgba(225, 112, 85, 0.25);
+            box-shadow: 0 6px 18px rgba(225, 112, 85, 0.2);
         }
 
         .join-box {
-            background: rgba(0, 0, 0, 0.15);
-            padding: 16px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            margin: 8px 0 4px;
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.1);
+            padding: 12px 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            margin: 4px 0 2px;
         }
 
-        /* لوحة الانتظار */
         .lobby-info {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 16px;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(0, 0, 0, 0.15);
+            padding: 12px 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
             text-align: center;
-            line-height: 1.8;
+            line-height: 1.7;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             color: #b0d0ff;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         .lobby-info span {
             color: #ffd966;
         }
         .players-panel {
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 18px;
-            padding: 14px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
             flex: 1;
-            min-height: 100px;
+            min-height: 80px;
         }
         .players-list-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             justify-content: center;
         }
         .player-chip {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 6px 14px 6px 10px;
-            border-radius: 40px;
-            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 4px 12px 4px 8px;
+            border-radius: 30px;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
             font-weight: 600;
             color: #d0e0ff;
-            backdrop-filter: blur(4px);
         }
 
         .invite-notification {
             background: linear-gradient(145deg, #f12711, #f5af19);
-            padding: 14px 18px;
-            border-radius: 18px;
-            margin-bottom: 16px;
+            padding: 10px 14px;
+            border-radius: 16px;
+            margin-bottom: 12px;
             font-weight: 700;
             text-align: center;
             color: #fff;
-            box-shadow: 0 8px 24px rgba(241, 39, 17, 0.25);
+            box-shadow: 0 6px 20px rgba(241, 39, 17, 0.2);
             display: none;
         }
         .invite-notification button {
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.2);
             color: #fff;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            margin-top: 8px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            margin-top: 6px;
             width: auto;
             display: inline-block;
-            border-radius: 40px;
+            border-radius: 30px;
             box-shadow: none;
-            backdrop-filter: blur(4px);
         }
 
-        /* واجهة اللعب */
+        /* --- شاشة اللعب --- */
         .timer-bar-container {
             width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
+            height: 5px;
+            background: rgba(255, 255, 255, 0.04);
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             overflow: hidden;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         .timer-bar {
             height: 100%;
             background: linear-gradient(90deg, #ff416c, #ff4b2b);
             border-radius: 10px;
-            transition: width 0.3s linear;
+            transition: width 0.2s linear;
             width: 100%;
         }
 
         .question-box {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            line-height: 1.5;
+            margin-bottom: 14px;
             text-align: center;
-            min-height: 80px;
+            min-height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 20px;
-            padding: 18px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 18px;
+            padding: 14px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
             color: #f0f8ff;
         }
         .options-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             width: 100%;
             flex: 1;
         }
         .opt-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1.5px solid rgba(255, 255, 255, 0.04);
-            border-radius: 18px;
-            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1.5px solid rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 12px 14px;
             text-align: right;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.1s ease;
             color: #e8f0ff;
             font-weight: 600;
-            backdrop-filter: blur(4px);
         }
         .opt-card:active {
-            transform: scale(0.97);
+            transform: scale(0.98);
         }
         .opt-card.selected {
             border-color: #00d2ff;
-            background: rgba(0, 210, 255, 0.08);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.05);
+            background: rgba(0, 210, 255, 0.06);
         }
         .opt-card.correct {
             border-color: #00ff87 !important;
-            background: rgba(0, 255, 135, 0.08) !important;
+            background: rgba(0, 255, 135, 0.06) !important;
             color: #8effc0;
         }
         .opt-card.wrong {
             border-color: #ff4b2b !important;
-            background: rgba(255, 75, 43, 0.08) !important;
+            background: rgba(255, 75, 43, 0.06) !important;
             color: #ff8a7a;
         }
 
         .voters-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px dashed rgba(255, 255, 255, 0.05);
+            gap: 4px;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.03);
         }
         .voter-mini-chip {
-            font-size: 0.75rem;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 3px 10px 3px 6px;
-            border-radius: 30px;
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 2px 8px 2px 4px;
+            border-radius: 20px;
             display: inline-flex;
             align-items: center;
             color: #b0c8e8;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.02);
         }
         .voter-mini-chip img {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            margin-left: 6px;
+            margin-left: 4px;
             object-fit: cover;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .status-footer {
             text-align: center;
             font-weight: 600;
             color: #ffd966;
-            margin: 16px 0 8px;
-            min-height: 24px;
-            font-size: 0.95rem;
+            margin: 10px 0 6px;
+            min-height: 20px;
+            font-size: 0.85rem;
         }
 
-        /* منصة التتويج */
+        /* --- منصة التتويج --- */
         .podium-container {
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 8px;
-            margin: 24px 0 16px;
-            height: 200px;
+            gap: 6px;
+            margin: 16px 0 12px;
+            height: 180px;
             flex: 1;
         }
         .podium-step {
-            background: rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
-            padding-bottom: 16px;
+            padding-bottom: 12px;
             position: relative;
-            backdrop-filter: blur(4px);
-            transition: 0.3s;
         }
         .podium-step.first {
             height: 100%;
-            width: 110px;
+            width: 100px;
             border-color: #ffd700;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(255, 215, 0, 0.05));
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(255, 215, 0, 0.03));
         }
         .podium-step.second {
             height: 75%;
-            width: 95px;
+            width: 85px;
             border-color: #c0d0e0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(192, 208, 224, 0.04));
         }
         .podium-step.third {
             height: 55%;
-            width: 95px;
+            width: 85px;
             border-color: #e8a87c;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(232, 168, 124, 0.04));
         }
         .crown {
-            font-size: 2rem;
+            font-size: 1.8rem;
             position: absolute;
-            top: -32px;
-            filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.3));
+            top: -28px;
+            filter: drop-shadow(0 4px 10px rgba(255, 215, 0, 0.2));
         }
         .podium-step .avatar-preview {
-            width: 54px;
-            height: 54px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            margin-bottom: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 4px;
         }
         .podium-step .p-name {
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-align: center;
             width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
-            padding: 0 4px;
+            padding: 0 2px;
             color: #e0ecff;
         }
         .podium-step .p-score {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #b0c8e8;
             margin-top: 2px;
         }
@@ -465,60 +439,87 @@
             color: #ffd700;
         }
 
-        /* تحسينات للتمرير */
-        .screen::-webkit-scrollbar {
-            width: 2px;
-        }
-        .screen::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .screen::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        /* مرونة للأجهزة الصغيرة */
+        /* سريع للشاشات الصغيرة */
         @media (max-width: 420px) {
             .app-container {
-                border-radius: 24px;
+                border-radius: 20px;
                 max-height: 100vh;
             }
             .screen {
-                padding: 14px 14px 16px;
+                padding: 12px 12px 14px;
             }
             h1 {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
             .question-box {
-                font-size: 1.1rem;
-                min-height: 70px;
-                padding: 14px;
+                font-size: 1rem;
+                min-height: 60px;
+                padding: 10px;
             }
             .podium-step.first {
-                width: 90px;
+                width: 80px;
             }
             .podium-step.second,
             .podium-step.third {
-                width: 80px;
+                width: 70px;
             }
             .avatar-preview {
-                width: 80px;
-                height: 80px;
+                width: 70px;
+                height: 70px;
+            }
+            button {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            input {
+                padding: 10px 12px;
+                font-size: 0.9rem;
             }
         }
 
-        /* تأثيرات اضافية */
-        .glow-text {
-            text-shadow: 0 0 30px rgba(0, 210, 255, 0.15);
-        }
+        /* تأثيرات إضافية */
         .badge-host {
-            background: rgba(255, 215, 0, 0.1);
-            padding: 2px 10px;
-            border-radius: 40px;
-            font-size: 0.7rem;
+            background: rgba(255, 215, 0, 0.08);
+            padding: 1px 8px;
+            border-radius: 30px;
+            font-size: 0.65rem;
             color: #ffd700;
-            border: 1px solid rgba(255, 215, 0, 0.1);
-            margin-right: 6px;
+            border: 1px solid rgba(255, 215, 0, 0.06);
+            margin-right: 4px;
+        }
+
+        /* مؤشر تحميل سريع */
+        .loading-dots::after {
+            content: '...';
+            animation: dots 1s steps(3, end) infinite;
+        }
+        @keyframes dots {
+            0% {
+                content: '';
+            }
+            33% {
+                content: '.';
+            }
+            66% {
+                content: '..';
+            }
+            100% {
+                content: '...';
+            }
+        }
+
+        /* تأثير وميض للتنبيهات */
+        .blink-slow {
+            animation: blink 1.5s ease-in-out infinite;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
         }
     </style>
 </head>
@@ -527,140 +528,152 @@
 
         <!-- 1. شاشة تسجيل الدخول -->
         <div id="scrLogin" class="screen active">
-            <h1>🎮 ملفك الشخصي</h1>
-            <p>ارفع صورتك واكتب اسمك لتجهيز ملفك والانضمام لأصحابك الـ 12:</p>
+            <h1>⚡ التحدي الجماعي</h1>
+            <p>ارفع صورتك واكتب اسمك للانطلاق بسرعة البرق</p>
 
             <div class="photo-uploader">
                 <img src="data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 24 24' fill='%2364748b'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" class="avatar-preview" id="profilePhotoPreview">
                 <input type="file" id="inpPlayerPhoto" accept="image/*" style="display: none;" onchange="previewAndProcessPhoto(this)">
-                <label for="inpPlayerPhoto" class="file-label">📸 اختر صورة من جهازك</label>
+                <label for="inpPlayerPhoto" class="file-label">📸 اختر صورة</label>
             </div>
 
-            <input type="text" id="inpPlayerName" placeholder="اكتب اسمك هنا..." maxlength="20">
-            <button onclick="commitProfile()">🚀 موافق وحفظ الحساب</button>
+            <input type="text" id="inpPlayerName" placeholder="اسمك..." maxlength="20">
+            <button onclick="commitProfile()">🚀 انطلق الآن</button>
         </div>
 
         <!-- 2. الشاشة الرئيسية -->
         <div id="scrHome" class="screen">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; background:rgba(0,0,0,0.1); padding:10px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.03);">
-                <div id="homeProfileDisplay" style="font-weight:700; display:flex; align-items:center; font-size:0.95rem; color:#d0e0ff;"></div>
-                <button style="width:auto; padding:8px 16px; margin:0; font-size:0.8rem; background:rgba(255,255,255,0.04); color:#b0c8e8; box-shadow:none; border:1px solid rgba(255,255,255,0.04); border-radius:40px;" onclick="backToProfileUpdate()">⚙️ تعديل</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:rgba(0,0,0,0.08); padding:8px 14px; border-radius:16px; border:1px solid rgba(255,255,255,0.02);">
+                <div id="homeProfileDisplay" style="font-weight:700; display:flex; align-items:center; font-size:0.9rem; color:#d0e0ff;"></div>
+                <button style="width:auto; padding:6px 14px; margin:0; font-size:0.75rem; background:rgba(255,255,255,0.02); color:#b0c8e8; box-shadow:none; border:1px solid rgba(255,255,255,0.02); border-radius:30px;" onclick="backToProfileUpdate()">⚙️ تعديل</button>
             </div>
 
             <div id="notifInvite" class="invite-notification">
-                <span id="txtInviteNotify">وصلتك دعوة الآن من صديقك!</span>
-                <button onclick="acceptDirectInvite()">دخول الغرفة فوراً 📥</button>
+                <span id="txtInviteNotify">📩 دعوة جديدة!</span>
+                <button onclick="acceptDirectInvite()">دخول الغرفة ⚡</button>
             </div>
 
-            <p style="font-weight:700; color:#90b0d0; text-align:right; margin-bottom:8px;">اختر تصنيف التحدي لإنشاء غرفة جديدة:</p>
+            <p style="font-weight:700; color:#90b0d0; text-align:right; margin-bottom:4px;">اختر التحدي:</p>
             <div class="grid-menu">
-                <button class="btn-game-type" onclick="initiateRoom('أسئلة ثقافية وإسلامية')">🧠 غرفة أسئلة إسلامية وثقافية</button>
-                <button class="btn-game-type" onclick="initiateRoom('ألغاز ومنافسة ذكاء')">🔍 غرفة ألغاز وعجائب</button>
+                <button class="btn-game-type" onclick="initiateRoom('أسئلة ثقافية وإسلامية')">🧠 أسئلة إسلامية وثقافية</button>
+                <button class="btn-game-type" onclick="initiateRoom('ألغاز ومنافسة ذكاء')">🔍 ألغاز وعجائب</button>
             </div>
 
             <div class="join-box">
-                <p style="margin-top:0; font-weight:600; text-align:right; color:#90b0d0;">دخول غرفة صديق عبر الكود:</p>
-                <input type="text" id="inpRoomCode" placeholder="اكتب كود الغرفة السري (4 أرقام)..." maxlength="4" inputmode="numeric">
-                <button style="background:linear-gradient(145deg, #8b5cf6, #7c3aed); box-shadow:0 8px 20px rgba(124, 58, 237, 0.25); color:#fff;" onclick="connectRoomByCode()">🔑 التحقق ودخول الغرفة</button>
+                <p style="margin-top:0; font-weight:600; text-align:right; color:#90b0d0; font-size:0.85rem;">دخول غرفة صديق:</p>
+                <input type="text" id="inpRoomCode" placeholder="كود الغرفة (4 أرقام)" maxlength="4" inputmode="numeric">
+                <button style="background:linear-gradient(145deg, #8b5cf6, #7c3aed); box-shadow:0 6px 18px rgba(124, 58, 237, 0.2); color:#fff;" onclick="connectRoomByCode()">🔑 دخول</button>
             </div>
         </div>
 
         <!-- 3. شاشة الانتظار (Lobby) -->
         <div id="scrLobby" class="screen">
             <div class="lobby-info">
-                🏢 نوع الغرفة: <span id="lobGameType">--</span><br>
-                🔑 الكود السري: <span id="lobCodeText" style="color:#ffb347; font-size:1.5rem; letter-spacing:3px;">--</span><br>
-                ⏱️ عداد السؤال: <span id="lobTimerText" style="color:#7bed9f;">20</span> ثانية
+                🏢 <span id="lobGameType">--</span><br>
+                🔑 الكود: <span id="lobCodeText" style="color:#ffb347; font-size:1.3rem; letter-spacing:2px;">--</span><br>
+                ⏱️ العداد: <span id="lobTimerText" style="color:#7bed9f;">20</span> ث
             </div>
 
-            <div id="hostTimerWrapper" style="display:none; background:rgba(0,0,0,0.1); padding:14px; border-radius:18px; border:1px solid rgba(255,255,255,0.03); margin-bottom:16px;">
-                <p style="text-align:right; margin-bottom:8px; font-weight:600; color:#90b0d0; font-size:0.9rem;">⚙️ تعديل عداد وقت السؤال:</p>
+            <div id="hostTimerWrapper" style="display:none; background:rgba(0,0,0,0.08); padding:10px 12px; border-radius:16px; border:1px solid rgba(255,255,255,0.02); margin-bottom:12px;">
+                <p style="text-align:right; margin-bottom:4px; font-weight:600; color:#90b0d0; font-size:0.85rem;">⚙️ ضبط العداد:</p>
                 <select id="selectTimerConfig" style="margin-bottom:0;" onchange="updateRoomTimerConfig(this.value)">
-                    <option value="10">10 ثوانٍ (تحدي سريع)</option>
-                    <option value="20" selected>20 ثانية (قياسي)</option>
-                    <option value="30">30 ثانية (تفكير هادئ)</option>
+                    <option value="10">10 ث (سريع)</option>
+                    <option value="20" selected>20 ث (قياسي)</option>
+                    <option value="30">30 ث (هادئ)</option>
                 </select>
             </div>
 
-            <div style="background:rgba(0,0,0,0.1); padding:12px 14px; border-radius:18px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.03);">
-                <p style="margin:0 0 6px 0; font-size:0.85rem; font-weight:600; text-align:right; color:#90b0d0;">✉️ دعوة صديق للغرفة:</p>
-                <div style="display:flex; gap:6px;">
-                    <input type="text" id="inpTargetPlayer" placeholder="اكتب اسم صديقك..." style="margin:0; padding:10px 12px; font-size:0.9rem; flex:1;">
-                    <button style="background:rgba(255,255,255,0.04); width:auto; margin:0; padding:0 16px; border-radius:40px; color:#c0d0f0; border:1px solid rgba(255,255,255,0.04); box-shadow:none;" onclick="dispatchInvite()">إرسال</button>
+            <div style="background:rgba(0,0,0,0.06); padding:10px 12px; border-radius:16px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.02);">
+                <p style="margin:0 0 4px 0; font-size:0.8rem; font-weight:600; text-align:right; color:#90b0d0;">✉️ دعوة صديق:</p>
+                <div style="display:flex; gap:4px;">
+                    <input type="text" id="inpTargetPlayer" placeholder="اسم الصديق..." style="margin:0; padding:8px 10px; font-size:0.85rem; flex:1;">
+                    <button style="background:rgba(255,255,255,0.03); width:auto; margin:0; padding:0 14px; border-radius:30px; color:#c0d0f0; border:1px solid rgba(255,255,255,0.02); box-shadow:none;" onclick="dispatchInvite()">إرسال</button>
                 </div>
             </div>
 
             <div class="players-panel">
-                <h3 style="font-size:0.9rem; margin-bottom:12px; text-align:right; color:#90b0d0;">👥 المتواجدون في الغرفة:</h3>
+                <h3 style="font-size:0.8rem; margin-bottom:8px; text-align:right; color:#90b0d0;">👥 اللاعبون:</h3>
                 <div class="players-list-grid" id="lobPlayersList"></div>
             </div>
 
-            <button id="btnHostStart" style="background:linear-gradient(145deg, #00ff87, #00d68f); color:#0a1a2a; box-shadow:0 8px 24px rgba(0, 255, 135, 0.2);" onclick="hostFireStart()">🚀 بدء التحدي الفعلي</button>
-            <p id="lblWaitHost" style="color:#ffd966; font-weight:600; text-align:center; display:none;">⏱️ في انتظار قيام المنظم ببدء اللعب...</p>
+            <button id="btnHostStart" style="background:linear-gradient(145deg, #00ff87, #00d68f); color:#0a1a2a; box-shadow:0 6px 20px rgba(0, 255, 135, 0.15);" onclick="hostFireStart()">🚀 بدء التحدي</button>
+            <p id="lblWaitHost" style="color:#ffd966; font-weight:600; text-align:center; display:none; font-size:0.85rem;">⏳ انتظار المنظم...</p>
         </div>
 
         <!-- 4. شاشة اللعب -->
         <div id="scrGameplay" class="screen">
             <div class="timer-bar-container"><div class="timer-bar" id="uiTimerBar"></div></div>
-            <div class="question-box" id="uiQuestionText">جاري تحميل السؤال...</div>
+            <div class="question-box" id="uiQuestionText">جاري التحميل...</div>
             <div class="options-list" id="uiOptionsContainer"></div>
-            <div class="status-footer" id="uiStatusFooter">⏳ جاري تحديث الاختيارات...</div>
-            <button id="btnNextQuestion" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); box-shadow:none; color:#7bed9f; display:none; border-radius:40px;" onclick="hostAdvanceQuestion()" disabled>السؤال التالي ➡️</button>
+            <div class="status-footer" id="uiStatusFooter">⏳ جاري التحديث...</div>
+            <button id="btnNextQuestion" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.02); box-shadow:none; color:#7bed9f; display:none; border-radius:30px; font-size:0.9rem;" onclick="hostAdvanceQuestion()" disabled>السؤال التالي ➡️</button>
         </div>
 
         <!-- 5. منصة التتويج -->
         <div id="scrPodium" class="screen">
-            <h1>🏆 منصة الأبطال</h1>
-            <p style="margin-bottom:8px;">النتائج النهائية للجولة</p>
+            <h1>🏆 الأبطال</h1>
+            <p style="margin-bottom:4px;">نتائج الجولة</p>
 
             <div class="podium-container">
                 <div class="podium-step second" id="step2">
-                    <div style="font-size:1.6rem; margin-bottom:4px;">🥈</div>
+                    <div style="font-size:1.4rem; margin-bottom:2px;">🥈</div>
                     <div id="p2PhotoContainer"></div>
                     <div id="p2Name" class="p-name">--</div>
-                    <div id="p2Score" class="p-score">0 ن</div>
+                    <div id="p2Score" class="p-score">0</div>
                 </div>
                 <div class="podium-step first" id="step1">
                     <div class="crown">👑</div>
-                    <div style="font-size:1.8rem; margin-bottom:4px;">🥇</div>
+                    <div style="font-size:1.6rem; margin-bottom:2px;">🥇</div>
                     <div id="p1PhotoContainer"></div>
                     <div id="p1Name" class="p-name">--</div>
-                    <div id="p1Score" class="p-score" style="color:#ffd700;">0 ن</div>
+                    <div id="p1Score" class="p-score" style="color:#ffd700;">0</div>
                 </div>
                 <div class="podium-step third" id="step3">
-                    <div style="font-size:1.4rem; margin-bottom:4px;">🥉</div>
+                    <div style="font-size:1.2rem; margin-bottom:2px;">🥉</div>
                     <div id="p3PhotoContainer"></div>
                     <div id="p3Name" class="p-name">--</div>
-                    <div id="p3Score" class="p-score">0 ن</div>
+                    <div id="p3Score" class="p-score">0</div>
                 </div>
             </div>
 
-            <button style="background:linear-gradient(145deg, #ff416c, #e61a3a); color:#fff; box-shadow:0 8px 24px rgba(255, 65, 108, 0.2); margin-top:auto; border-radius:40px;" onclick="terminateSessionAndExit()">🚪 تصفير الجولة والعودة</button>
+            <button style="background:linear-gradient(145deg, #ff416c, #e61a3a); color:#fff; box-shadow:0 6px 20px rgba(255, 65, 108, 0.15); margin-top:auto; border-radius:30px;" onclick="terminateSessionAndExit()">🚪 خروج</button>
         </div>
 
     </div>
-    <!-- نهاية الحاوية -->
 
     <script>
-        // --- ثوابت السيرفر وقواعد البيانات ---
+        // --- تحسين الأداء: استخدام Cache و Request مدمجة ---
         const dbURL = "https://sdfq-63ee0-default-rtdb.firebaseio.com/";
 
-        // --- بنوك الأسئلة (قابلة للتوسعة) ---
+        // --- بنوك الأسئلة الموسعة ---
         const questionBanks = {
             "أسئلة ثقافية وإسلامية": [
-                { q: "ما هي السورة التي تسمى الفاضحة لسرائر المنافقين؟", os: ["سورة التوبة", "سورة الأنفال", "سورة المنافقون", "سورة الحشر"], a: 0 },
-                { q: "كم عدد السجدات الواردة في القرآن الكريم بالكامل؟", os: ["12 سجدة", "14 سجدة", "15 سجدة", "17 سجدة"], a: 2 },
-                { q: "من هو الصحابي الجليل الذي اهتز لوفاته عرش الرحمن؟", os: ["سعد بن معاذ", "معاذ بن جبل", "مصعب بن عمير", "حمزة بن عبدالمطلب"], a: 0 },
-                { q: "ما هو اسم السورة التي تسمى قلب القرآن؟", os: ["سورة يس", "سورة الرحمن", "سورة الملك", "سورة الواقعة"], a: 0 }
+                { q: "ما هي السورة التي تسمى الفاضحة لسرائر المنافقين؟", os: ["سورة التوبة", "سورة الأنفال", "سورة المنافقون",
+                        "سورة الحشر"
+                    ], a: 0 },
+                { q: "كم عدد السجدات الواردة في القرآن الكريم بالكامل؟", os: ["12 سجدة", "14 سجدة", "15 سجدة",
+                        "17 سجدة"
+                    ], a: 2 },
+                { q: "من هو الصحابي الجليل الذي اهتز لوفاته عرش الرحمن؟", os: ["سعد بن معاذ", "معاذ بن جبل",
+                        "مصعب بن عمير", "حمزة بن عبدالمطلب"
+                    ], a: 0 },
+                { q: "ما هي السورة التي تسمى قلب القرآن؟", os: ["سورة يس", "سورة الرحمن", "سورة الملك",
+                        "سورة الواقعة"
+                    ], a: 0 },
+                { q: "كم عدد الرسل الذين ذُكروا في القرآن؟", os: ["25", "26", "27", "28"], a: 0 }
             ],
             "ألغاز ومنافسة ذكاء": [
-                { q: "له عين واحدة ولكنه لا يرى بها شيئاً أبداً، فما هو؟", os: ["المجهر", "الإبرة", "الإعصار", "البحر"], a: 1 },
-                { q: "ما هو الشيء الذي ينبض بلا قلب ويسير بلا أقدام؟", os: ["الساعة", "الماء", "الرياح", "القطار"], a: 0 },
-                { q: "ما هو الشيء الذي كلما زاد نقص؟", os: ["العمر", "المال", "الوقت", "الملح"], a: 0 }
+                { q: "له عين واحدة ولكنه لا يرى بها شيئاً، فما هو؟", os: ["المجهر", "الإبرة", "الإعصار", "البحر"],
+                    a: 1 },
+                { q: "ما هو الشيء الذي ينبض بلا قلب ويسير بلا أقدام؟", os: ["الساعة", "الماء", "الرياح", "القطار"],
+                    a: 0 },
+                { q: "ما هو الشيء الذي كلما زاد نقص؟", os: ["العمر", "المال", "الوقت", "الملح"], a: 0 },
+                { q: "ما هو الشيء الذي تأكله ولا يستطيع أن يأكلك؟", os: ["النار", "الماء", "الهواء", "التراب"],
+                    a: 0 }
             ]
         };
 
-        // --- متغيرات الحالة العامة ---
+        // --- متغيرات الحالة ---
         let selectedPhotoBase64 = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 24 24' fill='%2364748b'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
         let myName = "";
         let currentRoomId = "";
@@ -673,8 +686,10 @@
         let timerCountdownInterval = null;
         let serverSyncInterval = null;
         let isGameActive = false;
+        let lastSyncTime = 0;
+        let syncInProgress = false;
 
-        // --- تحميل البيانات المحفوظة ---
+        // --- تحميل البيانات المحفوظة بسرعة ---
         window.addEventListener('DOMContentLoaded', () => {
             const savedName = localStorage.getItem('game_player_name');
             const savedPhoto = localStorage.getItem('game_player_photo');
@@ -685,7 +700,7 @@
             }
         });
 
-        // --- معالجة الصورة ---
+        // --- معالجة الصورة بضغط سريع ---
         function previewAndProcessPhoto(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -694,10 +709,10 @@
                     img.onload = function() {
                         const canvas = document.createElement("canvas");
                         const ctx = canvas.getContext("2d");
-                        canvas.width = 80;
-                        canvas.height = 80;
-                        ctx.drawImage(img, 0, 0, 80, 80);
-                        selectedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.6);
+                        canvas.width = 70;
+                        canvas.height = 70;
+                        ctx.drawImage(img, 0, 0, 70, 70);
+                        selectedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.5);
                         document.getElementById("profilePhotoPreview").src = selectedPhotoBase64;
                     };
                     img.src = e.target.result;
@@ -712,33 +727,29 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // --- تسجيل الدخول وحفظ الحساب ---
+        // --- تسجيل الدخول السريع ---
         async function commitProfile() {
             myName = document.getElementById("inpPlayerName").value.trim().replace(/[^a-zA-Z0-9أ-ي]/g, "");
-            if (myName === "") return alert("الرجاء كتابة اسمك أولاً!");
+            if (myName === "") return alert("الرجاء كتابة اسمك!");
             if (myName.length < 2) return alert("الاسم يجب أن يكون حرفين على الأقل.");
 
             localStorage.setItem('game_player_name', myName);
             localStorage.setItem('game_player_photo', selectedPhotoBase64);
 
-            try {
-                await fetch(`${dbURL}online_users/${myName}.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify({ photo: selectedPhotoBase64, active: true, lastSeen: Date.now() })
-                });
-            } catch (e) {
-                console.warn("فشل الاتصال بالسيرفر، سيتم العمل محلياً.");
-            }
+            // تحديث السيرفر بشكل غير متزامن دون انتظار
+            fetch(`${dbURL}online_users/${myName}.json`, {
+                method: 'PUT',
+                body: JSON.stringify({ photo: selectedPhotoBase64, active: true, lastSeen: Date.now() })
+            }).catch(() => {});
 
             document.getElementById("homeProfileDisplay").innerHTML =
                 `<img src="${selectedPhotoBase64}" class="user-photo-mini"> <span>${myName}</span>`;
             navigate("scrHome");
 
             if (!serverSyncInterval) {
-                serverSyncInterval = setInterval(executeGlobalSync, 1500);
+                serverSyncInterval = setInterval(executeGlobalSync, 1000); // مزامنة كل ثانية لسرعة البرق
             }
-            // تحديث فوري للدعوات
-            setTimeout(executeGlobalSync, 300);
+            setTimeout(executeGlobalSync, 100);
         }
 
         // --- العودة لتعديل الملف ---
@@ -753,65 +764,70 @@
             isGameActive = false;
         }
 
-        // --- المزامنة العامة مع السيرفر ---
+        // --- المزامنة الفائقة السرعة (محسنة) ---
         async function executeGlobalSync() {
-            // 1. فحص الدعوات الواردة
-            if (currentRoomId === "" && myName) {
-                try {
-                    const resInv = await fetch(`${dbURL}invites/${myName}.json`);
-                    const invData = await resInv.json();
-                    if (invData && invData.roomCode) {
-                        pendingInviteCode = invData.roomCode;
-                        document.getElementById("txtInviteNotify").innerText =
-                            `✉️ أرسل لك [${invData.from || 'صديق'}] دعوة للغرفة: ${pendingInviteCode}`;
-                        document.getElementById("notifInvite").style.display = "block";
-                    } else {
-                        document.getElementById("notifInvite").style.display = "none";
-                    }
-                } catch (e) { /* تجاهل */ }
-            }
+            if (syncInProgress) return;
+            syncInProgress = true;
 
-            // 2. مزامنة الغرفة النشطة
-            if (currentRoomId !== "" && myName) {
-                try {
+            try {
+                // 1. فحص الدعوات (خفيف)
+                if (currentRoomId === "" && myName) {
+                    try {
+                        const resInv = await fetch(`${dbURL}invites/${myName}.json`);
+                        const invData = await resInv.json();
+                        if (invData && invData.roomCode) {
+                            pendingInviteCode = invData.roomCode;
+                            document.getElementById("txtInviteNotify").innerText =
+                                `📩 دعوة من [${invData.from || 'صديق'}] للغرفة: ${pendingInviteCode}`;
+                            document.getElementById("notifInvite").style.display = "block";
+                        } else {
+                            document.getElementById("notifInvite").style.display = "none";
+                        }
+                    } catch (e) { /* تجاهل */ }
+                }
+
+                // 2. مزامنة الغرفة (بسرعة)
+                if (currentRoomId !== "" && myName) {
                     const resRoom = await fetch(`${dbURL}rooms/${currentRoomId}.json`);
                     const room = await resRoom.json();
 
                     if (!room) {
-                        // الغرفة حُذفت
                         currentRoomId = "";
                         isHost = false;
                         isGameActive = false;
-                        alert("تم إغلاق الغرفة من قبل المنظم.");
-                        navigate("scrHome");
+                        if (!document.getElementById("scrHome").classList.contains("active")) {
+                            alert("تم إغلاق الغرفة.");
+                            navigate("scrHome");
+                        }
+                        syncInProgress = false;
                         return;
                     }
 
-                    // تحديث عداد الوقت من السيرفر لجميع اللاعبين
+                    // تحديث العداد
                     if (room.timerLimit && !isHost) {
                         maxTimerLimit = room.timerLimit;
                         document.getElementById("lobTimerText").innerText = maxTimerLimit;
                     }
 
-                    // تحديث قائمة اللاعبين في اللوبي
+                    // تحديث قائمة اللاعبين في اللوبي (سريع)
                     if (room.players && document.getElementById("scrLobby").classList.contains("active")) {
                         const listContainer = document.getElementById("lobPlayersList");
-                        listContainer.innerHTML = "";
+                        let html = '';
                         const playerNames = Object.keys(room.players);
                         if (playerNames.length === 0) {
-                            listContainer.innerHTML = `<span style="color:#7a8aa6;font-size:0.9rem;">لا يوجد لاعبون بعد...</span>`;
+                            html = `<span style="color:#7a8aa6;font-size:0.8rem;">لا يوجد لاعبون...</span>`;
+                        } else {
+                            playerNames.forEach(p => {
+                                const photo = room.players[p]?.photo || selectedPhotoBase64;
+                                const isHostBadge = (room.host === p) ? `<span class="badge-host">👑</span>` :
+                                '';
+                                html +=
+                                    `<span class="player-chip"><img src="${photo}" class="user-photo-mini"> ${p} ${isHostBadge}</span>`;
+                            });
                         }
-                        playerNames.forEach(p => {
-                            const photo = room.players[p]?.photo || selectedPhotoBase64;
-                            const isHostBadge = (room.host === p) ? `<span class="badge-host">👑</span>` : '';
-                            listContainer.innerHTML += `
-                                <span class="player-chip">
-                                    <img src="${photo}" class="user-photo-mini"> 
-                                    ${p} ${isHostBadge}
-                                </span>`;
-                        });
+                        listContainer.innerHTML = html;
 
-                        // إظهار زر البدء للمنظم فقط
+                        // التحكم في أزرار المنظم
                         if (room.host === myName && room.status === 'waiting') {
                             document.getElementById("btnHostStart").style.display = "block";
                             document.getElementById("lblWaitHost").style.display = "none";
@@ -819,13 +835,14 @@
                             isHost = true;
                         } else {
                             document.getElementById("btnHostStart").style.display = "none";
-                            document.getElementById("lblWaitHost").style.display = room.status === 'waiting' ? "block" : "none";
+                            document.getElementById("lblWaitHost").style.display = room.status === 'waiting' ? "block" :
+                                "none";
                             document.getElementById("hostTimerWrapper").style.display = "none";
                             isHost = false;
                         }
                     }
 
-                    // التعامل مع حالة اللعب
+                    // معالجة حالة اللعب
                     if (room.status === "playing") {
                         if (!isGameActive) {
                             isGameActive = true;
@@ -838,42 +855,36 @@
                         renderPodiumUI(room.players);
                     } else if (room.status === "waiting") {
                         isGameActive = false;
-                        // إذا كنا في شاشة اللعب نعود للوبي
                         if (document.getElementById("scrGameplay").classList.contains("active")) {
                             navigate("scrLobby");
                         }
                     }
-                } catch (e) {
-                    console.warn("خطأ في مزامنة الغرفة:", e);
                 }
+            } catch (e) {
+                // تجاهل الأخطاء للحفاظ على السرعة
             }
+            syncInProgress = false;
         }
 
-        // --- قبول الدعوة المباشرة ---
+        // --- قبول الدعوة ---
         async function acceptDirectInvite() {
             if (pendingInviteCode) {
                 document.getElementById("inpRoomCode").value = pendingInviteCode;
                 await connectRoomByCode();
                 document.getElementById("notifInvite").style.display = "none";
-                // حذف الدعوة بعد القبول
-                try {
-                    await fetch(`${dbURL}invites/${myName}.json`, { method: 'DELETE' });
-                } catch (e) { /* تجاهل */ }
+                fetch(`${dbURL}invites/${myName}.json`, { method: 'DELETE' }).catch(() => {});
             }
         }
 
-        // --- إنشاء غرفة جديدة ---
+        // --- إنشاء غرفة (محسّن) ---
         async function initiateRoom(gameType) {
-            if (!myName) return alert("الرجاء تسجيل الدخول أولاً!");
+            if (!myName) return alert("الرجاء تسجيل الدخول!");
 
-            // توليد كود عشوائي من 4 أرقام
             let roomCode = Math.floor(1000 + Math.random() * 9000).toString();
-            // التأكد من عدم وجود غرفة بنفس الكود
             try {
                 const check = await fetch(`${dbURL}rooms/${roomCode}.json`);
                 const existing = await check.json();
                 if (existing) {
-                    // محاولة مرة أخرى
                     roomCode = Math.floor(1000 + Math.random() * 9000).toString();
                 }
             } catch (e) { /* تجاهل */ }
@@ -897,11 +908,10 @@
             try {
                 await fetch(`${dbURL}rooms/${roomCode}.json`, { method: 'PUT', body: JSON.stringify(roomData) });
             } catch (e) {
-                alert("فشل إنشاء الغرفة، تحقق من الاتصال.");
+                alert("فشل إنشاء الغرفة.");
                 return;
             }
 
-            // عرض اللوبي
             document.getElementById("lobGameType").innerText = gameType;
             document.getElementById("lobCodeText").innerText = roomCode;
             document.getElementById("lobTimerText").innerText = "20";
@@ -910,39 +920,33 @@
             document.getElementById("lblWaitHost").style.display = "none";
 
             navigate("scrLobby");
-            // تحديث القائمة
-            setTimeout(executeGlobalSync, 200);
+            setTimeout(executeGlobalSync, 100);
         }
 
-        // --- الانضمام إلى غرفة عبر الكود ---
+        // --- الانضمام لغرفة ---
         async function connectRoomByCode() {
             const code = document.getElementById("inpRoomCode").value.trim();
-            if (!code || code.length !== 4 || isNaN(code)) return alert("الرجاء إدخال كود صحيح مكون من 4 أرقام.");
-            if (!myName) return alert("الرجاء تسجيل الدخول أولاً!");
+            if (!code || code.length !== 4 || isNaN(code)) return alert("كود صحيح من 4 أرقام.");
+            if (!myName) return alert("سجل الدخول أولاً!");
 
             try {
                 const res = await fetch(`${dbURL}rooms/${code}.json`);
                 const room = await res.json();
-                if (!room) return alert("الكود غير صحيح أو الغرفة غير موجودة.");
+                if (!room) return alert("الكود غير صحيح.");
 
                 if (room.status === "playing" || room.status === "finished") {
-                    return alert("لا يمكن الانضمام، الغرفة قيد اللعب أو انتهت.");
+                    return alert("الغرفة قيد اللعب.");
                 }
 
-                // إضافة اللاعب إلى الغرفة
                 currentRoomId = code;
                 isHost = false;
                 isGameActive = false;
 
-                // تحديث بيانات اللاعب
-                const playerData = {
-                    photo: selectedPhotoBase64,
-                    score: 0,
-                    lastVote: -1
-                };
-                await fetch(`${dbURL}rooms/${code}/players/${myName}.json`, { method: 'PUT', body: JSON.stringify(playerData) });
+                await fetch(`${dbURL}rooms/${code}/players/${myName}.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ photo: selectedPhotoBase64, score: 0, lastVote: -1 })
+                });
 
-                // عرض اللوبي
                 document.getElementById("lobGameType").innerText = room.gameType || "غير معروف";
                 document.getElementById("lobCodeText").innerText = code;
                 document.getElementById("lobTimerText").innerText = room.timerLimit || 20;
@@ -951,33 +955,28 @@
                 document.getElementById("lblWaitHost").style.display = "block";
 
                 navigate("scrLobby");
-                setTimeout(executeGlobalSync, 200);
+                setTimeout(executeGlobalSync, 100);
 
-                // حذف الدعوة إذا كانت موجودة
-                try {
-                    await fetch(`${dbURL}invites/${myName}.json`, { method: 'DELETE' });
-                } catch (e) { /* تجاهل */ }
+                fetch(`${dbURL}invites/${myName}.json`, { method: 'DELETE' }).catch(() => {});
                 document.getElementById("notifInvite").style.display = "none";
 
             } catch (e) {
-                alert("خطأ في الاتصال، حاول مرة أخرى.");
+                alert("خطأ في الاتصال.");
             }
         }
 
-        // --- إرسال دعوة لصديق ---
+        // --- إرسال دعوة ---
         async function dispatchInvite() {
             const target = document.getElementById("inpTargetPlayer").value.trim();
-            if (!target) return alert("اكتب اسم الصديق الذي تريد دعوته.");
-            if (target === myName) return alert("لا يمكنك دعوة نفسك!");
-            if (!currentRoomId) return alert("أنت لست في أي غرفة.");
+            if (!target) return alert("اكتب اسم الصديق.");
+            if (target === myName) return alert("لا يمكن دعوة نفسك!");
+            if (!currentRoomId) return alert("أنت لست في غرفة.");
 
             try {
-                // التحقق من وجود اللاعب
                 const res = await fetch(`${dbURL}online_users/${target}.json`);
                 const user = await res.json();
-                if (!user) return alert("اللاعب غير متصل حالياً.");
+                if (!user) return alert("اللاعب غير متصل.");
 
-                // إرسال الدعوة
                 await fetch(`${dbURL}invites/${target}.json`, {
                     method: 'PUT',
                     body: JSON.stringify({ from: myName, roomCode: currentRoomId, timestamp: Date.now() })
@@ -990,30 +989,30 @@
             }
         }
 
-        // --- تحديث عداد الوقت (للمنظم) ---
+        // --- تحديث العداد ---
         async function updateRoomTimerConfig(value) {
             if (!isHost || !currentRoomId) return;
             maxTimerLimit = parseInt(value);
             document.getElementById("lobTimerText").innerText = maxTimerLimit;
-            try {
-                await fetch(`${dbURL}rooms/${currentRoomId}/timerLimit.json`, { method: 'PUT', body: JSON.stringify(maxTimerLimit) });
-            } catch (e) { /* تجاهل */ }
+            fetch(`${dbURL}rooms/${currentRoomId}/timerLimit.json`, { method: 'PUT', body: JSON.stringify(maxTimerLimit) })
+                .catch(() => {});
         }
 
-        // --- بدء التحدي (للمنظم) ---
+        // --- بدء التحدي ---
         async function hostFireStart() {
             if (!isHost || !currentRoomId) return;
             try {
-                // التأكد من وجود لاعبين كافيين
                 const res = await fetch(`${dbURL}rooms/${currentRoomId}/players.json`);
                 const players = await res.json();
                 if (!players || Object.keys(players).length < 2) {
-                    return alert("يجب أن يكون هناك لاعبين على الأقل لبدء التحدي.");
+                    return alert("يلزم وجود لاعبين على الأقل.");
                 }
-                // إعادة تعيين النقاط والتصويت
+
                 for (let p in players) {
-                    await fetch(`${dbURL}rooms/${currentRoomId}/players/${p}/score.json`, { method: 'PUT', body: JSON.stringify(0) });
-                    await fetch(`${dbURL}rooms/${currentRoomId}/players/${p}/lastVote.json`, { method: 'PUT', body: JSON.stringify(-1) });
+                    await fetch(`${dbURL}rooms/${currentRoomId}/players/${p}/score.json`, { method: 'PUT',
+                        body: JSON.stringify(0) });
+                    await fetch(`${dbURL}rooms/${currentRoomId}/players/${p}/lastVote.json`, { method: 'PUT',
+                        body: JSON.stringify(-1) });
                 }
                 await fetch(`${dbURL}rooms/${currentRoomId}/currentQ.json`, { method: 'PUT', body: JSON.stringify(0) });
                 await fetch(`${dbURL}rooms/${currentRoomId}/calculatedQ.json`, { method: 'PUT', body: JSON.stringify(-1) });
@@ -1027,20 +1026,18 @@
                 selectedBank = questionBanks[document.getElementById("lobGameType").innerText] || [];
                 maxTimerLimit = parseInt(document.getElementById("lobTimerText").innerText) || 20;
 
-                // الانتقال فوراً لشاشة اللعب
                 navigate("scrGameplay");
-                setTimeout(executeGlobalSync, 300);
+                setTimeout(executeGlobalSync, 100);
             } catch (e) {
-                alert("حدث خطأ أثناء بدء التحدي.");
+                alert("خطأ أثناء بدء التحدي.");
             }
         }
 
-        // --- إدارة شاشة اللعب ---
+        // --- إدارة شاشة اللعب (محسنة للأداء) ---
         function manageGameplayScreen(room) {
             const qIndex = room.currentQ || 0;
             const bank = selectedBank.length ? selectedBank : questionBanks[room.gameType] || [];
             if (qIndex >= bank.length) {
-                // انتهت الأسئلة
                 if (isHost) {
                     fetch(`${dbURL}rooms/${currentRoomId}/status.json`, { method: 'PUT', body: JSON.stringify("finished") });
                 }
@@ -1065,7 +1062,7 @@
                 startLocalTimerBar();
             }
 
-            // حساب عدد المصوتين
+            // حساب المصوتين بسرعة
             let totalPlayers = 0,
                 votedCount = 0;
             const playersWhoVoted = {};
@@ -1080,18 +1077,15 @@
             const timeIsUp = localTimerValue <= 0;
             const allVoted = votedCount >= totalPlayers && totalPlayers > 0;
 
-            // عرض الخيارات
+            // بناء الخيارات بكفاءة
             const container = document.getElementById("uiOptionsContainer");
-            container.innerHTML = "";
+            let html = '';
 
             currentData.os.forEach((opt, idx) => {
                 let cardClass = "opt-card";
-                // اختيار اللاعب الحالي
                 if (room.players[myName] && room.players[myName].lastVote === idx && !timeIsUp && !allVoted) {
                     cardClass += " selected";
                 }
-
-                // إظهار النتائج بعد انتهاء الوقت أو اكتمال التصويت
                 if (timeIsUp || allVoted) {
                     if (idx === currentData.a) cardClass += " correct";
                     else if (room.players[myName] && room.players[myName].lastVote === idx) cardClass += " wrong";
@@ -1109,29 +1103,29 @@
                     votersHtml += `</div>`;
                 }
 
-                const disabledAttr = (timeIsUp || allVoted) ? 'style="cursor:default;opacity:0.8;"' : '';
-                container.innerHTML +=
+                const disabledAttr = (timeIsUp || allVoted) ? 'style="cursor:default;opacity:0.7;"' : '';
+                html +=
                     `<div class="${cardClass}" onclick="recordVote(${idx}, ${qIndex})" ${disabledAttr}>${opt} ${votersHtml}</div>`;
             });
 
-            // تحديث حالة التصويت
+            container.innerHTML = html;
+
+            // تحديث الحالة
             if (allVoted || timeIsUp) {
                 clearInterval(timerCountdownInterval);
                 document.getElementById("uiTimerBar").style.width = "0%";
-                document.getElementById("uiStatusFooter").innerHTML = "<span style='color:#7bed9f;'>✅ انتهى التصويت! تم كشف الإجابات.</span>";
+                document.getElementById("uiStatusFooter").innerHTML = "<span style='color:#7bed9f;'>✅ انتهى التصويت!</span>";
                 if (isHost) {
                     document.getElementById("btnNextQuestion").disabled = false;
-                    // حساب النقاط إذا لم يتم احتسابها مسبقاً
                     if (room.calculatedQ !== qIndex) {
                         processPointsAllocation(room, qIndex, currentData.a);
                     }
                 }
             } else {
                 document.getElementById("uiStatusFooter").innerText =
-                    `⏳ بانتظار التصويت... (${votedCount} من ${totalPlayers} صوتوا)`;
+                    `⏳ انتظار التصويت... (${votedCount}/${totalPlayers})`;
             }
 
-            // زر التالي للمنظم
             if (isHost) {
                 document.getElementById("btnNextQuestion").style.display = "block";
                 document.getElementById("btnNextQuestion").disabled = !(allVoted || timeIsUp);
@@ -1141,20 +1135,17 @@
         // --- تسجيل التصويت ---
         async function recordVote(idx, qIndex) {
             if (hasVotedThisTurn) return;
-            // التحقق من أن السؤال ما زال كما هو
             const currentQ = document.getElementById("uiQuestionText").getAttribute("data-q-idx");
             if (parseInt(currentQ) !== qIndex) return;
 
             hasVotedThisTurn = true;
-            try {
-                await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}/lastVote.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify(idx)
-                });
-            } catch (e) { /* تجاهل */ }
+            fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}/lastVote.json`, {
+                method: 'PUT',
+                body: JSON.stringify(idx)
+            }).catch(() => {});
         }
 
-        // --- احتساب النقاط (للمنظم) ---
+        // --- احتساب النقاط ---
         async function processPointsAllocation(room, qIndex, correctAnsIdx) {
             if (!isHost) return;
             try {
@@ -1177,7 +1168,7 @@
             } catch (e) { /* تجاهل */ }
         }
 
-        // --- المؤقت المحلي ---
+        // --- المؤقت ---
         function startLocalTimerBar() {
             clearInterval(timerCountdownInterval);
             document.getElementById("uiTimerBar").style.width = "100%";
@@ -1190,13 +1181,12 @@
 
                 if (localTimerValue <= 0) {
                     clearInterval(timerCountdownInterval);
-                    // تحديث الواجهة لإظهار النتائج
                     executeGlobalSync();
                 }
             }, 1000);
         }
 
-        // --- تقدم السؤال (للمنظم) ---
+        // --- تقدم السؤال ---
         async function hostAdvanceQuestion() {
             if (!isHost) return;
             try {
@@ -1204,7 +1194,6 @@
                 let current = await res.json() || 0;
                 const nextQ = current + 1;
 
-                // إعادة تعيين التصويت للجميع
                 const resRoom = await fetch(`${dbURL}rooms/${currentRoomId}.json`);
                 const room = await resRoom.json();
                 if (room && room.players) {
@@ -1223,9 +1212,9 @@
 
                 hasVotedThisTurn = false;
                 document.getElementById("btnNextQuestion").disabled = true;
-                document.getElementById("uiStatusFooter").innerText = "⏳ جاري تحميل السؤال التالي...";
+                document.getElementById("uiStatusFooter").innerText = "⏳ جاري التحميل...";
 
-                setTimeout(executeGlobalSync, 300);
+                setTimeout(executeGlobalSync, 100);
             } catch (e) { /* تجاهل */ }
         }
 
@@ -1249,83 +1238,57 @@
                 if (i < 3) top3[i] = p;
             });
 
-            // الأول
-            if (top3[0]) {
-                document.getElementById("p1PhotoContainer").innerHTML =
-                    `<img src="${top3[0].photo}" class="avatar-preview" style="width:60px;height:60px;">`;
-                document.getElementById("p1Name").innerText = top3[0].name;
-                document.getElementById("p1Score").innerText = `${top3[0].score} ن`;
-            } else {
-                document.getElementById("p1PhotoContainer").innerHTML = `<div class="avatar-preview" style="width:60px;height:60px;background:rgba(255,255,255,0.03);border-radius:50%;"></div>`;
-                document.getElementById("p1Name").innerText = "--";
-                document.getElementById("p1Score").innerText = "0 ن";
-            }
+            // عرض الأبطال
+            const renderPlayer = (index, containerId, nameId, scoreId, size) => {
+                const p = top3[index];
+                const container = document.getElementById(containerId);
+                const nameEl = document.getElementById(nameId);
+                const scoreEl = document.getElementById(scoreId);
+                if (p) {
+                    container.innerHTML = `<img src="${p.photo}" class="avatar-preview" style="width:${size}px;height:${size}px;">`;
+                    nameEl.innerText = p.name;
+                    scoreEl.innerText = `${p.score} ن`;
+                } else {
+                    container.innerHTML =
+                        `<div class="avatar-preview" style="width:${size}px;height:${size}px;background:rgba(255,255,255,0.02);border-radius:50%;"></div>`;
+                    nameEl.innerText = "--";
+                    scoreEl.innerText = "0";
+                }
+            };
 
-            // الثاني
-            if (top3[1]) {
-                document.getElementById("p2PhotoContainer").innerHTML =
-                    `<img src="${top3[1].photo}" class="avatar-preview" style="width:54px;height:54px;">`;
-                document.getElementById("p2Name").innerText = top3[1].name;
-                document.getElementById("p2Score").innerText = `${top3[1].score} ن`;
-            } else {
-                document.getElementById("p2PhotoContainer").innerHTML = `<div class="avatar-preview" style="width:54px;height:54px;background:rgba(255,255,255,0.03);border-radius:50%;"></div>`;
-                document.getElementById("p2Name").innerText = "--";
-                document.getElementById("p2Score").innerText = "0 ن";
-            }
-
-            // الثالث
-            if (top3[2]) {
-                document.getElementById("p3PhotoContainer").innerHTML =
-                    `<img src="${top3[2].photo}" class="avatar-preview" style="width:48px;height:48px;">`;
-                document.getElementById("p3Name").innerText = top3[2].name;
-                document.getElementById("p3Score").innerText = `${top3[2].score} ن`;
-            } else {
-                document.getElementById("p3PhotoContainer").innerHTML = `<div class="avatar-preview" style="width:48px;height:48px;background:rgba(255,255,255,0.03);border-radius:50%;"></div>`;
-                document.getElementById("p3Name").innerText = "--";
-                document.getElementById("p3Score").innerText = "0 ن";
-            }
+            renderPlayer(0, "p1PhotoContainer", "p1Name", "p1Score", 56);
+            renderPlayer(1, "p2PhotoContainer", "p2Name", "p2Score", 48);
+            renderPlayer(2, "p3PhotoContainer", "p3Name", "p3Score", 42);
         }
 
-        // --- إنهاء الجلسة والخروج ---
+        // --- إنهاء الجلسة ---
         async function terminateSessionAndExit() {
             clearInterval(timerCountdownInterval);
             isGameActive = false;
 
             if (isHost && currentRoomId) {
-                try {
-                    await fetch(`${dbURL}rooms/${currentRoomId}.json`, { method: 'DELETE' });
-                } catch (e) { /* تجاهل */ }
+                fetch(`${dbURL}rooms/${currentRoomId}.json`, { method: 'DELETE' }).catch(() => {});
             } else if (currentRoomId && myName) {
-                try {
-                    await fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}.json`, { method: 'DELETE' });
-                } catch (e) { /* تجاهل */ }
+                fetch(`${dbURL}rooms/${currentRoomId}/players/${myName}.json`, { method: 'DELETE' }).catch(() => {});
             }
 
             currentRoomId = "";
             isHost = false;
             hasVotedThisTurn = false;
             navigate("scrHome");
-            // تحديث فوري
-            setTimeout(executeGlobalSync, 300);
+            setTimeout(executeGlobalSync, 100);
         }
 
         // --- تنظيف عند الخروج ---
-        window.addEventListener('beforeunload', async () => {
+        window.addEventListener('beforeunload', () => {
             if (myName) {
-                try {
-                    await fetch(`${dbURL}online_users/${myName}.json`, { method: 'DELETE' });
-                } catch (e) { /* تجاهل */ }
+                fetch(`${dbURL}online_users/${myName}.json`, { method: 'DELETE' }).catch(() => {});
             }
-            if (serverSyncInterval) {
-                clearInterval(serverSyncInterval);
-            }
-            if (timerCountdownInterval) {
-                clearInterval(timerCountdownInterval);
-            }
+            if (serverSyncInterval) clearInterval(serverSyncInterval);
+            if (timerCountdownInterval) clearInterval(timerCountdownInterval);
         });
 
-        // دالة مساعدة للاختبار - يمكن إزالتها
-        console.log("🚀 منصة التحدي الجماعي المشترك - تم التحميل بنجاح!");
+        console.log("⚡ منصة التحدي الجماعي - نسخة البرق");
     </script>
 </body>
 </html>
