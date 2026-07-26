@@ -14,17 +14,14 @@
         button:hover { background: #0056b3; }
         .hidden { display: none !important; }
         
-        /* شاشة اللعبة */
         #gameArea { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
         #canvasContainer { width: 100%; max-width: 600px; aspect-ratio: 4/3; background: #fff; border: 3px solid #333; border-radius: 8px; touch-action: none; position: relative; }
         canvas { width: 100%; height: 100%; display: block; background: white; cursor: crosshair; }
         
-        /* أدوات الرسم */
         .controls { display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 600px; }
         .color-btn { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.3); cursor: pointer; }
         #clearBtn { background: #dc3545; color: white; max-width: 100px; padding: 8px; }
         
-        /* نظام التخمين والدردشة */
         #chatArea { width: 100%; max-width: 600px; background: #fafafa; border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
         #chatBox { height: 120px; overflow-y: auto; text-align: right; padding: 5px; border-bottom: 1px solid #eee; margin-bottom: 10px; font-size: 14px; }
         .chat-input-group { display: flex; gap: 5px; }
@@ -44,14 +41,12 @@
 <div class="container">
     <h1>🎨 لعبة الرسم الجماعية السريعة</h1>
 
-    <!-- شاشة الدخول وإنشاء الغرف -->
     <div id="lobby">
         <input type="text" id="username" placeholder="اكتب اسمك هنا">
         <input type="text" id="roomCode" placeholder="رمز الغرفة (مثال: 123)">
         <button id="joinBtn">دخول اللعبة</button>
     </div>
 
-    <!-- شاشة اللعب الرئيسية -->
     <div id="gameArea" class="hidden">
         <div id="canvasContainer">
             <canvas id="paintCanvas"></canvas>
@@ -77,16 +72,15 @@
     </div>
 </div>
 
-<!-- الروابط العالمية الجديدة المستقرة 100% لـ Firebase الإصدار v8 -->
-<script src="https://cloudflare.com"></script>
-<script src="https://cloudflare.com"></script>
+<!-- استدعاء وحدات الموديول الحديثة المتوافقة كلياً مع معايير الويب ومتصفح كروم -->
+<script type="module">
+import { initializeApp, getApps } from "https://gstatic.com";
+import { getDatabase, ref, push, onValue, set, onChildAdded } from "https://gstatic.com";
 
-<script>
-// إعدادات Firebase الخاصة بمشروعك الحالي
 const firebaseConfig = {
     apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
     authDomain: "://firebaseapp.com",
-    databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com",
+    databaseURL: "https://firebaseio.com",
     projectId: "sdfq-63ee0",
     storageBucket: "sdfq-63ee0.firebasestorage.app",
     messagingSenderId: "210107075463",
@@ -94,11 +88,13 @@ const firebaseConfig = {
     measurementId: "G-0CNB95E2X4"
 };
 
-// تهيئة الخدمة بالطريقة المتوافقة
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+let app;
+if (getApps().length === 0) {
+    app = initializeApp(firebaseConfig);
+} else {
+    app = getApps()[0];
 }
-const database = firebase.database();
+const database = getDatabase(app);
 
 const lobby = document.getElementById('lobby');
 const gameArea = document.getElementById('gameArea');
@@ -160,14 +156,14 @@ function stopDrawing() {
     if (!isDrawing) return;
     isDrawing = false;
     ctx.beginPath();
-    database.ref(`rooms/${roomCode}/drawing`).push({ action: 'stop' });
+    push(ref(database, `rooms/${roomCode}/drawing`), { action: 'stop' });
 }
 
 function draw(e) {
     if(!isDrawing) return;
     const pos = getPos(e);
     
-    database.ref(`rooms/${roomCode}/drawing`).push({
+    push(ref(database, `rooms/${roomCode}/drawing`), {
         x: pos.x,
         y: pos.y,
         color: currentColor,
@@ -183,12 +179,12 @@ canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(
 canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
 canvas.addEventListener('touchend', stopDrawing);
 
-function changeColor(color) {
+window.changeColor = function(color) {
     currentColor = color;
 }
 
 clearBtn.addEventListener('click', () => {
-    database.ref(`rooms/${roomCode}/drawing`).set(null);
+    set(ref(database, `rooms/${roomCode}/drawing`), null);
 });
 
 sendGuessBtn.addEventListener('click', sendGuess);
@@ -198,7 +194,7 @@ function sendGuess() {
     const text = guessInput.value.trim();
     if(!text) return;
     
-    database.ref(`rooms/${roomCode}/chat`).push({
+    push(ref(database, `rooms/${roomCode}/chat`), {
         sender: myName,
         message: text
     });
@@ -206,7 +202,7 @@ function sendGuess() {
 }
 
 function listenToRoom() {
-    database.ref(`rooms/${roomCode}/drawing`).on('value', (snapshot) => {
+    onValue(ref(database, `rooms/${roomCode}/drawing`), (snapshot) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
         
@@ -228,7 +224,7 @@ function listenToRoom() {
         });
     });
     
-    database.ref(`rooms/${roomCode}/chat`).on('child_added', (snapshot) => {
+    onChildAdded(ref(database, `rooms/${roomCode}/chat`), (snapshot) => {
         const data = snapshot.val();
         const msgElement = document.createElement('div');
         msgElement.style.marginBottom = "5px";
