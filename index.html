@@ -2,1305 +2,677 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎯 كلمة ذكية - Smart Word</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>لوحة الرسم المشتركة</title>
     <style>
-        /* ===== RESET ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+            user-select: none;
         }
-        :root {
-            --primary: #6C63FF;
-            --primary-dark: #5a52d5;
-            --success: #2ECC71;
-            --danger: #E74C3C;
-            --warning: #F1C40F;
-            --dark: #0f0c29;
-            --dark-card: #1a1a3e;
-            --light: #f0f2f5;
-            --gray: #7f8fa6;
-            --radius: 16px;
-            --shadow: 0 12px 48px rgba(0,0,0,0.4);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        
         body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            margin: 0;
+            background: #fff;
+            overflow: hidden;
+            height: 100vh;
+            font-family: Arial, sans-serif;
         }
-        .container {
+        
+        /* شاشة الدخول */
+        #lobby {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 1200px;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255,255,255,0.06);
-            min-height: 90vh;
-        }
-
-        /* ===== SCREENS ===== */
-        .screen {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-        .screen.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ===== HEADER ===== */
-        .header {
+            height: 100%;
+            background: #f0f2f5;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            margin-bottom: 20px;
+            z-index: 1000;
         }
-        .header h1 {
-            font-size: clamp(22px, 2.8vw, 32px);
-            font-weight: 800;
-            background: linear-gradient(135deg, #a78bfa, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        
+        #lobby-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
         }
-        .header .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #fff;
-        }
-        .header .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--primary);
-            object-fit: cover;
-        }
-
-        /* ===== BUTTONS ===== */
-        .btn {
-            padding: 12px 28px;
-            font-size: 16px;
-            font-weight: 700;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            touch-action: manipulation;
-        }
-        .btn:active {
-            transform: scale(0.95);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #6C63FF, #5a52d5);
-            color: #fff;
-            box-shadow: 0 8px 28px rgba(108, 99, 255, 0.3);
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 36px rgba(108, 99, 255, 0.45);
-        }
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.4);
-        }
-        .btn-danger {
-            background: var(--danger);
-            color: #fff;
-        }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(231, 76, 60, 0.4);
-        }
-        .btn-warning {
-            background: var(--warning);
+        
+        #lobby-box h2 {
+            font-size: 26px;
+            margin-bottom: 5px;
             color: #1a1a2e;
         }
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(241, 196, 15, 0.35);
-        }
-        .btn-outline {
-            background: transparent;
-            color: #fff;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-        .btn-outline:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: var(--primary);
-        }
-        .btn-sm {
-            padding: 8px 18px;
-            font-size: 13px;
-        }
-        .btn-lg {
-            padding: 16px 40px;
-            font-size: 18px;
-        }
-
-        /* ===== LOGIN SCREEN ===== */
-        #loginScreen {
-            max-width: 480px;
-            margin: 60px auto;
-            background: rgba(255,255,255,0.04);
-            padding: 40px;
-            border-radius: var(--radius);
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        #loginScreen h2 {
-            color: #fff;
-            font-size: 28px;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-        #loginScreen p {
-            color: rgba(255,255,255,0.5);
-            text-align: center;
-            margin-bottom: 28px;
-        }
-        .form-group {
+        
+        #lobby-box p {
+            color: #888;
+            font-size: 14px;
             margin-bottom: 20px;
         }
-        .form-group label {
-            display: block;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-        .form-group input,
-        .form-group select {
+        
+        #lobby-box input {
             width: 100%;
-            padding: 14px 18px;
+            padding: 12px 15px;
+            margin: 6px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
-            border: 2px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            background: rgba(255,255,255,0.06);
-            color: #fff;
-            transition: var(--transition);
-        }
-        .form-group input:focus,
-        .form-group select:focus {
             outline: none;
-            border-color: var(--primary);
-            background: rgba(255,255,255,0.1);
+            transition: 0.3s;
+            text-align: center;
         }
-        .form-group input::placeholder {
-            color: rgba(255,255,255,0.3);
+        
+        #lobby-box input:focus {
+            border-color: #4a90d9;
         }
-        .avatar-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-top: 8px;
-        }
-        .avatar-option {
+        
+        #lobby-box button {
             width: 100%;
-            aspect-ratio: 1;
-            border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: var(--transition);
-            object-fit: cover;
-            background: rgba(255,255,255,0.05);
-        }
-        .avatar-option:hover {
-            transform: scale(1.05);
-        }
-        .avatar-option.selected {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.2);
-        }
-
-        /* ===== LOBBY SCREEN ===== */
-        #lobbyScreen {
-            padding: 10px 0;
-        }
-        .lobby-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .lobby-header h2 {
+            padding: 14px;
+            margin-top: 12px;
+            background: #4a90d9;
             color: #fff;
-            font-size: 24px;
-        }
-        .rooms-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
-        }
-        .room-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            transition: var(--transition);
-            cursor: pointer;
-        }
-        .room-card:hover {
-            transform: translateY(-4px);
-            background: rgba(255,255,255,0.08);
-            border-color: var(--primary);
-        }
-        .room-card h3 {
-            color: #fff;
+            border: none;
+            border-radius: 8px;
             font-size: 18px;
-            margin-bottom: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .room-card p {
-            color: rgba(255,255,255,0.5);
-            font-size: 14px;
+        
+        #lobby-box button:hover {
+            background: #357abd;
+            transform: scale(1.02);
         }
-        .room-card .room-code {
-            display: inline-block;
-            background: rgba(108, 99, 255, 0.2);
-            color: #a78bfa;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            margin-top: 8px;
+        
+        .hidden {
+            display: none !important;
         }
-        .room-card .players-count {
-            color: rgba(255,255,255,0.4);
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
-        /* ===== ROOM SCREEN ===== */
-        #roomScreen {
-            padding: 10px 0;
-        }
-        .room-header {
+        
+        /* شريط الأدوات */
+        #toolbar {
+            position: fixed;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.12);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            align-items: center;
+            gap: 4px;
+            z-index: 100;
+            border: 1px solid #e8e8e8;
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            max-width: 95%;
         }
-        .room-header .room-title {
-            color: #fff;
-            font-size: 22px;
-        }
-        .room-header .room-code-display {
-            background: rgba(108, 99, 255, 0.15);
-            color: #a78bfa;
-            padding: 6px 20px;
-            border-radius: 40px;
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-        .room-content {
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 20px;
-        }
-        @media (max-width: 768px) {
-            .room-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ===== GAME AREA ===== */
-        .game-area {
-            background: rgba(255,255,255,0.04);
-            border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            min-height: 400px;
-        }
-        .game-area .game-status {
-            color: rgba(255,255,255,0.6);
-            text-align: center;
-            padding: 40px 20px;
-        }
-        .game-area .game-status h3 {
-            color: #fff;
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-        .game-area .game-status .big-icon {
-            font-size: 64px;
-            margin-bottom: 12px;
-        }
-
-        /* Word Game */
-        .word-game {
-            text-align: center;
-        }
-        .word-game .word-display {
-            font-size: 32px;
-            font-weight: 700;
-            color: #fff;
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 16px 0;
-            letter-spacing: 4px;
-            min-height: 80px;
+        
+        #toolbar button {
+            padding: 5px 9px;
+            border: 2px solid transparent;
+            background: #f5f5f5;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+            min-width: 32px;
+            height: 34px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            font-weight: bold;
         }
-        .word-game .word-display .letter {
-            display: inline-block;
-            min-width: 30px;
-            border-bottom: 3px solid var(--primary);
-            padding-bottom: 4px;
-            font-size: 28px;
+        
+        #toolbar button:hover {
+            background: #e8ecf1;
+            border-color: #4a90d9;
         }
-        .word-game .word-display .letter.revealed {
-            border-bottom-color: var(--success);
-            color: #6ee7b7;
-        }
-        .word-game .hint-text {
-            color: rgba(255,255,255,0.5);
-            font-size: 14px;
-            margin: 8px 0 16px;
-        }
-        .word-game .guess-input-group {
-            display: flex;
-            gap: 10px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .word-game .guess-input-group input {
-            flex: 1;
-            padding: 12px 18px;
-            font-size: 16px;
-            border: 2px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            background: rgba(255,255,255,0.06);
+        
+        #toolbar button.active {
+            background: #4a90d9;
+            border-color: #4a90d9;
             color: #fff;
         }
-        .word-game .guess-input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .word-game .guesses-list {
-            margin-top: 16px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-        }
-        .word-game .guesses-list .guess-tag {
-            background: rgba(255,255,255,0.06);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: rgba(255,255,255,0.6);
-        }
-        .word-game .guesses-list .guess-tag.correct {
-            background: rgba(46, 204, 113, 0.2);
-            color: #6ee7b7;
-        }
-
-        /* ===== SIDEBAR ===== */
-        .room-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .room-sidebar .section {
-            background: rgba(255,255,255,0.04);
-            border-radius: var(--radius);
-            padding: 16px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .room-sidebar .section h4 {
-            color: rgba(255,255,255,0.6);
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-        .room-sidebar .players-list .player-item {
+        
+        .tool-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            color: #e2e8f0;
-            font-size: 14px;
+            gap: 3px;
+            padding: 0 4px;
+            border-left: 1px solid #e0e0e0;
         }
-        .room-sidebar .players-list .player-item img {
+        
+        .tool-group:last-child {
+            border-left: none;
+        }
+        
+        #toolbar input[type="color"] {
             width: 28px;
             height: 28px;
+            padding: 2px;
+            border: 2px solid #ddd;
             border-radius: 50%;
-            object-fit: cover;
+            cursor: pointer;
+            background: none;
         }
-        .room-sidebar .players-list .player-item .player-name {
-            flex: 1;
+        
+        #toolbar input[type="range"] {
+            width: 50px;
+            accent-color: #4a90d9;
+            cursor: pointer;
         }
-        .room-sidebar .players-list .player-item .player-score {
-            color: #a78bfa;
-            font-weight: 700;
+        
+        #toolbar .size-label {
+            font-size: 11px;
+            color: #666;
+            min-width: 18px;
+            text-align: center;
+            font-weight: bold;
         }
-        .room-sidebar .players-list .player-item .host-badge {
-            font-size: 10px;
-            background: var(--warning);
-            color: #1a1a2e;
-            padding: 1px 10px;
+        
+        .clear-btn {
+            background: #ff6b6b !important;
+            color: #fff !important;
+        }
+        
+        .clear-btn:hover {
+            background: #ee5a24 !important;
+        }
+        
+        /* اللوحة البيضاء */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #ffffff;
+            z-index: 1;
+        }
+        
+        #drawCanvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            cursor: crosshair;
+            touch-action: none;
+            background: #ffffff;
+        }
+        
+        /* معلومات المستخدمين */
+        #users-info {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 14px;
             border-radius: 20px;
-        }
-        .room-sidebar .room-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .room-sidebar .room-actions .btn {
-            width: 100%;
-            justify-content: center;
-        }
-
-        /* ===== TOAST ===== */
-        .toast-container {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-width: 360px;
-            width: 100%;
-        }
-        .toast {
-            background: #1e293b;
-            color: #f1f5f9;
-            padding: 14px 22px;
-            border-radius: 40px;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.6);
-            animation: toastIn 0.4s ease;
-            font-size: 14px;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.04);
-        }
-        .toast.success {
-            background: #065f46;
-            color: #a7f3d0;
-        }
-        .toast.error {
-            background: #7f1d1d;
-            color: #fca5a5;
-        }
-        .toast.warning {
-            background: #78350f;
-            color: #fde68a;
-        }
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(80px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        .toast.out {
-            animation: toastOut 0.3s ease forwards;
-        }
-        @keyframes toastOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(80px);
-            }
-        }
-
-        /* ===== MODAL ===== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            display: none;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            font-size: 12px;
+            color: #555;
             z-index: 100;
-            padding: 20px;
-        }
-        .modal-overlay.active {
             display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            border: 1px solid #eee;
+            max-width: 95%;
+            overflow-x: auto;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        .modal {
-            background: #1a1a3e;
-            border-radius: var(--radius);
-            padding: 32px;
-            max-width: 500px;
-            width: 100%;
-            border: 1px solid rgba(255,255,255,0.06);
+        
+        #users-info .user-dot {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin: 2px 3px;
         }
-        .modal h3 {
-            color: #fff;
-            font-size: 22px;
-            margin-bottom: 8px;
+        
+        #users-info .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(0,0,0,0.1);
         }
-        .modal p {
-            color: rgba(255,255,255,0.5);
-            margin-bottom: 20px;
+        
+        #users-info .user-name {
+            font-size: 11px;
+            color: #333;
         }
-        .modal .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 520px) {
-            .container {
-                padding: 12px;
+        
+        @media (max-width: 600px) {
+            #toolbar {
+                top: 4px;
+                padding: 4px 6px;
+                gap: 2px;
+                border-radius: 8px;
             }
-            #loginScreen {
-                padding: 24px;
-                margin: 20px auto;
+            #toolbar button {
+                padding: 3px 6px;
+                font-size: 13px;
+                min-width: 26px;
+                height: 28px;
             }
-            .avatar-grid {
-                grid-template-columns: repeat(3, 1fr);
+            #toolbar input[type="range"] {
+                width: 35px;
             }
-            .room-content {
-                grid-template-columns: 1fr;
-            }
-            .word-game .word-display {
-                font-size: 24px;
-                padding: 14px;
-            }
-            .word-game .word-display .letter {
-                font-size: 20px;
-                min-width: 22px;
-            }
-            .modal {
-                padding: 20px;
+            #users-info {
+                bottom: 6px;
+                padding: 3px 10px;
+                font-size: 10px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header -->
-        <header class="header" id="mainHeader">
-            <h1>🎯 كلمة ذكية</h1>
-            <div class="user-info" id="userInfo" style="display:none;">
-                <span id="userNameDisplay"></span>
-                <img id="userAvatarDisplay" src="" alt="avatar">
-            </div>
-        </header>
-
-        <!-- ===== LOGIN SCREEN ===== -->
-        <div class="screen active" id="loginScreen">
-            <h2>👋 مرحباً بك!</h2>
-            <p>أنشئ حسابك للانضمام إلى اللعبة</p>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>اسم المستخدم</label>
-                    <input type="text" id="loginUsername" placeholder="أدخل اسمك..." maxlength="20" required>
-                </div>
-                <div class="form-group">
-                    <label>اختر صورتك الشخصية</label>
-                    <div class="avatar-grid" id="avatarGrid">
-                        <!-- Will be populated by JS -->
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">
-                    🚀 دخول
-                </button>
-            </form>
-        </div>
-
-        <!-- ===== LOBBY SCREEN ===== -->
-        <div class="screen" id="lobbyScreen">
-            <div class="lobby-header">
-                <h2>🏠 القاعة الرئيسية</h2>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                    <button class="btn btn-success" id="createRoomBtn">➕ إنشاء غرفة</button>
-                    <button class="btn btn-outline btn-sm" id="joinRoomBtn">🔑 دخول برمز</button>
-                </div>
-            </div>
-            <div class="rooms-grid" id="roomsList">
-                <p style="color:rgba(255,255,255,0.3);text-align:center;grid-column:1/-1;padding:40px 0;">
-                    لا توجد غرف حالياً. اضغط "إنشاء غرفة" للبدء!
-                </p>
-            </div>
-        </div>
-
-        <!-- ===== ROOM SCREEN ===== -->
-        <div class="screen" id="roomScreen">
-            <div class="room-header">
-                <div>
-                    <div class="room-title" id="roomTitle">غرفة اللعبة</div>
-                    <div class="room-code-display" id="roomCodeDisplay">#000000</div>
-                </div>
-                <button class="btn btn-outline btn-sm" id="leaveRoomBtn">🚪 خروج</button>
-            </div>
-
-            <div class="room-content">
-                <!-- Game Area -->
-                <div class="game-area" id="gameArea">
-                    <div class="game-status" id="gameStatus">
-                        <div class="big-icon">🎮</div>
-                        <h3>انتظر بدء الجولة</h3>
-                        <p>المضيف سيبدأ اللعبة قريباً...</p>
-                    </div>
-                    <div id="gameContent" style="display:none;">
-                        <!-- Game content rendered by JS -->
-                    </div>
-                </div>
-
-                <!-- Sidebar -->
-                <div class="room-sidebar">
-                    <div class="section">
-                        <h4>👥 اللاعبين</h4>
-                        <div class="players-list" id="roomPlayersList"></div>
-                    </div>
-                    <div class="section">
-                        <h4>⚙️ التحكم</h4>
-                        <div class="room-actions" id="roomActions">
-                            <button class="btn btn-primary" id="startGameBtn">▶️ بدء الجولة</button>
-                            <button class="btn btn-danger btn-sm" id="kickPlayerBtn">👢 طرد لاعب</button>
-                        </div>
-                    </div>
-                    <div class="section">
-                        <h4>📊 النتائج</h4>
-                        <div id="resultsDisplay" style="color:rgba(255,255,255,0.6);font-size:14px;">
-                            لم تبدأ الجولات بعد
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- شاشة الدخول -->
+<div id="lobby">
+    <div id="lobby-box">
+        <h2>🎨 لوحة الرسم</h2>
+        <p>ارسم واكتب مع أصدقائك</p>
+        <input type="text" id="username" placeholder="اسمك" value="فنان">
+        <input type="text" id="roomCode" placeholder="رمز الغرفة" value="room1">
+        <button id="joinBtn">🚀 دخول</button>
     </div>
+</div>
 
-    <!-- ===== MODAL ===== -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h3 id="modalTitle">عنوان</h3>
-            <p id="modalDesc">وصف</p>
-            <div id="modalBody"></div>
-            <div class="modal-actions">
-                <button class="btn btn-outline btn-sm" id="modalCancelBtn">إلغاء</button>
-                <button class="btn btn-primary btn-sm" id="modalConfirmBtn">تأكيد</button>
-            </div>
-        </div>
+<!-- شريط الأدوات -->
+<div id="toolbar" class="hidden">
+    <div class="tool-group">
+        <button class="active" data-tool="pen" title="قلم">✏️</button>
+        <button data-tool="line" title="خط">📏</button>
+        <button data-tool="rect" title="مستطيل">▭</button>
+        <button data-tool="circle" title="دائرة">⭕</button>
+        <button data-tool="text" title="نص">🅰️</button>
+        <button data-tool="eraser" title="ممحاة">🧹</button>
     </div>
+    
+    <div class="tool-group">
+        <input type="color" id="colorPicker" value="#000000">
+        <input type="range" id="sizeSlider" min="1" max="30" value="4">
+        <span class="size-label" id="sizeDisplay">4</span>
+    </div>
+    
+    <div class="tool-group">
+        <button class="clear-btn" id="clearBtn">🗑️</button>
+    </div>
+</div>
 
-    <!-- ===== TOAST ===== -->
-    <div class="toast-container" id="toastContainer"></div>
+<!-- اللوحة البيضاء -->
+<div id="canvas-container" class="hidden">
+    <canvas id="drawCanvas"></canvas>
+</div>
 
-    <!-- ===== FIREBASE ===== -->
-    <script type="importmap">
-        {
-            "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-                "firebase/database": "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"
-            }
-        }
-    </script>
+<!-- معلومات المستخدمين -->
+<div id="users-info" class="hidden">
+    <span>👥</span>
+    <span id="usersList">جاري التحميل...</span>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, push, onValue, set, update, remove, onDisconnect, onChildAdded } from "firebase/database";
+<script type="module">
+// استيراد Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // ===== FIREBASE CONFIG =====
-        const firebaseConfig = {
-            apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
-            authDomain: "sdfq-63ee0.firebaseapp.com",
-            databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com",
-            projectId: "sdfq-63ee0",
-            storageBucket: "sdfq-63ee0.firebasestorage.app",
-            messagingSenderId: "210107075463",
-            appId: "1:210107075463:web:469133f4305ecd61d42122"
-        };
+// ========== إعدادات Firebase ==========
+const firebaseConfig = {
+    apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
+    authDomain: "sdfq-63ee0.firebaseapp.com",
+    databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com",
+    projectId: "sdfq-63ee0",
+    storageBucket: "sdfq-63ee0.firebasestorage.app",
+    messagingSenderId: "210107075463",
+    appId: "1:210107075463:web:469133f4305ecd61d42122"
+};
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
-        // ===== DOM REFS =====
-        const $ = id => document.getElementById(id);
-        const loginScreen = $('loginScreen');
-        const lobbyScreen = $('lobbyScreen');
-        const roomScreen = $('roomScreen');
-        const loginForm = $('loginForm');
-        const loginUsername = $('loginUsername');
-        const avatarGrid = $('avatarGrid');
-        const userInfo = $('userInfo');
-        const userNameDisplay = $('userNameDisplay');
-        const userAvatarDisplay = $('userAvatarDisplay');
-        const roomsList = $('roomsList');
-        const createRoomBtn = $('createRoomBtn');
-        const joinRoomBtn = $('joinRoomBtn');
-        const roomTitle = $('roomTitle');
-        const roomCodeDisplay = $('roomCodeDisplay');
-        const roomPlayersList = $('roomPlayersList');
-        const gameArea = $('gameArea');
-        const gameStatus = $('gameStatus');
-        const gameContent = $('gameContent');
-        const startGameBtn = $('startGameBtn');
-        const kickPlayerBtn = $('kickPlayerBtn');
-        const leaveRoomBtn = $('leaveRoomBtn');
-        const resultsDisplay = $('resultsDisplay');
-        const modalOverlay = $('modalOverlay');
-        const modalTitle = $('modalTitle');
-        const modalDesc = $('modalDesc');
-        const modalBody = $('modalBody');
-        const modalCancelBtn = $('modalCancelBtn');
-        const modalConfirmBtn = $('modalConfirmBtn');
-        const toastContainer = $('toastContainer');
+// ========== المتغيرات ==========
+let myName = "فنان";
+let roomCode = "room1";
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+let currentTool = "pen";
+let currentColor = "#000000";
+let currentSize = 4;
+let canvas, ctx;
 
-        // ===== AVATARS =====
-        const AVATARS = [
-            '👨', '👩', '🧑', '👦', '👧', '🧒', '👨‍🦰', '👩‍🦰',
-            '👨‍🦳', '👩‍🦳', '👨‍🦲', '👩‍🦲', '🧔', '👳‍♂️', '👳‍♀️', '🧕',
-            '🦸‍♂️', '🦸‍♀️', '🧙‍♂️', '🧙‍♀️', '🧝‍♂️', '🧝‍♀️', '🧛‍♂️', '🧛‍♀️'
-        ];
+// ========== عناصر HTML ==========
+const lobby = document.getElementById('lobby');
+const joinBtn = document.getElementById('joinBtn');
+const usernameInput = document.getElementById('username');
+const roomInput = document.getElementById('roomCode');
+const toolbar = document.getElementById('toolbar');
+const canvasContainer = document.getElementById('canvas-container');
+const usersInfo = document.getElementById('users-info');
+const usersList = document.getElementById('usersList');
+const colorPicker = document.getElementById('colorPicker');
+const sizeSlider = document.getElementById('sizeSlider');
+const sizeDisplay = document.getElementById('sizeDisplay');
+const clearBtn = document.getElementById('clearBtn');
+const toolBtns = document.querySelectorAll('[data-tool]');
 
-        // ===== STATE =====
-        const state = {
-            uid: '',
-            name: '',
-            avatar: '👨',
-            roomId: '',
-            isHost: false,
-            isPlaying: false,
-            currentGame: null, // 'word' or 'quiz'
-            players: {},
-            gameData: {},
-            myScore: 0
-        };
+// ========== إعداد اللوحة ==========
+function setupCanvas() {
+    canvas = document.getElementById('drawCanvas');
+    if (!canvas) return;
+    ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // ربط الأحداث
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+    
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing, { passive: false });
+}
 
-        // ===== TOAST =====
-        function toast(msg, type = 'info', duration = 3200) {
-            const el = document.createElement('div');
-            el.className = `toast ${type}`;
-            el.textContent = msg;
-            toastContainer.appendChild(el);
-            setTimeout(() => {
-                el.classList.add('out');
-                setTimeout(() => el.remove(), 300);
-            }, duration);
-        }
-
-        // ===== AVATAR GRID =====
-        function renderAvatars() {
-            avatarGrid.innerHTML = '';
-            AVATARS.forEach((emoji, i) => {
-                const div = document.createElement('div');
-                div.className = 'avatar-option' + (i === 0 ? ' selected' : '');
-                div.textContent = emoji;
-                div.style.fontSize = '32px';
-                div.style.display = 'flex';
-                div.style.alignItems = 'center';
-                div.style.justifyContent = 'center';
-                div.dataset.avatar = emoji;
-                div.addEventListener('click', () => {
-                    document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
-                    div.classList.add('selected');
-                });
-                avatarGrid.appendChild(div);
-            });
-        }
-        renderAvatars();
-
-        // ===== SCREEN MANAGEMENT =====
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-            $(screenId).classList.add('active');
-        }
-
-        // ===== LOGIN =====
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = loginUsername.value.trim();
-            if (!name) { toast('❌ أدخل اسمك!', 'error'); return; }
-            if (name.length < 2) { toast('❌ الاسم قصير جداً!', 'error'); return; }
-
-            const selected = document.querySelector('.avatar-option.selected');
-            const avatar = selected ? selected.dataset.avatar : '👨';
-
-            state.name = name;
-            state.avatar = avatar;
-            state.uid = Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
-
-            // Save user data locally
-            localStorage.setItem('smartword_user', JSON.stringify({
-                uid: state.uid,
-                name: state.name,
-                avatar: state.avatar
-            }));
-
-            // Update UI
-            userNameDisplay.textContent = state.name;
-            userAvatarDisplay.textContent = state.avatar;
-            userAvatarDisplay.style.fontSize = '24px';
-            userAvatarDisplay.style.display = 'flex';
-            userAvatarDisplay.style.alignItems = 'center';
-            userAvatarDisplay.style.justifyContent = 'center';
-            userAvatarDisplay.style.background = 'rgba(255,255,255,0.05)';
-            userInfo.style.display = 'flex';
-
-            showScreen('lobbyScreen');
-            toast(`✅ مرحباً ${state.name}!`, 'success');
-            listenRooms();
-        });
-
-        // ===== ROOMS =====
-        function listenRooms() {
-            const roomsRef = ref(db, 'rooms');
-            onValue(roomsRef, (snap) => {
-                const data = snap.val();
-                roomsList.innerHTML = '';
-                if (!data) {
-                    roomsList.innerHTML =
-                        `<p style="color:rgba(255,255,255,0.3);text-align:center;grid-column:1/-1;padding:40px 0;">
-                        لا توجد غرف حالياً. اضغط "إنشاء غرفة" للبدء!
-                    </p>`;
-                    return;
-                }
-                const entries = Object.entries(data);
-                entries.forEach(([roomId, roomData]) => {
-                    const card = document.createElement('div');
-                    card.className = 'room-card';
-                    const playersCount = roomData.players ? Object.keys(roomData.players).length : 0;
-                    card.innerHTML = `
-                        <h3>${roomData.name || 'غرفة'}</h3>
-                        <p>المضيف: ${roomData.hostName || 'غير معروف'}</p>
-                        <div class="room-code">#${roomId}</div>
-                        <div class="players-count">👥 ${playersCount} لاعب</div>
-                    `;
-                    card.addEventListener('click', () => joinRoom(roomId));
-                    roomsList.appendChild(card);
-                });
-            });
-        }
-
-        // ===== CREATE ROOM =====
-        createRoomBtn.addEventListener('click', () => {
-            const roomId = Math.random().toString(36).substr(2, 6).toUpperCase();
-            const roomRef = ref(db, `rooms/${roomId}`);
-            set(roomRef, {
-                name: `غرفة ${state.name}`,
-                host: state.uid,
-                hostName: state.name,
-                createdAt: Date.now(),
-                gameType: 'word', // 'word' or 'quiz'
-                isPlaying: false,
-                round: 0,
-                maxRounds: 3
-            }).then(() => {
-                joinRoom(roomId);
-                toast(`✅ تم إنشاء الغرفة #${roomId}`, 'success');
-            });
-        });
-
-        // ===== JOIN ROOM =====
-        joinRoomBtn.addEventListener('click', () => {
-            modalTitle.textContent = '🔑 دخول الغرفة';
-            modalDesc.textContent = 'أدخل رمز الغرفة للانضمام';
-            modalBody.innerHTML = `
-                <input type="text" id="joinRoomInput" placeholder="مثال: ABC123" 
-                       style="width:100%;padding:12px;border:2px solid rgba(255,255,255,0.08);
-                       border-radius:12px;background:rgba(255,255,255,0.06);color:#fff;font-size:16px;">
-            `;
-            modalConfirmBtn.onclick = () => {
-                const code = document.getElementById('joinRoomInput').value.trim().toUpperCase();
-                if (!code) { toast('❌ أدخل رمز الغرفة!', 'error'); return; }
-                modalOverlay.classList.remove('active');
-                joinRoom(code);
+// ========== دوال الرسم ==========
+function startDrawing(e) {
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+    
+    // أداة النص
+    if (currentTool === 'text') {
+        const text = prompt('✏️ اكتب النص:');
+        if (text && text.trim()) {
+            const data = {
+                type: 'text',
+                x: pos.x,
+                y: pos.y,
+                text: text.trim(),
+                color: currentColor,
+                size: currentSize * 2 + 14,
+                sender: myName,
+                time: Date.now()
             };
-            modalCancelBtn.onclick = () => modalOverlay.classList.remove('active');
-            modalOverlay.classList.add('active');
+            drawOnCanvas(data);
+            saveToFirebase(data);
+        }
+        isDrawing = false;
+    }
+}
+
+function draw(e) {
+    e.preventDefault();
+    if (!isDrawing || currentTool === 'text') return;
+    
+    const pos = getPos(e);
+    const color = currentTool === 'eraser' ? '#ffffff' : currentColor;
+    
+    const data = {
+        type: currentTool,
+        x1: lastX,
+        y1: lastY,
+        x2: pos.x,
+        y2: pos.y,
+        color: color,
+        size: currentTool === 'eraser' ? currentSize * 3 : currentSize,
+        sender: myName,
+        time: Date.now()
+    };
+    
+    drawOnCanvas(data);
+    saveToFirebase(data);
+    
+    lastX = pos.x;
+    lastY = pos.y;
+}
+
+function stopDrawing(e) {
+    if (e) e.preventDefault();
+    isDrawing = false;
+}
+
+function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    let clientX, clientY;
+    
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+    
+    return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+    };
+}
+
+// ========== رسم على canvas ==========
+function drawOnCanvas(data) {
+    if (!ctx) return;
+    ctx.save();
+    
+    ctx.strokeStyle = data.color || '#000000';
+    ctx.fillStyle = data.color || '#000000';
+    ctx.lineWidth = data.size || 4;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    switch(data.type) {
+        case 'pen':
+        case 'eraser':
+            ctx.beginPath();
+            ctx.moveTo(data.x1, data.y1);
+            ctx.lineTo(data.x2, data.y2);
+            ctx.stroke();
+            break;
+            
+        case 'line':
+            ctx.beginPath();
+            ctx.moveTo(data.x1, data.y1);
+            ctx.lineTo(data.x2, data.y2);
+            ctx.stroke();
+            break;
+            
+        case 'rect':
+            const w = data.x2 - data.x1;
+            const h = data.y2 - data.y1;
+            ctx.strokeRect(data.x1, data.y1, w, h);
+            break;
+            
+        case 'circle':
+            const radius = Math.sqrt(
+                Math.pow(data.x2 - data.x1, 2) + 
+                Math.pow(data.y2 - data.y1, 2)
+            );
+            ctx.beginPath();
+            ctx.arc(data.x1, data.y1, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            break;
+            
+        case 'text':
+            ctx.font = `${data.size || 20}px Arial, sans-serif`;
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'top';
+            ctx.fillText(data.text, data.x, data.y);
+            break;
+            
+        case 'clear':
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            break;
+    }
+    
+    ctx.restore();
+}
+
+// ========== حفظ في Firebase ==========
+function saveToFirebase(data) {
+    if (!roomCode) return;
+    const drawRef = ref(database, `rooms/${roomCode}/drawings`);
+    push(drawRef, data);
+}
+
+// ========== استماع للرسومات ==========
+function listenToDrawings() {
+    const drawRef = ref(database, `rooms/${roomCode}/drawings`);
+    
+    onChildAdded(drawRef, (snapshot) => {
+        const data = snapshot.val();
+        drawOnCanvas(data);
+    });
+}
+
+// ========== إدارة المستخدمين ==========
+function manageUsers() {
+    const userRef = ref(database, `rooms/${roomCode}/users/${myName}`);
+    
+    // تسجيل المستخدم
+    set(userRef, {
+        name: myName,
+        color: currentColor,
+        lastActive: Date.now()
+    });
+    
+    // تحديث اللون
+    colorPicker.addEventListener('input', () => {
+        currentColor = colorPicker.value;
+        set(userRef, {
+            name: myName,
+            color: currentColor,
+            lastActive: Date.now()
         });
-
-        function joinRoom(roomId) {
-            if (!roomId) return;
-            state.roomId = roomId;
-
-            // Add player to room
-            const playerRef = ref(db, `rooms/${roomId}/players/${state.uid}`);
-            set(playerRef, {
-                name: state.name,
-                avatar: state.avatar,
-                score: 0,
-                joinedAt: Date.now()
-            });
-            onDisconnect(playerRef).remove();
-
-            // Listen to room data
-            listenRoom(roomId);
-            showScreen('roomScreen');
-            roomTitle.textContent = `غرفة #${roomId}`;
-            roomCodeDisplay.textContent = `#${roomId}`;
+    });
+    
+    // استماع للمستخدمين
+    const usersRef = ref(database, `rooms/${roomCode}/users`);
+    onValue(usersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+            usersList.textContent = 'لا يوجد مستخدمين';
+            return;
         }
-
-        // ===== LISTEN ROOM =====
-        function listenRoom(roomId) {
-            const roomRef = ref(db, `rooms/${roomId}`);
-
-            onValue(roomRef, (snap) => {
-                const data = snap.val();
-                if (!data) {
-                    toast('❌ الغرفة غير موجودة!', 'error');
-                    showScreen('lobbyScreen');
-                    return;
-                }
-
-                state.isHost = (data.host === state.uid);
-                state.isPlaying = data.isPlaying || false;
-                state.currentGame = data.gameType || 'word';
-
-                // Update players
-                if (data.players) {
-                    state.players = data.players;
-                    renderPlayers(data.players);
-                    updateRoomActions();
-                }
-
-                // Update game status
-                if (data.isPlaying) {
-                    gameStatus.style.display = 'none';
-                    gameContent.style.display = 'block';
-                    renderGame(data);
-                } else {
-                    gameStatus.style.display = 'block';
-                    gameContent.style.display = 'none';
-                    document.querySelector('#gameStatus h3').textContent = '⏳ انتظر بدء الجولة';
-                    document.querySelector('#gameStatus p').textContent = 'المضيف سيبدأ اللعبة قريباً...';
-                }
-
-                // Update results
-                if (data.players) {
-                    const scores = Object.values(data.players).sort((a, b) => (b.score || 0) - (a.score || 0));
-                    resultsDisplay.innerHTML = scores.map(p =>
-                        `${p.avatar} ${p.name}: ${p.score || 0} نقطة`
-                    ).join('<br>');
-                }
-            });
-        }
-
-        // ===== RENDER PLAYERS =====
-        function renderPlayers(players) {
-            roomPlayersList.innerHTML = '';
-            const entries = Object.entries(players);
-            entries.forEach(([uid, player]) => {
-                const div = document.createElement('div');
-                div.className = 'player-item';
-                const isHost = uid === state.uid && state.isHost;
-                div.innerHTML = `
-                    <span style="font-size:20px;">${player.avatar || '👤'}</span>
-                    <span class="player-name">${player.name} ${isHost ? '<span class="host-badge">👑 مضيف</span>' : ''}</span>
-                    <span class="player-score">${player.score || 0}</span>
-                `;
-                if (state.isHost && uid !== state.uid) {
-                    div.style.cursor = 'pointer';
-                    div.addEventListener('dblclick', () => {
-                        if (confirm(`طرد ${player.name} من الغرفة؟`)) {
-                            remove(ref(db, `rooms/${state.roomId}/players/${uid}`));
-                            toast(`👢 تم طرد ${player.name}`, 'warning');
-                        }
-                    });
-                }
-                roomPlayersList.appendChild(div);
-            });
-        }
-
-        // ===== UPDATE ROOM ACTIONS =====
-        function updateRoomActions() {
-            if (state.isHost) {
-                startGameBtn.style.display = 'block';
-                kickPlayerBtn.style.display = 'block';
-            } else {
-                startGameBtn.style.display = 'none';
-                kickPlayerBtn.style.display = 'none';
-            }
-        }
-
-        // ===== START GAME =====
-        startGameBtn.addEventListener('click', () => {
-            if (!state.isHost) { toast('❌ فقط المضيف يمكنه بدء اللعبة!', 'error'); return; }
-            const players = Object.keys(state.players);
-            if (players.length < 2) {
-                toast('❌ يحتاج على الأقل 2 لاعبين!', 'error');
-                return;
-            }
-            startGame();
-        });
-
-        function startGame() {
-            const roomRef = ref(db, `rooms/${state.roomId}`);
-            update(roomRef, {
-                isPlaying: true,
-                round: 0,
-                maxRounds: 3,
-                gameType: state.currentGame || 'word',
-                gameData: {
-                    word: getRandomWord(),
-                    revealed: [],
-                    guesses: [],
-                    round: 1,
-                    turn: 0
-                }
-            });
-            toast('🎮 بدأت الجولة!', 'success');
-        }
-
-        // ===== WORD GAME =====
-        const WORDS = [
-            'قط', 'كلب', 'أسد', 'فيل', 'زرافة', 'نمر', 'أرنب', 'سلحفاة', 'دلفين', 'نسر',
-            'سيارة', 'طائرة', 'قلم', 'كتاب', 'هاتف', 'حاسوب', 'ساعة', 'مصباح', 'كرسي', 'طاولة',
-            'بيتزا', 'برغر', 'معكرونة', 'شوكولاتة', 'آيس كريم', 'فطيرة', 'كعكة', 'سوشي', 'تفاح', 'موز',
-            'مدرسة', 'مستشفى', 'مطعم', 'حديقة', 'شاطئ', 'جبل', 'غابة', 'مدينة', 'قرية', 'جامعة',
-            'رقص', 'غناء', 'قراءة', 'كتابة', 'سباحة', 'جري', 'قفز', 'رسم', 'طبخ', 'نوم'
-        ];
-
-        function getRandomWord() {
-            return WORDS[Math.floor(Math.random() * WORDS.length)];
-        }
-
-        function renderGame(data) {
-            const gameData = data.gameData || {};
-            const word = gameData.word || '???';
-            const revealed = gameData.revealed || [];
-            const guesses = gameData.guesses || [];
-            const round = gameData.round || 1;
-            const maxRounds = data.maxRounds || 3;
-
-            // Check if game is over
-            if (round > maxRounds) {
-                gameStatus.style.display = 'block';
-                gameContent.style.display = 'none';
-                document.querySelector('#gameStatus h3').textContent = '🏆 انتهت اللعبة!';
-                document.querySelector('#gameStatus p').textContent = 'شاهد النتائج في الجانب';
-                return;
-            }
-
-            // Render word with revealed letters
-            const wordLetters = word.split('');
-            let wordHTML = '';
-            wordLetters.forEach((letter, i) => {
-                const isRevealed = revealed.includes(i);
-                wordHTML += `<span class="letter ${isRevealed ? 'revealed' : ''}">${isRevealed ? letter : '_'}</span>`;
-            });
-
-            gameContent.innerHTML = `
-                <div class="word-game">
-                    <h3 style="color:#fff;font-size:20px;">🎯 الجولة ${round}/${maxRounds}</h3>
-                    <div class="word-display">${wordHTML}</div>
-                    <div class="hint-text">💡 خمّن الحروف أو الكلمة كاملة</div>
-                    <div class="guess-input-group">
-                        <input type="text" id="wordGuessInput" placeholder="أدخل حرف أو كلمة..." maxlength="20">
-                        <button class="btn btn-success" id="wordGuessBtn">تخمين</button>
-                    </div>
-                    <div class="guesses-list">
-                        ${guesses.map(g => 
-                            `<span class="guess-tag ${g.correct ? 'correct' : ''}">${g.text} ${g.correct ? '✅' : '❌'}</span>`
-                        ).join('')}
-                    </div>
-                </div>
+        
+        const names = Object.keys(data);
+        let html = '';
+        names.forEach(name => {
+            const user = data[name];
+            const isMe = name === myName;
+            html += `
+                <span class="user-dot">
+                    <span class="dot" style="background:${user.color || '#888'}"></span>
+                    <span class="user-name">${name}${isMe ? ' ⭐' : ''}</span>
+                </span>
             `;
+        });
+        usersList.innerHTML = html;
+    });
+    
+    // عند الإغلاق
+    window.addEventListener('beforeunload', () => {
+        remove(userRef);
+    });
+}
 
-            // Guess handler
-            const guessInput = document.getElementById('wordGuessInput');
-            const guessBtn = document.getElementById('wordGuessBtn');
+// ========== مسح اللوحة ==========
+function clearCanvas() {
+    if (!confirm('🗑️ مسح كل الرسومات؟')) return;
+    
+    const data = {
+        type: 'clear',
+        sender: myName,
+        time: Date.now()
+    };
+    
+    drawOnCanvas(data);
+    saveToFirebase(data);
+}
 
-            function handleGuess() {
-                const text = guessInput.value.trim();
-                if (!text) return;
-                if (text.length === 0) return;
+// ========== الدخول للغرفة ==========
+joinBtn.addEventListener('click', () => {
+    myName = usernameInput.value.trim() || 'فنان';
+    roomCode = roomInput.value.trim().toLowerCase() || 'room1';
+    
+    // إخفاء شاشة الدخول
+    lobby.classList.add('hidden');
+    toolbar.classList.remove('hidden');
+    canvasContainer.classList.remove('hidden');
+    usersInfo.classList.remove('hidden');
+    
+    // إعداد اللوحة
+    setupCanvas();
+    listenToDrawings();
+    manageUsers();
+});
 
-                const roomRef = ref(db, `rooms/${state.roomId}`);
-                const gameDataRef = ref(db, `rooms/${state.roomId}/gameData`);
-
-                // Check if letter or word
-                if (text.length === 1) {
-                    // Letter guess
-                    const letter = text;
-                    const wordLetters = word.split('');
-                    const newRevealed = [...revealed];
-                    let found = false;
-                    wordLetters.forEach((l, i) => {
-                        if (l === letter && !newRevealed.includes(i)) {
-                            newRevealed.push(i);
-                            found = true;
-                        }
-                    });
-
-                    if (found) {
-                        update(gameDataRef, { revealed: newRevealed });
-                        toast(`✅ الحرف "${letter}" موجود!`, 'success');
-                    } else {
-                        toast(`❌ الحرف "${letter}" غير موجود`, 'error');
-                    }
-
-                    // Add guess
-                    const guessesRef = ref(db, `rooms/${state.roomId}/gameData/guesses`);
-                    push(guessesRef, { text: letter, correct: found });
-
-                } else {
-                    // Word guess
-                    const isCorrect = text === word;
-                    if (isCorrect) {
-                        // Award points
-                        const playerRef = ref(db, `rooms/${state.roomId}/players/${state.uid}`);
-                        const currentScore = state.players[state.uid]?.score || 0;
-                        const points = 10 + (data.gameData?.round || 1) * 2;
-                        update(playerRef, { score: currentScore + points });
-                        toast(`🎉 ${points} نقطة! الكلمة صحيحة!`, 'success', 4000);
-
-                        // End round
-                        update(roomRef, {
-                            isPlaying: false,
-                            'gameData/word': '',
-                            round: (data.gameData?.round || 1) + 1
-                        });
-
-                        // Check if game over
-                        const newRound = (data.gameData?.round || 1) + 1;
-                        if (newRound > (data.maxRounds || 3)) {
-                            toast('🏆 انتهت اللعبة!', 'success', 5000);
-                        } else {
-                            toast(`🔄 جولة ${newRound} تبدأ قريباً...`, 'info', 3000);
-                            setTimeout(() => {
-                                update(roomRef, {
-                                    isPlaying: true,
-                                    'gameData/word': getRandomWord(),
-                                    'gameData/revealed': [],
-                                    'gameData/guesses': [],
-                                    'gameData/round': newRound
-                                });
-                            }, 2000);
-                        }
-                    } else {
-                        toast(`❌ "${text}" ليست الكلمة الصحيحة`, 'error');
-                        const guessesRef = ref(db, `rooms/${state.roomId}/gameData/guesses`);
-                        push(guessesRef, { text: text, correct: false });
-                    }
-                }
-
-                guessInput.value = '';
-            }
-
-            guessBtn.addEventListener('click', handleGuess);
-            guessInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleGuess();
-            });
+// ========== أحداث الأدوات ==========
+toolBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        toolBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTool = btn.dataset.tool;
+        
+        // تغيير المؤشر
+        if (canvas) {
+            canvas.style.cursor = currentTool === 'eraser' ? 'cell' : 'crosshair';
         }
+    });
+});
 
-        // ===== KICK PLAYER =====
-        kickPlayerBtn.addEventListener('click', () => {
-            if (!state.isHost) { toast('❌ فقط المضيف يمكنه الطرد!', 'error'); return; }
-            const players = Object.values(state.players);
-            if (players.length <= 1) { toast('❌ لا يوجد لاعبين للطرد!', 'warning'); return; }
+// ========== تغيير الحجم ==========
+sizeSlider.addEventListener('input', (e) => {
+    currentSize = parseInt(e.target.value);
+    sizeDisplay.textContent = currentSize;
+});
 
-            modalTitle.textContent = '👢 طرد لاعب';
-            modalDesc.textContent = 'اختر لاعب لطرده من الغرفة';
-            modalBody.innerHTML = `
-                <select id="kickSelect" style="width:100%;padding:12px;border:2px solid rgba(255,255,255,0.08);
-                        border-radius:12px;background:rgba(255,255,255,0.06);color:#fff;font-size:16px;">
-                    ${Object.entries(state.players)
-                        .filter(([uid]) => uid !== state.uid)
-                        .map(([uid, p]) => `<option value="${uid}">${p.avatar} ${p.name}</option>`)
-                        .join('')}
-                </select>
-            `;
-            modalConfirmBtn.onclick = () => {
-                const uid = document.getElementById('kickSelect').value;
-                if (uid) {
-                    remove(ref(db, `rooms/${state.roomId}/players/${uid}`));
-                    toast('👢 تم طرد اللاعب', 'warning');
-                    modalOverlay.classList.remove('active');
-                }
-            };
-            modalCancelBtn.onclick = () => modalOverlay.classList.remove('active');
-            modalOverlay.classList.add('active');
-        });
+// ========== تغيير اللون ==========
+colorPicker.addEventListener('input', (e) => {
+    currentColor = e.target.value;
+});
 
-        // ===== LEAVE ROOM =====
-        leaveRoomBtn.addEventListener('click', () => {
-            if (state.isHost) {
-                if (!confirm('أنت المضيف. حذف الغرفة سيؤدي إلى طرد جميع اللاعبين. متأكد؟')) return;
-                remove(ref(db, `rooms/${state.roomId}`));
-                toast('🗑️ تم حذف الغرفة', 'warning');
-            } else {
-                remove(ref(db, `rooms/${state.roomId}/players/${state.uid}`));
-                toast('🚪 غادرت الغرفة', 'info');
-            }
-            state.roomId = '';
-            showScreen('lobbyScreen');
-        });
+// ========== مسح ==========
+clearBtn.addEventListener('click', clearCanvas);
 
-        // ===== MODAL CONTROLS =====
-        modalCancelBtn.addEventListener('click', () => modalOverlay.classList.remove('active'));
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) modalOverlay.classList.remove('active');
-        });
+// ========== تغيير حجم النافذة ==========
+window.addEventListener('resize', () => {
+    if (!canvas || !ctx) return;
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.putImageData(imageData, 0, 0);
+});
 
-        // ===== CHECK USER SESSION =====
-        const savedUser = localStorage.getItem('smartword_user');
-        if (savedUser) {
-            try {
-                const user = JSON.parse(savedUser);
-                state.uid = user.uid;
-                state.name = user.name;
-                state.avatar = user.avatar;
-                userNameDisplay.textContent = state.name;
-                userAvatarDisplay.textContent = state.avatar;
-                userAvatarDisplay.style.fontSize = '24px';
-                userAvatarDisplay.style.display = 'flex';
-                userAvatarDisplay.style.alignItems = 'center';
-                userAvatarDisplay.style.justifyContent = 'center';
-                userAvatarDisplay.style.background = 'rgba(255,255,255,0.05)';
-                userInfo.style.display = 'flex';
-                showScreen('lobbyScreen');
-                listenRooms();
-                toast(`👋 مرحباً بعودتك ${state.name}!`, 'success');
-            } catch (e) {
-                localStorage.removeItem('smartword_user');
-            }
-        }
+// ========== اختصارات الكيبورد ==========
+document.addEventListener('keydown', (e) => {
+    const keys = {
+        '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5
+    };
+    if (e.key in keys && toolBtns[keys[e.key]]) {
+        toolBtns[keys[e.key]].click();
+    }
+});
 
-        console.log('🎯 كلمة ذكية - Smart Word Game Loaded!');
-    </script>
+console.log('✅ لوحة الرسم جاهزة!');
+</script>
 </body>
 </html>
