@@ -77,12 +77,12 @@
     </div>
 </div>
 
-<!-- تحميل مكتبات Firebase المتوافقة مع المتصفح المباشر -->
-<script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
+<!-- الروابط العالمية الجديدة المستقرة 100% لـ Firebase الإصدار v8 -->
+<script src="https://cloudflare.com"></script>
+<script src="https://cloudflare.com"></script>
 
 <script>
-// إعدادات Firebase الخاصة بمشروعك (مأخوذة من صورتك بدقة)
+// إعدادات Firebase الخاصة بمشروعك الحالي
 const firebaseConfig = {
     apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
     authDomain: "://firebaseapp.com",
@@ -94,8 +94,10 @@ const firebaseConfig = {
     measurementId: "G-0CNB95E2X4"
 };
 
-// تهيئة Firebase
-firebase.initializeApp(firebaseConfig);
+// تهيئة الخدمة بالطريقة المتوافقة
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const database = firebase.database();
 
 const lobby = document.getElementById('lobby');
