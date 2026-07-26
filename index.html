@@ -2,1461 +2,239 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>منصة هاتف الرسم الجماعي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الرسم الجماعية</title>
     <style>
-        * { box-sizing: border-box; font-family: Tahoma, Geneva, sans-serif; -webkit-tap-highlight-color: transparent; }
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #f0f2f5; color: #333333; overflow: hidden; }
-        body { display: flex; flex-direction: column; width: 100%; height: 100%; }
-        
-        .screen { display: none; flex: 1; flex-direction: column; padding: 20px; overflow-y: auto; width: 100%; height: 100%; }
-        .screen.active { display: flex; }
-        
-        h1, h2, h3 { text-align: center; color: #1e3a8a; margin-top: 10px; font-weight: bold; }
-        p { text-align: center; color: #4b5563; font-size: 0.95rem; margin-bottom: 20px; }
-        
-        input, select, textarea { 
-            width: 100%; padding: 12px; background-color: #ffffff; 
-            border: 1px solid #cccccc; border-radius: 8px; 
-            margin-bottom: 12px; font-size: 1rem; text-align: center; 
-            color: #333333; outline: none; resize: none;
-        }
-        input:focus, select:focus, textarea:focus { border-color: #2563eb; }
-        
-        button { 
-            width: 100%; padding: 13px; background-color: #2563eb; 
-            color: #ffffff; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; 
-            cursor: pointer; margin-bottom: 10px; transition: background-color 0.2s;
-        }
-        button:active { background-color: #1d4ed8; }
-        button:disabled { background-color: #9ca3af; color: #ffffff; cursor: not-allowed; }
-        
-        .photo-uploader { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
-        .avatar-preview { width: 85px; height: 85px; border-radius: 50%; border: 1px solid #cccccc; object-fit: cover; background-color: #ffffff; margin-bottom: 10px; }
-        .file-label { background-color: #4b5563; color: #ffffff; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
-        .user-photo-mini { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-left: 6px; border: 1px solid #cccccc; background-color: #ffffff; }
-        
-        .join-box { background-color: #ffffff; padding: 15px; border-radius: 12px; border: 1px solid #e5e7eb; margin-top: 20px; }
-        .lobby-info { background-color: #eff6ff; padding: 12px; border-radius: 10px; color: #1e40af; font-weight: bold; margin-bottom: 15px; border: 1px solid #bfdbfe; text-align: center; line-height: 1.6; font-size: 1rem; }
-        
-        .players-panel { background-color: #ffffff; border-radius: 12px; padding: 12px; margin-bottom: 20px; border: 1px solid #e5e7eb; flex: 1; min-height: 120px; }
-        .players-list-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .player-chip { background-color: #f3f4f6; border: 1px solid #e5e7eb; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; font-weight: bold; color: #374151; }
-        
-        .invite-notification { background-color: #fef3c7; color: #92400e; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; text-align: center; border: 1px solid #fde68a; display: none; }
-        
-        .canvas-container { width: 100%; background-color: #ffffff; border-radius: 12px; border: 1px solid #cccccc; overflow: hidden; position: relative; margin-bottom: 12px; }
-        canvas { display: block; background-color: #ffffff; width: 100%; height: 260px; cursor: crosshair; touch-action: none; }
-        
-        .canvas-tools { display: flex; justify-content: space-around; background-color: #f3f4f6; padding: 8px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #e5e7eb; flex-wrap: wrap; gap: 5px; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #cccccc; }
-        .color-dot.active { border-color: #2563eb; transform: scale(1.1); box-shadow: 0 0 5px rgba(37,99,235,0.5); }
-        .btn-clear { background-color: #dc2626; color: #ffffff; padding: 4px 10px; font-size: 0.8rem; border-radius: 6px; width: auto; margin: 0; }
-        
-        .timer-bar-container { width: 100%; height: 8px; background-color: #e5e7eb; border-radius: 4px; margin-bottom: 15px; overflow: hidden; }
-        .timer-bar { width: 100%; height: 100%; background-color: #16a34a; transition: width 0.3s ease; }
-        .status-footer { text-align: center; font-weight: bold; color: #b45309; margin: 10px 0; min-height: 20px; font-size: 1rem; }
-        
-        .album-box { background-color: #ffffff; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #e5e7eb; text-align: center; }
-        .album-img { width: 100%; max-height: 220px; object-fit: contain; background-color: #ffffff; border-radius: 8px; border: 1px solid #cccccc; margin: 10px 0; }
-        .album-text { font-size: 1.1rem; font-weight: bold; color: #16a34a; margin: 5px 0; }
-        .question-box { background-color: #f3f4f6; padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 1.1rem; border: 1px solid #e5e7eb; }
-        .flex-row { display: flex; gap: 8px; }
-        .flex-row button { width: 50%; }
-        .album-controls { display: flex; gap: 10px; justify-content: center; margin: 15px 0; }
-        .album-controls button { width: auto; padding: 8px 20px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 10px; }
+        .container { width: 100%; max-width: 900px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        h1 { color: #333; margin-bottom: 20px; font-size: 24px; }
+        input, button { padding: 12px; margin: 5px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; width: 100%; max-width: 200px; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
         .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .mt-10 { margin-top: 10px; }
-        .mb-10 { margin-bottom: 10px; }
-        .error-message { background-color: #fee2e2; color: #dc2626; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: none; border: 1px solid #fca5a5; }
-        .success-message { background-color: #dcfce7; color: #16a34a; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: none; border: 1px solid #86efac; }
-        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f4f6; border-top: 3px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .game-status { background-color: #f3f4f6; padding: 10px; border-radius: 8px; margin-bottom: 10px; text-align: center; font-weight: bold; }
-        .player-turn { background-color: #dbeafe; padding: 8px; border-radius: 6px; margin: 5px 0; text-align: center; }
-        .waiting-message { background-color: #fef3c7; padding: 10px; border-radius: 8px; text-align: center; color: #92400e; display: none; }
-        .phase-indicator { display: flex; justify-content: center; gap: 15px; margin: 10px 0; flex-wrap: wrap; }
-        .phase-step { padding: 5px 15px; border-radius: 20px; background-color: #e5e7eb; color: #6b7280; font-size: 0.8rem; }
-        .phase-step.active { background-color: #2563eb; color: #ffffff; }
-        .phase-step.done { background-color: #16a34a; color: #ffffff; }
-        .drawing-preview { max-width: 100%; max-height: 150px; border-radius: 8px; margin: 10px 0; border: 1px solid #e5e7eb; }
+        
+        /* شاشة اللعبة */
+        #gameArea { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
+        #canvasContainer { width: 100%; max-width: 600px; aspect-ratio: 4/3; background: #fff; border: 3px solid #333; border-radius: 8px; touch-action: none; position: relative; }
+        canvas { width: 100%; height: 100%; display: block; background: white; cursor: crosshair; }
+        
+        /* أدوات الرسم */
+        .controls { display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 600px; }
+        .color-btn { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 5px rgba(0,0,0,0.3); cursor: pointer; }
+        #clearBtn { background: #dc3545; color: white; max-width: 100px; padding: 8px; }
+        
+        /* نظام التخمين والدردشة */
+        #chatArea { width: 100%; max-width: 600px; background: #fafafa; border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
+        #chatBox { height: 120px; overflow-y: auto; text-align: right; padding: 5px; border-bottom: 1px solid #eee; margin-bottom: 10px; font-size: 14px; }
+        .chat-input-group { display: flex; gap: 5px; }
+        #guessInput { flex: 1; max-width: none; }
+        #sendGuessBtn { max-width: 80px; }
+        
+        @media (min-width: 768px) {
+            #gameArea { flex-direction: row; align-items: flex-start; justify-content: center; }
+            #canvasContainer { flex: 2; }
+            #sidebar { flex: 1; display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 280px; }
+            #chatArea { max-width: 100%; }
+        }
     </style>
 </head>
 <body>
-<div class="app-container">
-    <!-- 1. شاشة تسجيل الدخول -->
-    <div id="scrLogin" class="screen active">
-        <h1>🎨 ملفك الشخصي</h1>
-        <p>ارفع صورتك واكتب اسمك لتجهيز ملفك وبدء تحدي الرسم المضحك:</p>
-        
-        <div class="photo-uploader">
-            <img src="data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 24 24' fill='%2364748b'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" class="avatar-preview" id="profilePhotoPreview">
-            <input type="file" id="inpPlayerPhoto" accept="image/*" style="display: none;" onchange="previewAndProcessPhoto(this)">
-            <label for="inpPlayerPhoto" class="file-label">📸 اختر صورة من جهازك</label>
-        </div>
-        
-        <input type="text" id="inpPlayerName" placeholder="اكتب اسمك هنا...">
-        <button onclick="commitProfile()">موافق وحفظ الحساب 🚀</button>
-        
-        <div id="notifInvite" class="invite-notification">
-            <span id="txtInviteNotify">📩 لديك دعوة جديدة!</span>
-            <button onclick="acceptDirectInvite()" style="margin-top:8px; background-color:#16a34a;">قبول الدعوة ✅</button>
-        </div>
+
+<div class="container">
+    <h1>🎨 لعبة الرسم الجماعية السريعة</h1>
+
+    <!-- شاشة الدخول وإنشاء الغرف -->
+    <div id="lobby">
+        <input type="text" id="username" placeholder="اكتب اسمك هنا">
+        <input type="text" id="roomCode" placeholder="رمز الغرفة (مثال: 123)">
+        <button id="joinBtn">دخول اللعبة</button>
     </div>
 
-    <!-- 2. الشاشة الرئيسية -->
-    <div id="scrHome" class="screen">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#ffffff; padding:10px 15px; border-radius:8px; border:1px solid #e5e7eb;">
-            <div id="homeProfileDisplay" style="font-weight:bold; display:flex; align-items:center; color:#333;"></div>
-            <button style="width:auto; padding:6px 12px; margin:0; font-size:0.85rem; background-color:#4b5563; color:#fff;" onclick="backToProfileUpdate()">⚙️ تعديل</button>
-        </div>
-
-        <div id="homeErrorMessage" class="error-message"></div>
-        <div id="homeSuccessMessage" class="success-message"></div>
-
-        <p style="font-weight:bold; color:#1e3a8a; text-align:right; margin-bottom:5px;">أنشئ غرفة جديدة وتولى الإدارة والتحكيم:</p>
-        <button id="btnCreateRoom" style="background-color:#16a34a;" onclick="initiateRoom()">🎨 إنشاء غرفة هاتف الرسم 🚀</button>
-
-        <div class="join-box">
-            <p style="margin-top:0; font-weight:bold; text-align:right; color:#4b5563;">دخول غرفة أصحابك عبر الكود السري:</p>
-            <input type="text" id="inpRoomCode" placeholder="اكتب كود الغرفة المكون من 4 أرقام...">
-            <button id="btnJoinRoom" style="background-color:#7c3aed; color:#fff;" onclick="connectRoomByCode()">التحقق ودخول الغرفة 🔑</button>
-        </div>
-    </div>
-
-    <!-- 3. شاشة الانتظار (Lobby) -->
-    <div id="scrLobby" class="screen">
-        <div class="lobby-info">
-            🏢 غرفة: هاتف الرسم اللاسلكي 📱<br>
-            🔑 كود الغرفة السري: <span id="lobCodeText" style="color:#dc2626; font-size:1.4rem; letter-spacing: 2px;">--</span><br>
-            ⏱️ وقت التفكير المختار: <span id="lobTimerText" style="color:#16a34a;">45</span> ثانية
-        </div>
-
-        <div id="hostTimerWrapper" style="display:none; background-color:#ffffff; padding:12px; border-radius:8px; border:1px solid #e5e7eb; margin-bottom:15px;">
-            <p style="text-align:right; margin-bottom:6px; font-weight:bold; color:#1e3a8a; font-size:0.9rem;">⚙️ حدد وقت الرسم والتفكير لكل جولة:</p>
-            <select id="selectTimerConfig" style="margin-bottom:0;" onchange="updateRoomTimerConfig(this.value)">
-                <option value="30">30 ثانية (تحدي سريع ومجنون)</option>
-                <option value="45" selected>45 ثانية (وقت قياسي وممتاز)</option>
-                <option value="60">60 ثانية (رسم براحة وتفاصيل)</option>
-            </select>
-        </div>
-
-        <div class="players-panel">
-            <h3 style="font-size:0.95rem; margin-bottom:10px; text-align:right; color:#4b5563;">👥 المتواجدون في الغرفة حالياً وصورهم:</h3>
-            <div class="players-list-grid" id="lobPlayersList"></div>
-        </div>
-
-        <div id="lobbyErrorMessage" class="error-message"></div>
-        <div id="lobbySuccessMessage" class="success-message"></div>
-        
-        <button id="btnHostStart" style="background-color:#16a34a; color:#fff; display:none;" onclick="hostFireStart()">🚀 بدء اللعبة</button>
-        <p id="lblWaitHost" style="color:#b45309; font-weight:bold; text-align:center; display:none;">⏱️ في انتظار قيام منظم الغرفة بإشارة البدء...</p>
-        <button style="background-color:#6b7280; color:#fff; margin-top:10px;" onclick="leaveRoom()">🚪 مغادرة الغرفة</button>
-    </div>
-
-    <!-- 4. شاشة اللعب -->
-    <div id="scrGameplay" class="screen">
-        <div class="timer-bar-container"><div class="timer-bar" id="uiTimerBar"></div></div>
-        
-        <div class="game-status" id="uiGameStatus">🎮 جاري اللعب...</div>
-        
-        <div class="phase-indicator" id="phaseIndicator">
-            <span class="phase-step active" id="stepWriting">✍️ كتابة</span>
-            <span class="phase-step" id="stepDrawing">🎨 رسم</span>
-            <span class="phase-step" id="stepGuessing">🔍 تخمين</span>
+    <!-- شاشة اللعب الرئيسية -->
+    <div id="gameArea" class="hidden">
+        <div id="canvasContainer">
+            <canvas id="paintCanvas"></canvas>
         </div>
         
-        <div class="player-turn" id="uiPlayerTurn">دورك: الكتابة ✍️</div>
-        
-        <h2 id="uiPhaseTitle" style="font-size:1.2rem; color:#1e3a8a; margin-bottom:15px;">المرحلة الأولى</h2>
-        
-        <div class="question-box" id="uiPromptDisplay">اكتب فكرة مجنونة ومضحكة ليقوم لاعب آخر برسمها!</div>
-        
-        <div id="wrapperInputPhase" style="display:none; width:100%;">
-            <textarea id="inpTextPhase" rows="3" placeholder="مثال: قطة مضحكة تطبخ كبسة سعودية..."></textarea>
-            <button onclick="submitTextPhaseData()">إرسال وتأكيد الإجابة 🚀</button>
-        </div>
-
-        <div id="wrapperCanvasPhase" style="display:none; width:100%;">
-            <div class="canvas-container">
-                <canvas id="gameCanvas"></canvas>
+        <div id="sidebar">
+            <div class="controls">
+                <div class="color-btn" style="background: #000000;" onclick="changeColor('#000000')"></div>
+                <div class="color-btn" style="background: #ff0000;" onclick="changeColor('#ff0000')"></div>
+                <div class="color-btn" style="background: #00ff00;" onclick="changeColor('#00ff00')"></div>
+                <div class="color-btn" style="background: #0000ff;" onclick="changeColor('#0000ff')"></div>
+                <button id="clearBtn">مسح</button>
             </div>
-            <div class="canvas-tools">
-                <div class="color-dot active" style="background-color:#000000;" data-color="#000000"></div>
-                <div class="color-dot" style="background-color:#dc2626;" data-color="#dc2626"></div>
-                <div class="color-dot" style="background-color:#2563eb;" data-color="#2563eb"></div>
-                <div class="color-dot" style="background-color:#16a34a;" data-color="#16a34a"></div>
-                <div class="color-dot" style="background-color:#ca8a04;" data-color="#ca8a04"></div>
-                <div class="color-dot" style="background-color:#8b5cf6;" data-color="#8b5cf6"></div>
-                <button class="btn-clear" onclick="clearCanvasBoard()">مسح 🗑️</button>
+            
+            <div id="chatArea">
+                <div id="chatBox"></div>
+                <div class="chat-input-group">
+                    <input type="text" id="guessInput" placeholder="اكتب تخمينك هنا...">
+                    <button id="sendGuessBtn">إرسال</button>
+                </div>
             </div>
-            <button style="background-color:#16a34a;" onclick="submitCanvasPhaseData()">تأكيد وإرسال الرسمة 🎨</button>
         </div>
-
-        <div class="status-footer" id="uiStatusFooter">بانتظار بقية اللاعبين...</div>
-        
-        <div id="waitingMessage" class="waiting-message">
-            ⏳ في انتظار بقية اللاعبين لإكمال المرحلة...
-        </div>
-        
-        <button style="background-color:#6b7280; color:#fff; margin-top:10px;" onclick="leaveGame()">🚪 مغادرة اللعبة</button>
     </div>
-
-    <!-- 5. شاشة معرض الألبومات -->
-    <div id="scrAlbumShow" class="screen">
-        <h1>🎬 معرض ألبومات التحدي</h1>
-        <p>استمتعوا برؤية كيف تحولت العبارات بسبب الرسم والتخمين المضحك:</p>
-        
-        <div class="album-box">
-            <div class="album-text" id="uiAlbumOwner">ألبوم اللاعب: --</div>
-            <div class="album-text" style="color:#b45309; font-size:1rem;" id="uiAlbumOrigText">العبارة الأصلية: --</div>
-            <img src="" class="album-img" id="uiAlbumDrawPreview" style="display:none;">
-            <div class="album-text" style="color:#16a34a; font-size:1rem;" id="uiAlbumFinalGuess">التخمين النهائي: --</div>
-        </div>
-
-        <div class="album-controls" id="hostAlbumControls" style="display:none;">
-            <button onclick="hostNavigateAlbum(-1)">⬅️ السابق</button>
-            <span id="albumCounter" style="display:flex;align-items:center;font-weight:bold;">1 / 1</span>
-            <button onclick="hostNavigateAlbum(1)">التالي ➡️</button>
-        </div>
-        
-        <button style="background-color:#6b7280; color:#fff; margin-top:auto;" onclick="leaveRoom()">🚪 العودة للرئيسية</button>
-    </div>
-
 </div>
 
+<!-- تحميل مكتبات Firebase المتوافقة مع المتصفح المباشر -->
+<script src="https://gstatic.com"></script>
+<script src="https://gstatic.com"></script>
+
 <script>
-    // ============================================================
-    //  إعدادات Firebase
-    // ============================================================
-    const dbURL = "https://sdfq-63ee0-default-rtdb.firebaseio.com/";
-
-    // ============================================================
-    //  قائمة العبارات العشوائية
-    // ============================================================
-    const funnySamplePhrases = [
-        "خروف يرتدي نظارة شمسية ويركض في الصحراء",
-        "قطة تطبخ كبسة في المطبخ وتضحك",
-        "دجاجة تلعب كرة قدم في الملعب مع البطريق",
-        "بطريق يركب دراجة هوائية عتيقة في الثلج",
-        "قرد يقرأ كتاباً ضخماً بذكاء شديد",
-        "سنجاب يرتدي وشاحاً شتوياً طويلاً ويغني",
-        "فيل صغير يرسم لوحة فنية بخرطومه",
-        "سلحفاة تتسابق مع أرنب في سباق مضحك",
-        "بومة ترتدي نظارة وتدرس في المكتبة",
-        "كلب يطير بطائرة ورقية في الحديقة"
-    ];
-
-    // ============================================================
-    //  المتغيرات العامة - مكتملة
-    // ============================================================
-    let selectedPhotoBase64 = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 24 24' fill='%2364748b'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
-    let myName = "";
-    let currentRoomId = "";
-    let isHost = false;
-    let hasSubmitted = false;
-    let pendingInviteCode = "";
-    let localTimerValue = 45;
-    let maxTimerLimit = 45;
-    let timerInterval = null;
-    let syncInterval = null;
-    let roomPlayers = [];
-    let currentPhase = "writing";
-    let chainData = null;
-    let currentAlbumIndex = 0;
-    let albumData = [];
-    let isLeaving = false;
-    let currentRound = 0;
-    const MAX_ROUNDS = 2;
-    let myNextPlayer = "";
-    let isWaitingForOthers = false;
-    let lastSyncData = null;
-    let gameStarted = false;
-    let allPlayersDone = false;
-
-    // ============================================================
-    //  دوال أساسية - مكتملة
-    // ============================================================
-    function previewAndProcessPhoto(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement("canvas");
-                    const ctx = canvas.getContext("2d");
-                    canvas.width = 80; 
-                    canvas.height = 80;
-                    ctx.drawImage(img, 0, 0, 80, 80);
-                    selectedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.6);
-                    document.getElementById("profilePhotoPreview").src = selectedPhotoBase64;
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function navigate(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-    }
-
-    function showError(msg, id = "homeErrorMessage") {
-        const el = document.getElementById(id);
-        if(el) { 
-            el.textContent = msg; 
-            el.style.display = "block"; 
-            setTimeout(() => { 
-                if(el) el.style.display = "none"; 
-            }, 5000); 
-        }
-    }
-
-    function showSuccess(msg, id = "homeSuccessMessage") {
-        const el = document.getElementById(id);
-        if(el) { 
-            el.textContent = msg; 
-            el.style.display = "block"; 
-            setTimeout(() => { 
-                if(el) el.style.display = "none"; 
-            }, 3000); 
-        }
-    }
-
-    // ============================================================
-    //  تسجيل الدخول - مكتمل
-    // ============================================================
-    async function commitProfile() {
-        myName = document.getElementById("inpPlayerName").value.trim();
-        if(myName === "") return showError("الرجاء كتابة اسمك أولاً!", "homeErrorMessage");
-        if(myName.length < 2) return showError("الاسم يجب أن يكون حرفين على الأقل!", "homeErrorMessage");
-        if(myName.length > 20) return showError("الاسم طويل جداً! استخدم 20 حرفاً كحد أقصى.", "homeErrorMessage");
-
-        localStorage.setItem('game_player_name', myName);
-        localStorage.setItem('game_player_photo', selectedPhotoBase64);
-
-        try {
-            await fetch(`${dbURL}online_users/${encodeURIComponent(myName)}.json`, { 
-                method: 'PUT', 
-                body: JSON.stringify({ 
-                    photo: selectedPhotoBase64, 
-                    active: true, 
-                    lastSeen: Date.now() 
-                }) 
-            });
-        } catch(e) {
-            console.warn("فشل حفظ الحساب:", e);
-        }
-
-        document.getElementById("homeProfileDisplay").innerHTML = `<img src="${selectedPhotoBase64}" class="user-photo-mini"> اللاعب: ${myName}`;
-        navigate("scrHome");
-        showSuccess("تم تسجيل الدخول بنجاح! 🎉", "homeSuccessMessage");
-
-        if(!syncInterval) {
-            syncInterval = setInterval(syncGame, 1500);
-        }
-    }
-
-    function backToProfileUpdate() { 
-        navigate("scrLogin"); 
-    }
-
-    // ============================================================
-    //  إنشاء والانضمام للغرفة - مكتمل
-    // ============================================================
-    async function initiateRoom() {
-        if(!myName) return showError("الرجاء تسجيل الدخول أولاً!", "homeErrorMessage");
-
-        const btn = document.getElementById("btnCreateRoom");
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loading-spinner"></span> جاري الإنشاء...';
-
-        try {
-            isHost = true;
-            currentRoomId = Math.floor(1000 + Math.random() * 9000).toString();
-            
-            const selectTimer = document.getElementById("selectTimerConfig");
-            maxTimerLimit = parseInt(selectTimer.value);
-
-            const roomData = {
-                host: myName,
-                status: "waiting",
-                timerLimit: maxTimerLimit,
-                players: { [myName]: { photo: selectedPhotoBase64 } },
-                chains: {},
-                round: 0,
-                maxRounds: MAX_ROUNDS,
-                createdAt: Date.now(),
-                gamePhase: "waiting"
-            };
-
-            const response = await fetch(`${dbURL}rooms/${currentRoomId}.json`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(roomData)
-            });
-
-            if(!response.ok) throw new Error("فشل إنشاء الغرفة");
-
-            showSuccess("تم إنشاء الغرفة بنجاح! 🎉", "homeSuccessMessage");
-            await goToLobby(currentRoomId);
-            
-        } catch(e) {
-            console.error(e);
-            showError("حدث خطأ في إنشاء الغرفة!", "homeErrorMessage");
-            currentRoomId = "";
-            isHost = false;
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '🎨 إنشاء غرفة هاتف الرسم 🚀';
-        }
-    }
-
-    async function connectRoomByCode() {
-        if(!myName) return showError("الرجاء تسجيل الدخول أولاً!", "homeErrorMessage");
-
-        const code = document.getElementById("inpRoomCode").value.trim();
-        if(code === "") return showError("أدخل كود الغرفة!", "homeErrorMessage");
-        if(code.length !== 4 || !/^\d+$/.test(code)) return showError("الكود يجب أن يكون 4 أرقام!", "homeErrorMessage");
-
-        const btn = document.getElementById("btnJoinRoom");
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loading-spinner"></span> جاري التحقق...';
-
-        try {
-            const res = await fetch(`${dbURL}rooms/${code}.json`);
-            const room = await res.json();
-            
-            if(!room) return showError("هذا الكود غير موجود!", "homeErrorMessage");
-            if(room.status === "finished") return showError("هذه الغرفة انتهت!", "homeErrorMessage");
-            if(room.status !== "waiting") return showError("اللعبة بدأت بالفعل!", "homeErrorMessage");
-            
-            const playerCount = room.players ? Object.keys(room.players).length : 0;
-            if(playerCount >= 12) return showError("الغرفة ممتلئة (12 لاعب كحد أقصى)!", "homeErrorMessage");
-            if(room.players && room.players[myName]) return showError("أنت بالفعل في هذه الغرفة!", "homeErrorMessage");
-
-            isHost = false;
-            currentRoomId = code;
-            maxTimerLimit = room.timerLimit || 45;
-
-            await fetch(`${dbURL}rooms/${currentRoomId}/players/${encodeURIComponent(myName)}.json`, { 
-                method: 'PUT', 
-                body: JSON.stringify({ photo: selectedPhotoBase64 }) 
-            });
-
-            showSuccess("تم الدخول إلى الغرفة بنجاح! 🎉", "homeSuccessMessage");
-            await goToLobby(currentRoomId);
-            
-        } catch(e) {
-            console.error(e);
-            showError("حدث خطأ في الاتصال!", "homeErrorMessage");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = 'التحقق ودخول الغرفة 🔑';
-        }
-    }
-
-    async function goToLobby(roomId) {
-        await updatePlayersList();
-        document.getElementById("lobCodeText").innerText = roomId;
-        document.getElementById("lobTimerText").innerText = maxTimerLimit;
-        
-        if (isHost) {
-            document.getElementById("hostTimerWrapper").style.display = "block";
-            document.getElementById("btnHostStart").style.display = "block";
-            document.getElementById("lblWaitHost").style.display = "none";
-        } else {
-            document.getElementById("hostTimerWrapper").style.display = "none";
-            document.getElementById("btnHostStart").style.display = "none";
-            document.getElementById("lblWaitHost").style.display = "block";
-        }
-        
-        navigate("scrLobby");
-    }
-
-    async function updatePlayersList() {
-        if(!currentRoomId) return;
-        try {
-            const res = await fetch(`${dbURL}rooms/${currentRoomId}/players.json`);
-            const players = await res.json();
-            if(!players) return;
-            
-            const list = document.getElementById("lobPlayersList");
-            list.innerHTML = "";
-            roomPlayers = [];
-            for(let p in players) {
-                roomPlayers.push(p);
-                const photo = players[p].photo || selectedPhotoBase64;
-                list.innerHTML += `<span class="player-chip"><img src="${photo}" class="user-photo-mini"> ${p}</span>`;
-            }
-            
-            // تحديث عدد اللاعبين
-            const count = roomPlayers.length;
-            document.getElementById("lobPlayersList").innerHTML += `<span class="player-chip" style="background-color:#e5e7eb;">👥 ${count}/12</span>`;
-            
-        } catch(e) {
-            console.warn("خطأ في تحديث القائمة:", e);
-        }
-    }
-
-    async function updateRoomTimerConfig(val) {
-        if (!isHost || !currentRoomId) return;
-        maxTimerLimit = parseInt(val);
-        try {
-            await fetch(`${dbURL}rooms/${currentRoomId}/timerLimit.json`, {
-                method: 'PUT',
-                body: JSON.stringify(maxTimerLimit)
-            });
-            document.getElementById("lobTimerText").innerText = maxTimerLimit;
-            showSuccess(`تم تحديث الوقت إلى ${maxTimerLimit} ثانية`, "lobbySuccessMessage");
-        } catch(e) {
-            console.warn("خطأ في تحديث الوقت:", e);
-        }
-    }
-
-    // ============================================================
-    //  مغادرة الغرفة - مكتمل
-    // ============================================================
-    async function leaveRoom() {
-        if(!currentRoomId) { 
-            navigate("scrHome"); 
-            return; 
-        }
-        if(isLeaving) return;
-        isLeaving = true;
-
-        try {
-            // إزالة اللاعب من الغرفة
-            if(myName) {
-                await fetch(`${dbURL}rooms/${currentRoomId}/players/${encodeURIComponent(myName)}.json`, { 
-                    method: 'DELETE' 
-                });
-            }
-            
-            // إذا كان المنظم، حذف الغرفة
-            if(isHost) {
-                await fetch(`${dbURL}rooms/${currentRoomId}.json`, { 
-                    method: 'DELETE' 
-                });
-            } else {
-                // التحقق من عدد اللاعبين المتبقيين
-                const res = await fetch(`${dbURL}rooms/${currentRoomId}/players.json`);
-                const players = await res.json();
-                if(!players || Object.keys(players).length === 0) {
-                    await fetch(`${dbURL}rooms/${currentRoomId}.json`, { 
-                        method: 'DELETE' 
-                    });
-                }
-            }
-        } catch(e) {
-            console.warn("خطأ في مغادرة الغرفة:", e);
-        }
-
-        // تنظيف المتغيرات
-        currentRoomId = "";
-        isHost = false;
-        gameStarted = false;
-        hasSubmitted = false;
-        clearInterval(timerInterval);
-        timerInterval = null;
-        isLeaving = false;
-        
-        navigate("scrHome");
-        showSuccess("تم مغادرة الغرفة بنجاح!", "homeSuccessMessage");
-    }
-
-    function leaveGame() {
-        if(confirm("هل تريد مغادرة اللعبة؟")) {
-            leaveRoom();
-        }
-    }
-
-    // ============================================================
-    //  الدعوات - مكتمل
-    // ============================================================
-    async function acceptDirectInvite() {
-        if(!pendingInviteCode) return;
-        document.getElementById("inpRoomCode").value = pendingInviteCode;
-        try { 
-            await fetch(`${dbURL}invites/${encodeURIComponent(myName)}.json`, { method: 'DELETE' }); 
-        } catch(e) {}
-        pendingInviteCode = "";
-        document.getElementById("notifInvite").style.display = "none";
-        connectRoomByCode();
-    }
-
-    // ============================================================
-    //  بدء اللعبة - مكتمل
-    // ============================================================
-    async function hostFireStart() {
-        if(!isHost) return showError("أنت لست المنظم!", "lobbyErrorMessage");
-        
-        await updatePlayersList();
-        if(roomPlayers.length < 2) return showError("يجب أن يكون على الأقل 2 لاعبين!", "lobbyErrorMessage");
-        
-        const btn = document.getElementById("btnHostStart");
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loading-spinner"></span> جاري البدء...';
-        
-        try {
-            // توزيع اللاعبين في سلسلة
-            const shuffled = [...roomPlayers];
-            for(let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            
-            const chains = {};
-            roomPlayers.forEach((name, idx) => {
-                const nextIdx = (idx + 1) % roomPlayers.length;
-                chains[name] = {
-                    nextPlayer: shuffled[nextIdx],
-                    phase: "writing",
-                    originalText: "",
-                    drawingData: null,
-                    guessText: "",
-                    done: false,
-                    submitted: false
-                };
-            });
-            
-            // حفظ البيانات في Firebase
-            await fetch(`${dbURL}rooms/${currentRoomId}/chains.json`, {
-                method: 'PUT',
-                body: JSON.stringify(chains)
-            });
-            
-            await fetch(`${dbURL}rooms/${currentRoomId}/status.json`, { 
-                method: 'PUT', 
-                body: JSON.stringify("playing") 
-            });
-            
-            await fetch(`${dbURL}rooms/${currentRoomId}/round.json`, { 
-                method: 'PUT', 
-                body: JSON.stringify(0) 
-            });
-            
-            await fetch(`${dbURL}rooms/${currentRoomId}/gamePhase.json`, { 
-                method: 'PUT', 
-                body: JSON.stringify("writing") 
-            });
-            
-            gameStarted = true;
-            showSuccess("بدأت اللعبة! 🎉", "lobbySuccessMessage");
-            
-        } catch(e) {
-            console.error(e);
-            showError("حدث خطأ في بدء اللعبة!", "lobbyErrorMessage");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '🚀 بدء اللعبة';
-        }
-    }
-
-    // ============================================================
-    //  المزامنة الرئيسية - مكتملة
-    // ============================================================
-    async function syncGame() {
-        // فحص الدعوات
-        if (!currentRoomId && myName) {
-            try {
-                const res = await fetch(`${dbURL}invites/${encodeURIComponent(myName)}.json`);
-                const data = await res.json();
-                if (data && data.roomCode) {
-                    pendingInviteCode = data.roomCode;
-                    document.getElementById("txtInviteNotify").innerHTML = `✉️ دعوة من <strong>${data.from || 'لاعب'}</strong> للغرفة: <strong>${pendingInviteCode}</strong>`;
-                    document.getElementById("notifInvite").style.display = "block";
-                } else {
-                    document.getElementById("notifInvite").style.display = "none";
-                }
-            } catch(e) {}
-        }
-
-        // مزامنة الغرفة
-        if (currentRoomId && !isLeaving) {
-            try {
-                const res = await fetch(`${dbURL}rooms/${currentRoomId}.json`);
-                const room = await res.json();
-                
-                if (!room) {
-                    console.log("الغرفة غير موجودة");
-                    currentRoomId = "";
-                    isHost = false;
-                    gameStarted = false;
-                    navigate("scrHome");
-                    return;
-                }
-
-                // تحديث قائمة اللاعبين في اللوبي
-                if (document.getElementById("scrLobby").classList.contains("active")) {
-                    await updatePlayersList();
-                }
-
-                // معالجة حالة اللعبة
-                if (room.status === "playing") {
-                    chainData = room.chains || {};
-                    currentRound = room.round || 0;
-                    await handleGameplay(room);
-                } else if (room.status === "finished") {
-                    chainData = room.chains || {};
-                    showAlbum(chainData);
-                }
-            } catch(e) {
-                console.warn("خطأ في المزامنة:", e);
-            }
-        }
-    }
-
-    // ============================================================
-    //  منطق اللعبة - مكتمل
-    // ============================================================
-    async function handleGameplay(room) {
-        const chains = room.chains || {};
-        const myChain = chains[myName];
-        
-        if (!myChain) {
-            await reinitializeChain();
-            return;
-        }
-        
-        const phase = myChain.phase || "writing";
-        currentPhase = phase;
-        myNextPlayer = myChain.nextPlayer || "غير معروف";
-        hasSubmitted = myChain.submitted || false;
-        
-        // الانتقال لشاشة اللعب
-        if (!document.getElementById("scrGameplay").classList.contains("active")) {
-            navigate("scrGameplay");
-        }
-        
-        // تحديث مؤشر المراحل
-        updatePhaseIndicator(phase);
-        
-        // تحديث معلومات الجولة
-        document.getElementById("uiGameStatus").innerHTML = `🎮 الجولة ${currentRound + 1} من ${MAX_ROUNDS}`;
-        document.getElementById("uiPlayerTurn").innerHTML = `👤 دورك: ${getPhaseName(phase)} → ستنتقل إلى <strong>${myNextPlayer}</strong>`;
-        
-        // عرض المرحلة المناسبة
-        if (phase === "writing") {
-            showWritingPhase();
-        } else if (phase === "drawing") {
-            showDrawingPhase(myChain);
-        } else if (phase === "guessing") {
-            showGuessingPhase();
-        } else if (phase === "done") {
-            showDonePhase();
-        }
-    }
-
-    function getPhaseName(phase) {
-        const names = { 
-            writing: "✍️ كتابة", 
-            drawing: "🎨 رسم", 
-            guessing: "🔍 تخمين", 
-            done: "✅ مكتمل" 
-        };
-        return names[phase] || phase;
-    }
-
-    function updatePhaseIndicator(phase) {
-        const steps = ["writing", "drawing", "guessing"];
-        steps.forEach((s, i) => {
-            const el = document.getElementById(`step${s.charAt(0).toUpperCase() + s.slice(1)}`);
-            if (el) {
-                el.className = "phase-step";
-                if (s === phase) el.classList.add("active");
-                else if (steps.indexOf(s) < steps.indexOf(phase)) el.classList.add("done");
-            }
-        });
-    }
-
-    // ============================================================
-    //  عرض المراحل - مكتمل
-    // ============================================================
-    function showWritingPhase() {
-        document.getElementById("uiPhaseTitle").innerHTML = "✍️ مرحلة الكتابة";
-        document.getElementById("uiPromptDisplay").innerHTML = `📝 اكتب فكرة مضحكة ليرسمها <strong>${myNextPlayer}</strong>:`;
-        document.getElementById("wrapperInputPhase").style.display = "block";
-        document.getElementById("wrapperCanvasPhase").style.display = "none";
-        document.getElementById("inpTextPhase").value = "";
-        document.getElementById("inpTextPhase").disabled = hasSubmitted;
-        document.getElementById("waitingMessage").style.display = "none";
-        
-        const randomPhrase = funnySamplePhrases[Math.floor(Math.random() * funnySamplePhrases.length)];
-        document.getElementById("uiStatusFooter").innerHTML = `💡 فكرة مقترحة: "${randomPhrase}"`;
-        
-        // بدء المؤقت فقط إذا لم يتم الإرسال
-        if (!timerInterval && !hasSubmitted) {
-            localTimerValue = maxTimerLimit;
-            startTimer();
-        }
-        
-        // إذا تم الإرسال بالفعل
-        if (hasSubmitted) {
-            document.getElementById("uiStatusFooter").innerHTML = "✅ تم الإرسال! في انتظار دور الرسم...";
-            document.getElementById("inpTextPhase").disabled = true;
-        }
-    }
-
-    function showDrawingPhase(myChain) {
-        document.getElementById("uiPhaseTitle").innerHTML = "🎨 مرحلة الرسم";
-        const textToDraw = myChain.originalText || "ارسم شيئاً مضحكاً!";
-        document.getElementById("uiPromptDisplay").innerHTML = `📝 النص المراد رسمه: "<strong>${textToDraw}</strong>"`;
-        document.getElementById("wrapperInputPhase").style.display = "none";
-        document.getElementById("wrapperCanvasPhase").style.display = "block";
-        document.getElementById("waitingMessage").style.display = "none";
-        document.getElementById("uiStatusFooter").innerHTML = "🎨 استخدم الألوان لرسم فكرة مضحكة!";
-        
-        // مسح اللوحة فقط إذا لم يتم الإرسال
-        if (!hasSubmitted) {
-            clearCanvasBoard();
-        }
-        
-        // بدء المؤقت فقط إذا لم يتم الإرسال
-        if (!timerInterval && !hasSubmitted) {
-            localTimerValue = maxTimerLimit;
-            startTimer();
-        }
-        
-        // إذا تم الإرسال بالفعل
-        if (hasSubmitted) {
-            document.getElementById("uiStatusFooter").innerHTML = "✅ تم إرسال الرسمة! في انتظار التخمين...";
-        }
-    }
-
-    function showGuessingPhase() {
-        document.getElementById("uiPhaseTitle").innerHTML = "🔍 مرحلة التخمين";
-        document.getElementById("uiPromptDisplay").innerHTML = "👀 انظر إلى الرسمة وخمن ماذا تمثل:";
-        document.getElementById("wrapperInputPhase").style.display = "block";
-        document.getElementById("wrapperCanvasPhase").style.display = "none";
-        document.getElementById("inpTextPhase").value = "";
-        document.getElementById("inpTextPhase").disabled = hasSubmitted;
-        document.getElementById("waitingMessage").style.display = "none";
-        document.getElementById("uiStatusFooter").innerHTML = "💡 خمن بحرية، لا توجد إجابات خاطئة!";
-        
-        // عرض الرسمة السابقة
-        displayPreviousDrawing();
-        
-        if (!timerInterval && !hasSubmitted) {
-            localTimerValue = maxTimerLimit;
-            startTimer();
-        }
-        
-        if (hasSubmitted) {
-            document.getElementById("uiStatusFooter").innerHTML = "✅ تم إرسال التخمين! في انتظار النتائج...";
-            document.getElementById("inpTextPhase").disabled = true;
-        }
-    }
-
-    function showDonePhase() {
-        document.getElementById("uiPhaseTitle").innerHTML = "✅ اكتملت مشاركتك!";
-        document.getElementById("uiPromptDisplay").innerHTML = "🎉 لقد أكملت جميع المراحل! في انتظار بقية اللاعبين...";
-        document.getElementById("wrapperInputPhase").style.display = "none";
-        document.getElementById("wrapperCanvasPhase").style.display = "none";
-        document.getElementById("waitingMessage").style.display = "block";
-        document.getElementById("uiStatusFooter").innerHTML = "⏳ جاري انتظار بقية اللاعبين...";
-        
-        clearInterval(timerInterval);
-        timerInterval = null;
-        
-        // التحقق من انتهاء الجميع
-        setTimeout(checkAllDone, 3000);
-    }
-
-    // ============================================================
-    //  عرض الرسمة السابقة - مكتمل
-    // ============================================================
-    function displayPreviousDrawing() {
-        const chains = chainData || {};
-        // نبحث عن اللاعب الذي رسم لنا
-        let foundDrawing = false;
-        for (let p in chains) {
-            if (chains[p].nextPlayer === myName && chains[p].drawingData) {
-                // وجدنا الرسمة
-                const container = document.getElementById("uiPromptDisplay");
-                // إزالة الصور القديمة
-                const oldImages = container.querySelectorAll(".previous-drawing");
-                oldImages.forEach(img => img.remove());
-                
-                const wrapper = document.createElement("div");
-                wrapper.className = "previous-drawing";
-                wrapper.innerHTML = `<p style="margin:5px 0;font-size:0.9rem;color:#6b7280;">🖼️ الرسمة التي ستراها:</p>`;
-                
-                const img = document.createElement("img");
-                img.src = chains[p].drawingData;
-                img.className = "drawing-preview";
-                img.alt = "الرسمة السابقة";
-                wrapper.appendChild(img);
-                container.appendChild(wrapper);
-                foundDrawing = true;
-                break;
-            }
-        }
-        
-        if (!foundDrawing) {
-            // لا توجد رسمة سابقة
-            const container = document.getElementById("uiPromptDisplay");
-            const oldImages = container.querySelectorAll(".previous-drawing");
-            oldImages.forEach(img => img.remove());
-        }
-    }
-
-    // ============================================================
-    //  تقديم البيانات - مكتمل
-    // ============================================================
-    async function submitTextPhaseData() {
-        if (hasSubmitted) {
-            alert("لقد قمت بالإرسال مسبقاً!");
-            return;
-        }
-        
-        const input = document.getElementById("inpTextPhase");
-        const text = input.value.trim();
-        if (text === "") return alert("الرجاء كتابة نص!");
-        if (text.length < 3) return alert("النص قصير جداً! اكتب جملة أطول.");
-        if (text.length > 200) return alert("النص طويل جداً! استخدم 200 حرف كحد أقصى.");
-        
-        hasSubmitted = true;
-        clearInterval(timerInterval);
-        timerInterval = null;
-        input.disabled = true;
-        
-        try {
-            // حفظ حالة الإرسال
-            await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/submitted.json`, {
-                method: 'PUT',
-                body: JSON.stringify(true)
-            });
-            
-            if (currentPhase === "writing") {
-                await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/originalText.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify(text)
-                });
-                await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/phase.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify("drawing")
-                });
-                document.getElementById("uiStatusFooter").innerHTML = "✅ تم إرسال النص! في انتظار دور الرسم...";
-                showSuccess("تم إرسال النص بنجاح! 📝", "homeSuccessMessage");
-            } else if (currentPhase === "guessing") {
-                await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/guessText.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify(text)
-                });
-                await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/phase.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify("done")
-                });
-                document.getElementById("uiStatusFooter").innerHTML = "✅ تم إرسال التخمين! في انتظار النتائج...";
-                showSuccess("تم إرسال التخمين بنجاح! 💭", "homeSuccessMessage");
-                
-                // التحقق من انتهاء الجميع
-                setTimeout(checkAllDone, 2000);
-            }
-            
-        } catch(e) {
-            console.error(e);
-            alert("خطأ في الإرسال! حاول مرة أخرى.");
-            hasSubmitted = false;
-            input.disabled = false;
-            
-            // إعادة تعيين حالة الإرسال
-            await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/submitted.json`, {
-                method: 'PUT',
-                body: JSON.stringify(false)
-            });
-        }
-    }
-
-    async function submitCanvasPhaseData() {
-        if (hasSubmitted) {
-            alert("لقد قمت بالإرسال مسبقاً!");
-            return;
-        }
-        
-        const canvas = document.getElementById("gameCanvas");
-        
-        // التحقق من أن اللوحة ليست فارغة
-        const ctx = canvas.getContext("2d");
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = imageData.data;
-        let hasDrawing = false;
-        for (let i = 0; i < pixels.length; i += 4) {
-            if (pixels[i] !== 255 || pixels[i+1] !== 255 || pixels[i+2] !== 255 || pixels[i+3] !== 0) {
-                hasDrawing = true;
-                break;
-            }
-        }
-        
-        if (!hasDrawing) {
-            return alert("⚠️ اللوحة فارغة! قم برسم شيء قبل الإرسال.");
-        }
-        
-        const data = canvas.toDataURL("image/png");
-        
-        hasSubmitted = true;
-        clearInterval(timerInterval);
-        timerInterval = null;
-        
-        try {
-            // حفظ حالة الإرسال
-            await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/submitted.json`, {
-                method: 'PUT',
-                body: JSON.stringify(true)
-            });
-            
-            await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/drawingData.json`, {
-                method: 'PUT',
-                body: JSON.stringify(data)
-            });
-            await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/phase.json`, {
-                method: 'PUT',
-                body: JSON.stringify("guessing")
-            });
-            document.getElementById("uiStatusFooter").innerHTML = "✅ تم إرسال الرسمة! في انتظار التخمين...";
-            showSuccess("تم إرسال الرسمة بنجاح! 🎨", "homeSuccessMessage");
-            
-        } catch(e) {
-            console.error(e);
-            alert("خطأ في إرسال الرسمة!");
-            hasSubmitted = false;
-            
-            await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(myName)}/submitted.json`, {
-                method: 'PUT',
-                body: JSON.stringify(false)
-            });
-        }
-    }
-
-    // ============================================================
-    //  التحقق من انتهاء الجميع وبدء جولة جديدة - مكتمل
-    // ============================================================
-    async function checkAllDone() {
-        try {
-            const res = await fetch(`${dbURL}rooms/${currentRoomId}/chains.json`);
-            const chains = await res.json();
-            if (!chains) return;
-            
-            let allDone = true;
-            let allSubmitted = true;
-            let playersCount = 0;
-            
-            for (let p in chains) {
-                playersCount++;
-                if (chains[p].phase !== "done") {
-                    allDone = false;
-                }
-                if (!chains[p].submitted) {
-                    allSubmitted = false;
-                }
-            }
-            
-            // إذا لم يكمل الجميع ولكن الكل أرسل، ننتظر
-            if (!allDone && allSubmitted) {
-                // كل اللاعبين أرسلوا ولكن لم يكملوا المرحلة
-                document.getElementById("waitingMessage").style.display = "block";
-                document.getElementById("waitingMessage").innerHTML = "⏳ جميع اللاعبين أرسلوا، في انتظار اكتمال المرحلة...";
-                return;
-            }
-            
-            // بدء جولة جديدة
-            if (allDone && currentRound < MAX_ROUNDS - 1) {
-                // إعادة تعيين جميع اللاعبين للجولة التالية
-                for (let p in chains) {
-                    await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(p)}/phase.json`, {
-                        method: 'PUT',
-                        body: JSON.stringify("writing")
-                    });
-                    await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(p)}/originalText.json`, {
-                        method: 'PUT',
-                        body: JSON.stringify("")
-                    });
-                    await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(p)}/drawingData.json`, {
-                        method: 'PUT',
-                        body: JSON.stringify(null)
-                    });
-                    await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(p)}/guessText.json`, {
-                        method: 'PUT',
-                        body: JSON.stringify("")
-                    });
-                    await fetch(`${dbURL}rooms/${currentRoomId}/chains/${encodeURIComponent(p)}/submitted.json`, {
-                        method: 'PUT',
-                        body: JSON.stringify(false)
-                    });
-                }
-                
-                // زيادة الجولة
-                currentRound++;
-                await fetch(`${dbURL}rooms/${currentRoomId}/round.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify(currentRound)
-                });
-                
-                // إعادة تعيين hasSubmitted محلياً
-                hasSubmitted = false;
-                document.getElementById("waitingMessage").style.display = "none";
-                
-                showSuccess(`🔄 بدء الجولة ${currentRound + 1}!`, "homeSuccessMessage");
-                return;
-            }
-            
-            // إنهاء اللعبة
-            if (allDone && currentRound >= MAX_ROUNDS - 1) {
-                await fetch(`${dbURL}rooms/${currentRoomId}/status.json`, {
-                    method: 'PUT',
-                    body: JSON.stringify("finished")
-                });
-                document.getElementById("waitingMessage").style.display = "none";
-                showSuccess("🎉 انتهت اللعبة! عرض النتائج...", "homeSuccessMessage");
-            }
-        } catch(e) {
-            console.warn("خطأ في التحقق:", e);
-        }
-    }
-
-    // ============================================================
-    //  إعادة تهيئة السلسلة - مكتمل
-    // ============================================================
-    async function reinitializeChain() {
-        try {
-            const res = await fetch(`${dbURL}rooms/${currentRoomId}/players.json`);
-            const players = await res.json();
-            if (!players) return;
-            
-            const names = Object.keys(players);
-            if (names.length === 0) return;
-            
-            const shuffled = [...names];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            
-            const chains = {};
-            names.forEach((name, idx) => {
-                const nextIdx = (idx + 1) % names.length;
-                chains[name] = {
-                    nextPlayer: shuffled[nextIdx],
-                    phase: "writing",
-                    originalText: "",
-                    drawingData: null,
-                    guessText: "",
-                    done: false,
-                    submitted: false
-                };
-            });
-            
-            await fetch(`${dbURL}rooms/${currentRoomId}/chains.json`, {
-                method: 'PUT',
-                body: JSON.stringify(chains)
-            });
-            
-            chainData = chains;
-        } catch(e) {
-            console.warn("خطأ في إعادة التهيئة:", e);
-        }
-    }
-
-    // ============================================================
-    //  المؤقت - مكتمل
-    // ============================================================
-    function startTimer() {
-        clearInterval(timerInterval);
-        const bar = document.getElementById("uiTimerBar");
-        bar.style.width = "100%";
-        bar.style.backgroundColor = "#16a34a";
-        localTimerValue = maxTimerLimit;
-        
-        timerInterval = setInterval(() => {
-            localTimerValue--;
-            let percent = Math.max(0, (localTimerValue / maxTimerLimit) * 100);
-            bar.style.width = `${percent}%`;
-            
-            if (percent < 25) {
-                bar.style.backgroundColor = "#dc2626";
-            } else if (percent < 50) {
-                bar.style.backgroundColor = "#f59e0b";
-            } else {
-                bar.style.backgroundColor = "#16a34a";
-            }
-            
-            if (localTimerValue <= 0) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                autoSubmit();
-            }
-        }, 1000);
-    }
-
-    async function autoSubmit() {
-        if (hasSubmitted) return;
-        
-        if (currentPhase === "writing" || currentPhase === "guessing") {
-            const input = document.getElementById("inpTextPhase");
-            if (input.value.trim() === "") {
-                const random = funnySamplePhrases[Math.floor(Math.random() * funnySamplePhrases.length)];
-                input.value = random;
-            }
-            await submitTextPhaseData();
-        } else if (currentPhase === "drawing") {
-            await submitCanvasPhaseData();
-        }
-    }
-
-    // ============================================================
-    //  عرض الألبومات - مكتمل
-    // ============================================================
-    function showAlbum(chains) {
-        if (!chains) {
-            document.getElementById("uiAlbumOwner").innerHTML = "لا توجد بيانات لعرضها";
-            return;
-        }
-        
-        albumData = [];
-        for (let p in chains) {
-            const c = chains[p];
-            if (c) {
-                albumData.push({
-                    player: p,
-                    originalText: c.originalText || "لا يوجد نص",
-                    drawingData: c.drawingData || null,
-                    guessText: c.guessText || "لا يوجد تخمين"
-                });
-            }
-        }
-        
-        if (albumData.length === 0) {
-            document.getElementById("uiAlbumOwner").innerHTML = "لا توجد ألبومات لعرضها";
-            document.getElementById("uiAlbumOrigText").innerHTML = "--";
-            document.getElementById("uiAlbumFinalGuess").innerHTML = "--";
-            document.getElementById("uiAlbumDrawPreview").style.display = "none";
-            return;
-        }
-        
-        currentAlbumIndex = 0;
-        navigate("scrAlbumShow");
-        displayAlbum(currentAlbumIndex);
-        
-        document.getElementById("hostAlbumControls").style.display = isHost ? "flex" : "none";
-    }
-
-    function displayAlbum(index) {
-        if (!albumData || albumData.length === 0) return;
-        if (index < 0) index = albumData.length - 1;
-        if (index >= albumData.length) index = 0;
-        currentAlbumIndex = index;
-        
-        const album = albumData[index];
-        document.getElementById("uiAlbumOwner").innerHTML = `👤 ألبوم: <strong>${album.player}</strong>`;
-        document.getElementById("uiAlbumOrigText").innerHTML = `📝 "${album.originalText}"`;
-        
-        const img = document.getElementById("uiAlbumDrawPreview");
-        if (album.drawingData && album.drawingData !== "null" && album.drawingData !== "") {
-            img.src = album.drawingData;
-            img.style.display = "block";
-        } else {
-            img.style.display = "none";
-        }
-        
-        document.getElementById("uiAlbumFinalGuess").innerHTML = `💭 "${album.guessText}"`;
-        document.getElementById("albumCounter").innerHTML = `${index + 1} / ${albumData.length}`;
-    }
-
-    function hostNavigateAlbum(dir) {
-        if (!isHost) return;
-        displayAlbum(currentAlbumIndex + dir);
-    }
-
-    // ============================================================
-    //  محرك الرسم - مكتمل
-    // ============================================================
-    let canvas, ctx, isDrawing = false, currentColor = "#000000";
-
-    function initCanvas() {
-        canvas = document.getElementById("gameCanvas");
-        if (!canvas) return;
-        ctx = canvas.getContext("2d");
-        
-        const resize = () => {
-            const container = canvas.parentElement;
-            if (container) {
-                canvas.width = container.clientWidth;
-                canvas.height = 280;
-                ctx.strokeStyle = currentColor;
-                ctx.lineWidth = 4;
-                ctx.lineCap = "round";
-                ctx.lineJoin = "round";
-            }
-        };
-        resize();
-        window.addEventListener('resize', resize);
-
-        // أحداث الماوس
-        canvas.addEventListener("mousedown", (e) => {
-            isDrawing = true;
-            const rect = canvas.getBoundingClientRect();
-            const sx = canvas.width / rect.width;
-            const sy = canvas.height / rect.height;
-            draw((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy);
-        });
-        canvas.addEventListener("mousemove", (e) => {
-            if (!isDrawing) return;
-            const rect = canvas.getBoundingClientRect();
-            const sx = canvas.width / rect.width;
-            const sy = canvas.height / rect.height;
-            draw((e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy);
-        });
-        canvas.addEventListener("mouseup", () => { isDrawing = false; ctx.beginPath(); });
-        canvas.addEventListener("mouseleave", () => { isDrawing = false; ctx.beginPath(); });
-
-        // أحداث اللمس
-        canvas.addEventListener("touchstart", (e) => {
-            e.preventDefault();
-            isDrawing = true;
-            const t = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            const sx = canvas.width / rect.width;
-            const sy = canvas.height / rect.height;
-            draw((t.clientX - rect.left) * sx, (t.clientY - rect.top) * sy);
-        }, { passive: false });
-        
-        canvas.addEventListener("touchmove", (e) => {
-            e.preventDefault();
-            if (!isDrawing) return;
-            const t = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            const sx = canvas.width / rect.width;
-            const sy = canvas.height / rect.height;
-            draw((t.clientX - rect.left) * sx, (t.clientY - rect.top) * sy);
-        }, { passive: false });
-        
-        canvas.addEventListener("touchend", (e) => {
-            e.preventDefault();
-            isDrawing = false;
-            ctx.beginPath();
-        }, { passive: false });
-
-        // اختيار الألوان
-        document.querySelectorAll('.color-dot').forEach(dot => {
-            dot.addEventListener('click', () => {
-                document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-                dot.classList.add('active');
-                currentColor = dot.dataset.color;
-                ctx.strokeStyle = currentColor;
-            });
-        });
-    }
-
-    function draw(x, y) {
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-    }
-
-    function clearCanvasBoard() {
-        if (ctx && canvas) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
-        }
-    }
-
-    // ============================================================
-    //  التهيئة عند التحميل - مكتمل
-    // ============================================================
-    window.addEventListener('DOMContentLoaded', () => {
-        const name = localStorage.getItem('game_player_name');
-        const photo = localStorage.getItem('game_player_photo');
-        if (name && photo) {
-            document.getElementById("inpPlayerName").value = name;
-            selectedPhotoBase64 = photo;
-            document.getElementById("profilePhotoPreview").src = photo;
-        }
-        initCanvas();
-    });
-
-    // ============================================================
-    //  التعامل مع إغلاق الصفحة - مكتمل
-    // ============================================================
-    window.addEventListener('beforeunload', () => {
-        if (currentRoomId && myName) {
-            navigator.sendBeacon(
-                `${dbURL}rooms/${currentRoomId}/players/${encodeURIComponent(myName)}.json`, 
-                JSON.stringify(null)
-            );
-        }
-    });
-
-    // ============================================================
-    //  دوال إضافية مفقودة - مكتمل
-    // ============================================================
+// إعدادات Firebase الخاصة بمشروعك (مأخوذة من صورتك بدقة)
+const firebaseConfig = {
+    apiKey: "AIzaSyD-G_jk_UgqxGUuedsRZuqgfQgrkGWG2MM",
+    authDomain: "://firebaseapp.com",
+    databaseURL: "https://sdfq-63ee0-default-rtdb.firebaseio.com",
+    projectId: "sdfq-63ee0",
+    storageBucket: "sdfq-63ee0.firebasestorage.app",
+    messagingSenderId: "210107075463",
+    appId: "1:210107075463:web:469133f4305ecd61d42122",
+    measurementId: "G-0CNB95E2X4"
+};
+
+// تهيئة Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+const lobby = document.getElementById('lobby');
+const gameArea = document.getElementById('gameArea');
+const joinBtn = document.getElementById('joinBtn');
+const usernameInput = document.getElementById('username');
+const roomInput = document.getElementById('roomCode');
+const canvas = document.getElementById('paintCanvas');
+const ctx = canvas.getContext('2d');
+const clearBtn = document.getElementById('clearBtn');
+const guessInput = document.getElementById('guessInput');
+const sendGuessBtn = document.getElementById('sendGuessBtn');
+const chatBox = document.getElementById('chatBox');
+
+let myName = "";
+let roomCode = "";
+let isDrawing = false;
+let currentColor = "#000000";
+
+function resizeCanvas() {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 4;
+}
+window.addEventListener('resize', resizeCanvas);
+
+joinBtn.addEventListener('click', () => {
+    myName = usernameInput.value.trim();
+    roomCode = roomInput.value.trim();
     
-    // دالة لإرسال دعوة للاعب آخر
-    async function sendInviteToPlayer(targetPlayer) {
-        if (!targetPlayer || targetPlayer === myName) {
-            alert("الرجاء إدخال اسم لاعب صحيح!");
-            return;
-        }
+    if(!myName || !roomCode) {
+        alert("الرجاء كتابة اسمك واختيار رمز للغرفة أولاً!");
+        return;
+    }
+    
+    lobby.classList.add('hidden');
+    gameArea.classList.remove('hidden');
+    resizeCanvas();
+    
+    listenToRoom();
+});
+
+function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches.clientX : e.clientX;
+    const clientY = e.touches ? e.touches.clientY : e.clientY;
+    return {
+        x: (clientX - rect.left) / canvas.clientWidth,
+        y: (clientY - rect.top) / canvas.clientHeight
+    };
+}
+
+function startDrawing(e) {
+    isDrawing = true;
+    draw(e);
+}
+
+function stopDrawing() {
+    if (!isDrawing) return;
+    isDrawing = false;
+    ctx.beginPath();
+    database.ref(`rooms/${roomCode}/drawing`).push({ action: 'stop' });
+}
+
+function draw(e) {
+    if(!isDrawing) return;
+    const pos = getPos(e);
+    
+    database.ref(`rooms/${roomCode}/drawing`).push({
+        x: pos.x,
+        y: pos.y,
+        color: currentColor,
+        action: 'draw'
+    });
+}
+
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+window.addEventListener('mouseup', stopDrawing);
+
+canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); }, { passive: false });
+canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
+canvas.addEventListener('touchend', stopDrawing);
+
+function changeColor(color) {
+    currentColor = color;
+}
+
+clearBtn.addEventListener('click', () => {
+    database.ref(`rooms/${roomCode}/drawing`).set(null);
+});
+
+sendGuessBtn.addEventListener('click', sendGuess);
+guessInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendGuess(); });
+
+function sendGuess() {
+    const text = guessInput.value.trim();
+    if(!text) return;
+    
+    database.ref(`rooms/${roomCode}/chat`).push({
+        sender: myName,
+        message: text
+    });
+    guessInput.value = "";
+}
+
+function listenToRoom() {
+    database.ref(`rooms/${roomCode}/drawing`).on('value', (snapshot) => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
         
-        try {
-            await fetch(`${dbURL}invites/${encodeURIComponent(targetPlayer)}.json`, {
-                method: 'PUT',
-                body: JSON.stringify({ 
-                    from: myName, 
-                    roomCode: currentRoomId,
-                    timestamp: Date.now()
-                })
-            });
-            showSuccess(`تم إرسال الدعوة إلى ${targetPlayer}! 📨`, "homeSuccessMessage");
-        } catch(e) {
-            showError("فشل إرسال الدعوة!", "homeErrorMessage");
-        }
-    }
-
-    // دالة لعرض عدد اللاعبين في الغرفة
-    function getPlayerCount() {
-        return roomPlayers.length;
-    }
-
-    // دالة للتحقق من جاهزية اللاعبين
-    async function checkPlayersReady() {
-        try {
-            const res = await fetch(`${dbURL}rooms/${currentRoomId}/players.json`);
-            const players = await res.json();
-            if (!players) return false;
-            
-            let allReady = true;
-            for (let p in players) {
-                if (!players[p].isReady) {
-                    allReady = false;
-                    break;
-                }
+        const data = snapshot.val();
+        if(!data) return;
+        
+        Object.values(data).forEach(point => {
+            if(point.action === 'stop') {
+                ctx.beginPath();
+            } else if(point.action === 'draw') {
+                ctx.strokeStyle = point.color;
+                const actualX = point.x * canvas.width;
+                const actualY = point.y * canvas.height;
+                ctx.lineTo(actualX, actualY);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(actualX, actualY);
             }
-            return allReady;
-        } catch(e) {
-            return false;
-        }
-    }
-
-    // دالة لتحديد جاهزية اللاعب
-    async function setPlayerReady(isReady = true) {
-        if (!currentRoomId || !myName) return;
-        try {
-            await fetch(`${dbURL}rooms/${currentRoomId}/players/${encodeURIComponent(myName)}/isReady.json`, {
-                method: 'PUT',
-                body: JSON.stringify(isReady)
-            });
-        } catch(e) {
-            console.warn("خطأ في تحديث الجاهزية:", e);
-        }
-    }
-
-    console.log("✅ السكربت مكتمل وجاهز للاستخدام!");
-    console.log(`📊 عدد اللاعبين: ${roomPlayers.length}`);
-    console.log(`🏠 الغرفة: ${currentRoomId || "غير موجودة"}`);
+        });
+    });
+    
+    database.ref(`rooms/${roomCode}/chat`).on('child_added', (snapshot) => {
+        const data = snapshot.val();
+        const msgElement = document.createElement('div');
+        msgElement.style.marginBottom = "5px";
+        msgElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
+        chatBox.appendChild(msgElement);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+}
 </script>
 </body>
 </html>
